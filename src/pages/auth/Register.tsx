@@ -31,19 +31,47 @@ const Register = () => {
   };
 
   const handleNextStep = () => {
+    // Validation pour l'étape 1
     if (step === 1) {
-      if (!formData.lastName || !formData.firstName || !formData.email) {
-        toast.error('Veuillez remplir tous les champs obligatoires');
+      const errors: Record<string, string> = {};
+      
+      if (!formData.lastName) errors.lastName = 'Le nom est obligatoire';
+      if (!formData.firstName) errors.firstName = 'Le prénom est obligatoire';
+      if (!formData.email) {
+        errors.email = 'L\'email est obligatoire';
+      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+        errors.email = 'Format d\'email invalide';
+      }
+      if (!formData.age) {
+        errors.age = 'L\'âge est obligatoire';
+      } else if (parseInt(formData.age) <= 0) {
+        errors.age = 'L\'âge doit être strictement positif';
+      }
+
+      if (Object.keys(errors).length > 0) {
+        Object.values(errors).forEach(error => toast.error(error));
         return;
       }
       setStep(2);
-    } else if (step === 2) {
-      if (!formData.phone || !formData.country || !formData.profession || !formData.password) {
-        toast.error('Veuillez remplir tous les champs obligatoires');
-        return;
+    } 
+    // Validation pour l'étape 2
+    else if (step === 2) {
+      const errors: Record<string, string> = {};
+      
+      if (!formData.phone) errors.phone = 'Le téléphone est obligatoire';
+      if (!formData.country) errors.country = 'Le pays est obligatoire';
+      if (!formData.profession) errors.profession = 'La profession est obligatoire';
+      if (!formData.password) {
+        errors.password = 'Le mot de passe est obligatoire';
+      } else if (formData.password.length < 6) {
+        errors.password = 'Le mot de passe doit contenir au moins 6 caractères';
       }
       if (!formData.acceptTerms) {
-        toast.error('Veuillez accepter les conditions d\'utilisation');
+        errors.terms = 'Veuillez accepter les conditions d\'utilisation';
+      }
+
+      if (Object.keys(errors).length > 0) {
+        Object.values(errors).forEach(error => toast.error(error));
         return;
       }
       navigate('/auth/verify-email');

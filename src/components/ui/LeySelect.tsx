@@ -6,10 +6,11 @@ interface LeySelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   error?: string;
   options: { value: string; label: string }[];
+  placeholder?: string;
 }
 
 const LeySelect = forwardRef<HTMLSelectElement, LeySelectProps>(
-  ({ label, error, options, className, ...props }, ref) => {
+  ({ label, error, options, placeholder, className, ...props }, ref) => {
     return (
       <div className="space-y-2">
         {label && (
@@ -27,6 +28,11 @@ const LeySelect = forwardRef<HTMLSelectElement, LeySelectProps>(
             )}
             {...props}
           >
+            {placeholder && (
+              <option value="" disabled>
+                {placeholder}
+              </option>
+            )}
             {options.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}

@@ -27,13 +27,16 @@ const FinalizeRegistration = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.phone || !formData.country || !formData.profession) {
-      toast.error('Veuillez remplir tous les champs obligatoires');
-      return;
-    }
+    // Validation des champs
+    const errors: Record<string, string> = {};
     
-    if (!formData.acceptTerms) {
-      toast.error('Veuillez accepter les conditions d\'utilisation');
+    if (!formData.phone) errors.phone = 'Le téléphone est obligatoire';
+    if (!formData.country) errors.country = 'Le pays est obligatoire';  
+    if (!formData.profession) errors.profession = 'La profession est obligatoire';
+    if (!formData.acceptTerms) errors.terms = 'Veuillez accepter les conditions d\'utilisation';
+
+    if (Object.keys(errors).length > 0) {
+      Object.values(errors).forEach(error => toast.error(error));
       return;
     }
 

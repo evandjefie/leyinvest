@@ -2,9 +2,12 @@ import { motion } from 'framer-motion';
 import { ChevronRight, ExternalLink } from 'lucide-react';
 import LeyCard from '@/components/ui/LeyCard';
 import { useAppSelector } from '@/store/hooks';
+import { useState } from 'react';
+import TradeModal from '@/components/ui/TradeModal';
 
 const Dashboard = () => {
   const { stats, top5, flop5 } = useAppSelector((state) => state.portfolio);
+  const [showTradeModal, setShowTradeModal] = useState(false);
 
   const evaluations = [
     { term: 'Court terme', icon: ChevronRight },
@@ -37,6 +40,24 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-8 p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-foreground">Vue d'ensemble de vos investissements</h1>
+        <div className="flex gap-3">
+          <button 
+            onClick={() => setShowTradeModal(true)}
+            className="bg-foreground text-background px-4 py-2 rounded-lg text-sm font-medium hover:bg-foreground/90 transition-colors flex items-center gap-2"
+          >
+            <div className="w-5 h-5 bg-background text-foreground rounded-full flex items-center justify-center text-xs font-bold">1</div>
+            Enregistrer achat
+          </button>
+          <button className="bg-amber-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-600 transition-colors flex items-center gap-2">
+            <div className="w-5 h-5 bg-white text-amber-500 rounded-full flex items-center justify-center text-xs font-bold">$</div>
+            Enregistrer vente
+          </button>
+        </div>
+      </div>
+
       {/* Investment Overview */}
       <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-6">
         <motion.div
@@ -242,6 +263,13 @@ const Dashboard = () => {
           </LeyCard>
         </motion.div>
       </div>
+
+      {showTradeModal && (
+        <TradeModal 
+          isOpen={showTradeModal} 
+          onClose={() => setShowTradeModal(false)}
+        />
+      )}
     </div>
   );
 };
