@@ -1,6 +1,7 @@
 import { Home, Briefcase, TrendingUp, User, Settings, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
+import logoLeycom from '@/assets/logo_leycom.svg';
 import { motion } from 'framer-motion';
 
 const navigation = [
@@ -17,12 +18,7 @@ const Sidebar = () => {
       {/* Logo */}
       <div className="p-6 border-b border-border">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-primary flex items-center justify-center">
-            <div className="w-6 h-6 bg-white rounded-sm opacity-90"></div>
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">LeyInvest</h1>
-          </div>
+          <img src={logoLeycom} alt="LeyInvest" className="h-10" />
         </div>
       </div>
 

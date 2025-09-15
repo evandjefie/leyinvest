@@ -5,7 +5,8 @@ import { ArrowLeft } from 'lucide-react';
 import LeyButton from '@/components/ui/LeyButton';
 import LeyInput from '@/components/ui/LeyInput';
 import toast from 'react-hot-toast';
-import authBackground from '@/assets/auth-background.jpg';
+import logoLeycom from '@/assets/logo_leycom.svg';
+import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -20,7 +21,7 @@ const ForgotPassword = () => {
     setTimeout(() => {
       setLoading(false);
       toast.success('Instructions envoyées par email');
-      navigate('/auth/reset-password');
+      navigate('/auth/verify-code-reset');
     }, 1500);
   };
 
@@ -46,12 +47,9 @@ const ForgotPassword = () => {
           {/* Logo & Title */}
           <div className="text-center space-y-4">
             <div className="flex justify-center">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-primary flex items-center justify-center">
-                <div className="w-8 h-8 bg-white rounded-lg opacity-90"></div>
-              </div>
+              <img src={logoLeycom} alt="LeyInvest" className="h-16" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-foreground">LeyInvest</h1>
               <p className="text-muted-foreground mt-2">Votre partenaire d'investissement BRVM</p>
             </div>
           </div>
@@ -93,7 +91,7 @@ const ForgotPassword = () => {
       <div className="hidden lg:block flex-1 relative overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${authBackground})` }}
+          style={{ backgroundImage: `url(${bgAuthLeycom})` }}
         >
           <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary-dark/90" />
         </div>

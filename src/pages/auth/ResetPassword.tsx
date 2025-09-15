@@ -5,15 +5,23 @@ import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import LeyButton from '@/components/ui/LeyButton';
 import LeyInput from '@/components/ui/LeyInput';
 import toast from 'react-hot-toast';
-import authBackground from '@/assets/auth-background.jpg';
+import logoLeycom from '@/assets/logo_leycom.svg';
+import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
+import SuccessModal from '@/components/ui/SuccessModal';
 
 const ResetPassword = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const handleModalClose = () => {
+    setShowSuccessModal(false);
+    navigate('/auth/login');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,8 +41,7 @@ const ResetPassword = () => {
     // Simulate API call
     setTimeout(() => {
       setLoading(false);
-      toast.success('Mot de passe réinitialisé avec succès');
-      navigate('/auth/login');
+      setShowSuccessModal(true);
     }, 1500);
   };
 
@@ -50,7 +57,7 @@ const ResetPassword = () => {
         >
           {/* Back Button */}
           <Link 
-            to="/auth/forgot-password"
+            to="/auth/verify-code-reset"
             className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
@@ -60,12 +67,9 @@ const ResetPassword = () => {
           {/* Logo & Title */}
           <div className="text-center space-y-4">
             <div className="flex justify-center">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-primary flex items-center justify-center">
-                <div className="w-8 h-8 bg-white rounded-lg opacity-90"></div>
-              </div>
+              <img src={logoLeycom} alt="LeyInvest" className="h-16" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-foreground">LeyInvest</h1>
               <p className="text-muted-foreground mt-2">Votre partenaire d'investissement BRVM</p>
             </div>
           </div>
@@ -136,11 +140,17 @@ const ResetPassword = () => {
       <div className="hidden lg:block flex-1 relative overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${authBackground})` }}
+          style={{ backgroundImage: `url(${bgAuthLeycom})` }}
         >
           <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary-dark/90" />
         </div>
       </div>
+
+      <SuccessModal
+        isOpen={showSuccessModal}
+        message="Votre mot de passe à bien été réinitialisé"
+        onClose={handleModalClose}
+      />
     </div>
   );
 };

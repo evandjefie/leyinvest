@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
 
-const VerifyEmail = () => {
+const VerifyCodeReset = () => {
   const [code, setCode] = useState(['', '', '', '']);
   const [timer, setTimer] = useState(59);
   const [canResend, setCanResend] = useState(false);
@@ -44,7 +44,7 @@ const VerifyEmail = () => {
     const fullCode = code.join('');
     if (fullCode.length === 4) {
       toast.success('Vérification réussie !');
-      navigate('/auth/finalize-registration');
+      navigate('/auth/reset-password');
     } else {
       toast.error('Veuillez saisir le code complet');
     }
@@ -144,4 +144,4 @@ const VerifyEmail = () => {
   );
 };
 
-export default VerifyEmail;
+export default VerifyCodeReset;
