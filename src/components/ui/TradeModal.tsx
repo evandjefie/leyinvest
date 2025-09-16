@@ -8,9 +8,10 @@ import LeyButton from './LeyButton';
 interface TradeModalProps {
   isOpen: boolean;
   onClose: () => void;
+  type?: 'buy' | 'sell';
 }
 
-const TradeModal = ({ isOpen, onClose }: TradeModalProps) => {
+const TradeModal = ({ isOpen, onClose, type = 'buy' }: TradeModalProps) => {
   const [formData, setFormData] = useState({
     action: '',
     quantity: '',
@@ -20,12 +21,21 @@ const TradeModal = ({ isOpen, onClose }: TradeModalProps) => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const actions = [
+  const buyActions = [
     { value: 'SONATEL', label: 'SONATEL' },
     { value: 'ECOBANK', label: 'ECOBANK' },
     { value: 'BOA', label: 'BOA' },
     { value: 'ORANGE', label: 'ORANGE' },
   ];
+
+  const sellActions = [
+    { value: 'SONATEL', label: 'SONATEL (10 actions disponibles)' },
+    { value: 'ECOBANK', label: 'ECOBANK (25 actions disponibles)' },
+    { value: 'BOA', label: 'BOA (15 actions disponibles)' },
+    { value: 'ORANGE', label: 'ORANGE (30 actions disponibles)' },
+  ];
+
+  const actions = type === 'buy' ? buyActions : sellActions;
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -36,17 +46,17 @@ const TradeModal = ({ isOpen, onClose }: TradeModalProps) => {
     if (!formData.quantity) {
       newErrors.quantity = 'Veuillez renseigner la quantité';
     } else if (parseInt(formData.quantity) <= 0) {
-      newErrors.quantity = 'La quantité doit être positive';
+      newErrors.quantity = 'La quantité doit être strictement positive';
     }
     if (!formData.price) {
       newErrors.price = 'Veuillez renseigner le prix';
     } else if (parseFloat(formData.price) <= 0) {
-      newErrors.price = 'Le prix doit être positif';
+      newErrors.price = 'Le prix doit être strictement positif';
     }
     if (!formData.totalAmount) {
       newErrors.totalAmount = 'Veuillez renseigner le montant';
     } else if (parseFloat(formData.totalAmount) <= 0) {
-      newErrors.totalAmount = 'Le montant doit être positif';
+      newErrors.totalAmount = 'Le montant doit être strictement positif';
     }
 
     setErrors(newErrors);
@@ -72,7 +82,7 @@ const TradeModal = ({ isOpen, onClose }: TradeModalProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, width: '100vw', height: '100vh' }}>
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -80,7 +90,9 @@ const TradeModal = ({ isOpen, onClose }: TradeModalProps) => {
         className="bg-background rounded-2xl p-6 w-full max-w-md shadow-2xl"
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-foreground">Enregistrer un achat</h2>
+          <h2 className="text-xl font-bold text-foreground">
+            {type === 'buy' ? 'Enregistrer un achat' : 'Enregistrer une vente'}
+          </h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-secondary rounded-lg transition-colors"
@@ -123,15 +135,15 @@ const TradeModal = ({ isOpen, onClose }: TradeModalProps) => {
             required
           />
 
-          <LeyInput
-            label="Montant de l'achat"
-            type="number"
-            placeholder="0"
-            value={formData.totalAmount}
-            onChange={(e) => handleInputChange('totalAmount')(e.target.value)}
-            error={errors.totalAmount}
-            required
-          />
+            <LeyInput
+              label={type === 'buy' ? "Montant de l'achat" : "Montant de la vente"}
+              type="number"
+              placeholder="0"
+              value={formData.totalAmount}
+              onChange={(e) => handleInputChange('totalAmount')(e.target.value)}
+              error={errors.totalAmount}
+              required
+            />
 
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
