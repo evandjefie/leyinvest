@@ -1,10 +1,11 @@
 # LeyInvest
 
-LeyInvest est une application de gestion d'investissements développée avec React.js, TypeScript, TailwindCSS et Redux. Elle permet aux utilisateurs de suivre leurs investissements en bourse, analyser leurs portefeuilles et accéder aux actualités du marché financier.
+LeyInvest est une application de gestion d'investissements développée avec React.js, TypeScript, TailwindCSS et Redux.
+Elle permet aux utilisateurs de suivre leurs investissements en bourse, analyser leurs portefeuilles et accéder aux actualités du marché financier.
 
-## 🚀 Fonctionnalités
+## Fonctionnalités
 
-### ✅ Authentification complète
+### Authentification complète
 - **Connexion** avec email/mot de passe
 - **Inscription** avec validation d'email
 - **Vérification par code** après inscription
@@ -12,7 +13,7 @@ LeyInvest est une application de gestion d'investissements développée avec Rea
 - **Récupération de mot de passe** avec code de vérification
 - **Réinitialisation de mot de passe** sécurisée
 
-### ✅ Dashboard principal
+### Dashboard principal
 - Vue d'ensemble des investissements
 - Statistiques en temps réel (montant investi, rendement, gains/pertes, valeur totale)
 - Top 5 et Flop 5 des actions
@@ -20,12 +21,12 @@ LeyInvest est une application de gestion d'investissements développée avec Rea
 - Publications officielles et actualités du marché
 - **Modal d'enregistrement d'achat/vente** avec validation
 
-### ✅ Pages fonctionnelles
+### Pages fonctionnelles
 - **Portfolio** : Gestion détaillée du portefeuille
 - **Analyse** : Outils d'analyse financière
 - **Page 404** personnalisée
 
-## 🛠 Technologies utilisées
+## Technologies utilisées
 
 - **Frontend** : React 18, TypeScript, Vite
 - **Styling** : TailwindCSS avec système de design personnalisé
@@ -35,7 +36,7 @@ LeyInvest est une application de gestion d'investissements développée avec Rea
 - **Icons** : Lucide React
 - **Composants UI** : Composants personnalisés + shadcn/ui
 
-## 🎨 Architecture
+## Architecture
 
 ### Structure des dossiers
 ```
@@ -82,7 +83,7 @@ src/
 - **Composants thématisés** avec variants
 - **Animations fluides** avec Framer Motion
 
-## 🔧 Installation et développement local
+## Installation et développement local
 
 ### Prérequis
 - Node.js (version 18+)
@@ -101,7 +102,7 @@ npm install
 npm run dev
 ```
 
-L'application sera accessible sur `http://localhost:5173`
+L'application sera accessible sur `http://localhost:8080`
 
 ### Scripts disponibles
 ```bash
@@ -111,7 +112,7 @@ npm run preview      # Prévisualisation du build
 npm run lint         # Analyse du code
 ```
 
-## 🧪 Test de l'application
+## Test de l'application
 
 ### Flow d'authentification complet
 
@@ -155,7 +156,7 @@ npm run lint         # Analyse du code
 4. Créer un nouveau mot de passe
 5. Notification de succès et redirection vers la connexion
 
-## 🔒 Validation des formulaires
+## Validation des formulaires
 
 ### Règles implémentées
 - **Champs obligatoires** : Validation côté client avec messages d'erreur
@@ -170,7 +171,7 @@ npm run lint         # Analyse du code
 - Effacement automatique lors de la saisie
 - Indication visuelle des champs en erreur
 
-## 🚀 Prochaines étapes
+## Prochaines étapes
 
 ### À développer
 - [ ] Intégration avec API backend réelle
@@ -189,7 +190,7 @@ npm run lint         # Analyse du code
 - [ ] Optimisation des images
 - [ ] Code splitting avancé
 
-## 📝 Notes de développement
+## Notes de développement
 
 ### État actuel
 - ✅ Architecture complète mise en place
