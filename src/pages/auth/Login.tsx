@@ -22,6 +22,26 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validation des champs
+    const errors: Record<string, string> = {};
+    
+    if (!email) {
+      errors.email = 'L\'email est obligatoire';
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = 'Format d\'email invalide';
+    }
+    if (!password) {
+      errors.password = 'Le mot de passe est obligatoire';
+    } else if (password.length < 6) {
+      errors.password = 'Le mot de passe doit contenir au moins 6 caractères';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      Object.values(errors).forEach(error => toast.error(error));
+      return;
+    }
+
     setLoading(true);
     dispatch(loginStart());
 
