@@ -15,7 +15,6 @@ const FinalizeRegistration = () => {
     countryCode: '+225',
     country: '',
     profession: '',
-    password: '',
     acceptTerms: false,
   });
   const [loading, setLoading] = useState(false);
@@ -34,11 +33,6 @@ const FinalizeRegistration = () => {
     if (!formData.phone) errors.phone = 'Le téléphone est obligatoire';
     if (!formData.country) errors.country = 'Le pays est obligatoire';  
     if (!formData.profession) errors.profession = 'La profession est obligatoire';
-    if (!formData.password) {
-      errors.password = 'Le mot de passe est obligatoire';
-    } else if (formData.password.length < 6) {
-      errors.password = 'Le mot de passe doit contenir au moins 6 caractères';
-    }
     if (!formData.acceptTerms) errors.terms = 'Veuillez accepter les conditions d\'utilisation';
 
     if (Object.keys(errors).length > 0) {
@@ -154,8 +148,6 @@ const FinalizeRegistration = () => {
                 </p>
                 <LeyInput
                   type="password"
-                  value={formData.password}
-                  onChange={(e) => handleInputChange('password', e.target.value)}
                   placeholder="6 caractères minimum"
                   required
                 />
