@@ -42,11 +42,11 @@ const FinalizeRegistration = () => {
 
     setLoading(true);
 
-    // Simulate API call
+    // Since user is already registered and verified, just navigate to dashboard
     setTimeout(() => {
       setLoading(false);
-      toast.success('Inscription finalisée avec succès !');
-      navigate('/dashboard');
+      toast.success('Profil complété avec succès !');
+      navigate('/auth/login');
     }, 1500);
   };
 

@@ -1,47 +1,52 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
 import LeyButton from '@/components/ui/LeyButton';
 import LeyInput from '@/components/ui/LeyInput';
+import LeySelect from '@/components/ui/LeySelect';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { registerUser, setRegistrationEmail } from '@/store/slices/authSlice';
+import { RegisterRequest } from '@/types/api';
 import toast from 'react-hot-toast';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
 
 const Register = () => {
-  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     lastName: '',
     firstName: '',
-    gender: '',
-    age: '',
     email: '',
     phone: '',
-    countryCode: '+225',
+    age: '',
+    gender: '',
     country: '',
     profession: '',
     password: '',
+    confirmPassword: '',
     acceptTerms: false,
   });
-  const [loading, setLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
   
+  const dispatch = useAppDispatch();
+  const { loading, error } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleNextStep = () => {
-    // Validation pour l'étape 1
-    if (step === 1) {
+  const handleNextStep = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validation des champs requis pour l'étape 1
+    if (currentStep === 1) {
       const errors: Record<string, string> = {};
       
       if (!formData.lastName) errors.lastName = 'Le nom est obligatoire';
       if (!formData.firstName) errors.firstName = 'Le prénom est obligatoire';
-      if (!formData.email) {
-        errors.email = 'L\'email est obligatoire';
-      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-        errors.email = 'Format d\'email invalide';
-      }
+      if (!formData.email) errors.email = 'L\'email est obligatoire';
+      if (!formData.phone) errors.phone = 'Le téléphone est obligatoire';
       if (!formData.age) {
         errors.age = 'L\'âge est obligatoire';
       } else if (parseInt(formData.age) <= 0) {
@@ -52,13 +57,13 @@ const Register = () => {
         Object.values(errors).forEach(error => toast.error(error));
         return;
       }
-      setStep(2);
-    } 
-    // Validation pour l'étape 2
-    else if (step === 2) {
+
+      setCurrentStep(2);
+    } else {
+      // Validation des champs requis pour l'étape 2
       const errors: Record<string, string> = {};
       
-      if (!formData.phone) errors.phone = 'Le téléphone est obligatoire';
+      if (!formData.gender) errors.gender = 'Le genre est obligatoire';
       if (!formData.country) errors.country = 'Le pays est obligatoire';
       if (!formData.profession) errors.profession = 'La profession est obligatoire';
       if (!formData.password) {
@@ -66,15 +71,38 @@ const Register = () => {
       } else if (formData.password.length < 6) {
         errors.password = 'Le mot de passe doit contenir au moins 6 caractères';
       }
-      if (!formData.acceptTerms) {
-        errors.terms = 'Veuillez accepter les conditions d\'utilisation';
-      }
+      if (!formData.confirmPassword) errors.confirmPassword = 'La confirmation du mot de passe est obligatoire';
+      if (formData.password !== formData.confirmPassword) errors.confirmPassword = 'Les mots de passe ne correspondent pas';
+      if (!formData.acceptTerms) errors.terms = 'Veuillez accepter les conditions d\'utilisation';
 
       if (Object.keys(errors).length > 0) {
         Object.values(errors).forEach(error => toast.error(error));
         return;
       }
-      navigate('/auth/verify-email');
+
+      // Prepare registration data
+      const registrationData: RegisterRequest = {
+        nom: formData.lastName,
+        prenom: formData.firstName,
+        age: parseInt(formData.age),
+        genre: formData.gender as 'Homme' | 'Femme',
+        email: formData.email,
+        numero_whatsapp: formData.phone,
+        pays_residence: formData.country,
+        situation_professionnelle: formData.profession,
+        mot_de_passe: formData.password,
+      };
+
+      try {
+        const result = await dispatch(registerUser(registrationData));
+        if (registerUser.fulfilled.match(result)) {
+          dispatch(setRegistrationEmail(formData.email));
+          toast.success('Inscription réussie ! Vérifiez votre email.');
+          navigate('/auth/verify-email');
+        }
+      } catch (err) {
+        // Error already handled by Redux
+      }
     }
   };
 
@@ -92,6 +120,16 @@ const Register = () => {
           transition={{ duration: 0.6 }}
           className="w-full max-w-md space-y-8"
         >
+          {currentStep === 2 && (
+            <button 
+              onClick={() => setCurrentStep(1)}
+              className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            >
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              Retour
+            </button>
+          )}
+
           {/* Logo & Title */}
           <div className="text-center space-y-4">
             <div className="flex justify-center">
@@ -103,7 +141,7 @@ const Register = () => {
           </div>
 
           <div className="space-y-6">
-            {step === 1 ? (
+            {currentStep === 1 ? (
               <>
                 <h2 className="text-2xl font-bold text-center text-foreground">
                   Créer votre compte
@@ -123,7 +161,7 @@ const Register = () => {
                     </svg>
                   }
                 >
-                  Continuer avec Google
+                  S'inscrire avec Google
                 </LeyButton>
 
                 <div className="relative">
@@ -136,7 +174,7 @@ const Register = () => {
                 </div>
 
                 {/* Registration Form Step 1 */}
-                <div className="space-y-4">
+                <form onSubmit={handleNextStep} className="space-y-4">
                   <LeyInput
                     label="Nom"
                     value={formData.lastName}
@@ -153,22 +191,6 @@ const Register = () => {
                     required
                   />
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <LeyInput
-                      label="Genre"
-                      value={formData.gender}
-                      onChange={(e) => handleInputChange('gender', e.target.value)}
-                      placeholder="Genre"
-                    />
-                    <LeyInput
-                      label="Age"
-                      type="number"
-                      value={formData.age}
-                      onChange={(e) => handleInputChange('age', e.target.value)}
-                      placeholder="Age"
-                    />
-                  </div>
-
                   <LeyInput
                     label="Email"
                     type="email"
@@ -178,84 +200,98 @@ const Register = () => {
                     required
                   />
 
+                  <LeyInput
+                    label="Numéro whatsapp"
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    placeholder="Numéro de téléphone"
+                    required
+                  />
+
+                  <LeyInput
+                    label="Age"
+                    type="number"
+                    value={formData.age}
+                    onChange={(e) => handleInputChange('age', e.target.value)}
+                    placeholder="Votre âge"
+                    required
+                  />
+
                   <LeyButton
-                    onClick={handleNextStep}
+                    type="submit"
                     className="w-full"
                   >
                     Suivant
                   </LeyButton>
-                </div>
+                </form>
               </>
             ) : (
               <>
-                <div className="flex items-center gap-4 mb-6">
-                  <button
-                    onClick={() => setStep(1)}
-                    className="p-2 rounded-full hover:bg-secondary transition-colors"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                  </button>
-                  <h2 className="text-2xl font-bold text-foreground">
-                    Finaliser la création de votre compte
-                  </h2>
-                </div>
+                <h2 className="text-2xl font-bold text-center text-foreground">
+                  Finaliser la création de votre compte
+                </h2>
 
                 {/* Registration Form Step 2 */}
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Numéro</label>
-                    <div className="flex gap-2">
-                      <select
-                        value={formData.countryCode}
-                        onChange={(e) => handleInputChange('countryCode', e.target.value)}
-                        className="input-field w-24"
-                      >
-                        <option value="+225">+225</option>
-                        <option value="+33">+33</option>
-                        <option value="+1">+1</option>
-                      </select>
-                      <LeyInput
-                        value={formData.phone}
-                        onChange={(e) => handleInputChange('phone', e.target.value)}
-                        placeholder="Numéro de téléphone"
-                        className="flex-1"
-                        required
-                      />
-                    </div>
-                  </div>
+                <form onSubmit={handleNextStep} className="space-y-4">
+                  <LeySelect
+                    label="Genre"
+                    value={formData.gender}
+                    onChange={(e) => handleInputChange('gender', e.target.value)}
+                    options={[
+                      { value: '', label: 'Sélectionner votre genre' },
+                      { value: 'Homme', label: 'Homme' },
+                      { value: 'Femme', label: 'Femme' },
+                    ]}
+                    required
+                  />
 
-                  <LeyInput
+                  <LeySelect
                     label="Pays de résidence"
                     value={formData.country}
                     onChange={(e) => handleInputChange('country', e.target.value)}
-                    placeholder="Sélectionner votre pays"
+                    options={[
+                      { value: '', label: 'Sélectionner votre pays' },
+                      { value: 'Côte d\'Ivoire', label: 'Côte d\'Ivoire' },
+                      { value: 'Sénégal', label: 'Sénégal' },
+                      { value: 'Burkina Faso', label: 'Burkina Faso' },
+                      { value: 'Mali', label: 'Mali' },
+                      { value: 'France', label: 'France' },
+                    ]}
+                    required
+                  />
+
+                  <LeySelect
+                    label="Situation professionnelle"
+                    value={formData.profession}
+                    onChange={(e) => handleInputChange('profession', e.target.value)}
+                    options={[
+                      { value: '', label: 'Votre profession' },
+                      { value: 'Employé', label: 'Employé' },
+                      { value: 'Travailleur indépendant', label: 'Travailleur indépendant' },
+                      { value: 'Entrepreneur', label: 'Entrepreneur' },
+                      { value: 'Étudiant', label: 'Étudiant' },
+                      { value: 'Retraité', label: 'Retraité' },
+                    ]}
                     required
                   />
 
                   <LeyInput
-                    label="Situation professionnelle"
-                    value={formData.profession}
-                    onChange={(e) => handleInputChange('profession', e.target.value)}
-                    placeholder="Votre profession"
+                    label="Mot de passe"
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    placeholder="Au moins 6 caractères"
                     required
                   />
 
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Mot de passe</label>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Votre mot de passe doit comporter 6 caractères ou plus, incluant au moins une
-                      majuscule, une minuscule, un chiffre et un symbole spécial (@ # $ % & etc.)
-                    </p>
-                    <LeyInput
-                      type="password"
-                      value={formData.password}
-                      onChange={(e) => handleInputChange('password', e.target.value)}
-                      placeholder="6 caractères minimum"
-                      required
-                    />
-                  </div>
+                  <LeyInput
+                    label="Confirmer le mot de passe"
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                    placeholder="Confirmer votre mot de passe"
+                    required
+                  />
 
                   <label className="flex items-start gap-3 cursor-pointer">
                     <input
@@ -270,13 +306,19 @@ const Register = () => {
                   </label>
 
                   <LeyButton
-                    onClick={handleNextStep}
+                    type="submit"
                     className="w-full"
                     loading={loading}
                   >
                     S'inscrire
                   </LeyButton>
-                </div>
+                  
+                  {error && (
+                    <div className="text-destructive text-sm text-center mt-2">
+                      {error}
+                    </div>
+                  )}
+                </form>
               </>
             )}
 

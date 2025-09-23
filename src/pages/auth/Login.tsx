@@ -4,8 +4,8 @@ import { motion } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
 import LeyButton from '@/components/ui/LeyButton';
 import LeyInput from '@/components/ui/LeyInput';
-import { useAppDispatch } from '@/store/hooks';
-import { loginStart, loginSuccess } from '@/store/slices/authSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { loginUser, clearError } from '@/store/slices/authSlice';
 import toast from 'react-hot-toast';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
@@ -15,27 +15,35 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [loading, setLoading] = useState(false);
   
   const dispatch = useAppDispatch();
+  const { loading, error } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    dispatch(loginStart());
+    
+    if (!email || !password) {
+      toast.error('Veuillez remplir tous les champs');
+      return;
+    }
 
-    // Simulate API call
-    setTimeout(() => {
-      dispatch(loginSuccess({
-        id: '1',
-        email,
-        name: 'Utilisateur',
-        firstName: 'Test'
-      }));
-      toast.success('Connexion réussie !');
-      navigate('/dashboard');
-    }, 1500);
+    if (password.length < 6) {
+      toast.error('Le mot de passe doit contenir au moins 6 caractères');
+      return;
+    }
+
+    dispatch(clearError());
+
+    try {
+      const result = await dispatch(loginUser({ email, password }));
+      if (loginUser.fulfilled.match(result)) {
+        toast.success('Connexion réussie !');
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      // Error already handled by Redux
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -147,6 +155,12 @@ const Login = () => {
               >
                 Se connecter
               </LeyButton>
+              
+              {error && (
+                <div className="text-destructive text-sm text-center mt-2">
+                  {error}
+                </div>
+              )}
             </form>
 
             <div className="text-center">
