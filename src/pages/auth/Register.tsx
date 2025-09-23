@@ -98,7 +98,7 @@ const Register = () => {
               <img src={logoLeycom} alt="LeyInvest" className="h-16" />
             </div>
             <div>
-              <p className="text-muted-foreground mt-2">Votre partenaire d'investissement BRVM</p>
+              {/* <p className="text-muted-foreground mt-2">Votre partenaire d'investissement BRVM</p> */}
             </div>
           </div>
 
@@ -162,7 +162,7 @@ const Register = () => {
                     />
                     <LeyInput
                       label="Age"
-                      type="number"
+                      // type="number"
                       value={formData.age}
                       onChange={(e) => handleInputChange('age', e.target.value)}
                       placeholder="Age"

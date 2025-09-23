@@ -58,7 +58,7 @@ const Login = () => {
               <img src={logoLeycom} alt="LeyInvest" className="h-16" />
             </div>
             <div>
-              <p className="text-muted-foreground mt-2">Votre partenaire d'investissement BRVM</p>
+              {/* <p className="text-muted-foreground mt-2">Votre partenaire d'investissement BRVM</p> */}
             </div>
           </div>
 
