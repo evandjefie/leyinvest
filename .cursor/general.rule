@@ -1,0 +1,25 @@
+# REGLES GENERALES ET CONVENTIONS DE CODAGE POUR LEYINVEST
+# Ces règles DOIVENT être respectées par tout code généré ou modifié.
+
+1. Architecture: Utiliser l'architecture par fonctionnalité dans src/features.
+2. État Global: Utiliser OBLIGATOIREMENT Redux Toolkit pour tout état global.
+3. Requêtes API: Utiliser la couche src/api/ avec AXIOS configuré. Ne JAMAIS faire de fetch directement dans les composants.
+4. Conventions React: Toujours utiliser des Hooks (pas de classes). Nommer les composants en PascalCase.
+5. Typage: Utiliser TypeScript (.tsx, .ts). Définir les interfaces dans src/types/.
+6. Style: Utiliser Tailwind CSS pour le stylisme. Éviter les styles inline ou les modules CSS locaux (sauf si strictement nécessaire).
+7. Authentification: Le token d'authentification DOIT être stocké dans le localStorage.
+
+# REGLES TECHNIQUES ET ARCHITECTURALES (TECH STACK)
+# Ces règles DEFINISSENT l'environnement technique de Leyinvest.
+
+# Langage et Frameworks
+1. Langage Principal: Utiliser OBLIGATOIREMENT TypeScript (.ts, .tsx). Définir les interfaces dans src/types/.
+2. UI: Utiliser React avec l'approche par composants fonctionnels et les Hooks.
+3. Style: Utiliser Tailwind CSS pour tous les styles. Les classes DOIVENT être appliquées directement dans le JSX (pas de modules CSS).
+
+# État et Données
+4. État Global: Utiliser Redux Toolkit pour tout état global. Les fichiers doivent être nommés *Slice.ts.
+5. Configuration Redux: Le store principal est configuré dans src/redux/store.ts.
+6. Requêtes API: Utiliser la librairie AXIOS pour toutes les requêtes HTTP.
+7. Couche API: Toutes les fonctions d'appel API DOIVENT résider dans src/api/ (e.g., src/api/authService.ts).
+8. Hooks Personnalisés: Les hooks génériques réutilisables vont dans src/hooks/. Les hooks spécifiques à une fonctionnalité vont dans le dossier de la feature (e.g., src/features/auth/hooks/).

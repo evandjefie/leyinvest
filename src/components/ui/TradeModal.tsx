@@ -59,6 +59,11 @@ const TradeModal = ({ isOpen, onClose, type = 'buy' }: TradeModalProps) => {
       newErrors.totalAmount = 'Le montant doit être strictement positif';
     }
 
+    // Comment is required per new requirement
+    if (!formData.comment || formData.comment.trim() === '') {
+      newErrors.comment = 'Le commentaire est obligatoire';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -153,8 +158,9 @@ const TradeModal = ({ isOpen, onClose, type = 'buy' }: TradeModalProps) => {
               placeholder="Ajoutez un commentaire..."
               value={formData.comment}
               onChange={(e) => handleInputChange('comment')(e.target.value)}
-              className="input-field w-full min-h-[80px] resize-none"
+              className={"input-field w-full min-h-[80px] resize-none " + (errors.comment ? 'border-destructive' : '')}
             />
+            {errors.comment && <p className="text-sm text-destructive">{errors.comment}</p>}
           </div>
 
           <div className="flex gap-3 pt-4">

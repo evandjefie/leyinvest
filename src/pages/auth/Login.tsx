@@ -4,8 +4,8 @@ import { motion } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
 import LeyButton from '@/components/ui/LeyButton';
 import LeyInput from '@/components/ui/LeyInput';
-import { useAppDispatch } from '@/store/hooks';
-import { loginStart, loginSuccess } from '@/store/slices/authSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { loginUser, clearError } from '@/store/slices/authSlice';
 import toast from 'react-hot-toast';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
@@ -13,29 +13,35 @@ import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [loading, setLoading] = useState(false);
   
   const dispatch = useAppDispatch();
+  const { loading, error } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    dispatch(loginStart());
+    
+    const nextErrors: { email?: string; password?: string } = {};
+    if (!email) nextErrors.email = 'L\'email est obligatoire';
+    if (!password) nextErrors.password = 'Le mot de passe est obligatoire';
+    if (password && password.length < 6) nextErrors.password = 'Le mot de passe doit contenir au moins 6 caractères';
+    setFieldErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
 
-    // Simulate API call
-    setTimeout(() => {
-      dispatch(loginSuccess({
-        id: '1',
-        email,
-        name: 'Utilisateur',
-        firstName: 'Test'
-      }));
-      toast.success('Connexion réussie !');
-      navigate('/dashboard');
-    }, 1500);
+    dispatch(clearError());
+
+    try {
+      const result = await dispatch(loginUser({ email, password }));
+      if (loginUser.fulfilled.match(result)) {
+        toast.success('Connexion réussie !');
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      // Error already handled by Redux
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -101,6 +107,7 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Entrer votre mail"
+                error={fieldErrors.email}
                 required
               />
 
@@ -110,6 +117,7 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Entrer votre mot de passe"
+                error={fieldErrors.password}
                 suffix={
                   <button
                     type="button"
@@ -147,6 +155,12 @@ const Login = () => {
               >
                 Se connecter
               </LeyButton>
+              
+              {error && (
+                <div className="text-destructive text-sm text-center mt-2">
+                  {error}
+                </div>
+              )}
             </form>
 
             <div className="text-center">

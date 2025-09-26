@@ -1,0 +1,13 @@
+# REGLES DE TEST POUR LEYINVEST (PTP - Product Testing Prompts)
+
+# 1. Méthodologie
+1. TDD: Toujours suivre le cycle Red-Green-Refactor. Les tests doivent être écrits AVANT le code de production (Tests First).
+
+# 2. Outils et Couverture
+2. Outils Unitaires: Utiliser **JEST** et **React Testing Library** pour tester la logique isolée (slices, hooks, composants sans dépendance complexe).
+3. Outils E2E: Utiliser **PLAYWRIGHT** pour les tests End-to-End (scénarios utilisateur complets).
+4. Couverture: Toute nouvelle logique (slice ou service) doit atteindre une couverture de test d'au moins 80%.
+
+# 3. Conventions Spécifiques aux Tests
+5. Redux: Lors du test des slices Redux, mocker les appels API et vérifier que l'état change correctement pour les cas `pending`, `fulfilled`, et `rejected` de chaque `createAsyncThunk`.
+6. Composants: Tester que les composants affichent correctement les messages d'erreur et les états de chargement conformément aux règles de l'UI.

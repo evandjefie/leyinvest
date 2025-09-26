@@ -1,0 +1,20 @@
+# REGLES METIER ET IMPLEMENTATION POUR L'AUTHENTIFICATION
+
+# 1. Organisation et Persistance
+1. Emplacement du code:
+    - Logique de l'API: **src/services/auth-service.ts**
+    - Slice Redux: **src/store/slices/authSlice.ts**
+    - Pages : **src/pages/auth/**
+2. Tokens et Persistance:
+    a. Le token JWT (obtenu après login/register) DOIT être stocké dans le **localStorage**.
+    b. Le token DOIT être envoyé dans l'en-tête **'Authorization: Bearer <token>'** pour toutes les requêtes authentifiées, via un intercepteur Axios configuré.
+
+# 2. Logique des Flux
+3. Redux Slice: Un seul slice (authSlice) gère l'état d'authentification (`token`, `user`, `loading`, `error`).
+4. Login/Register (Succès): Le statut d'auth passe à 'authenticated'. L'utilisateur DOIT être redirigé vers la page d'accueil après le succès.
+5. Logout: La déconnexion DOIT supprimer le token du localStorage et réinitialiser l'état d'authentification.
+6. Messages: Les messages de succès ou d'erreur liés aux processus temporaires (vérification email, renvoi de code) DOIVENT être gérés par l'état local du composant (non par Redux).
+
+# 3. Validation et UI
+7. Formulaires: Utiliser un validateur de formulaire pour afficher les messages d'erreur **juste en dessous de l'input concerné**. Les messages d'erreur DOIVENT être en **français**.
+8. UX: Ajouter un état de chargement (`loading`) sur le bouton de soumission pendant l'exécution des thunks asynchrones (login, register).

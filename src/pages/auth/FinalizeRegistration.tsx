@@ -17,36 +17,68 @@ const FinalizeRegistration = () => {
     profession: '',
     acceptTerms: false,
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    // clear field error when user types
+    setErrors(prev => ({ ...prev, [field]: '' }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validation des champs
-    const errors: Record<string, string> = {};
-    
-    if (!formData.phone) errors.phone = 'Le téléphone est obligatoire';
-    if (!formData.country) errors.country = 'Le pays est obligatoire';  
-    if (!formData.profession) errors.profession = 'La profession est obligatoire';
-    if (!formData.acceptTerms) errors.terms = 'Veuillez accepter les conditions d\'utilisation';
+    const newErrors: Record<string, string> = {};
 
-    if (Object.keys(errors).length > 0) {
-      Object.values(errors).forEach(error => toast.error(error));
+    if (!formData.phone) newErrors.phone = 'Le téléphone est obligatoire';
+    if (!formData.country) newErrors.country = 'Le pays est obligatoire';
+    if (!formData.profession) newErrors.profession = 'La situation est obligatoire';
+
+    // Age validation: integer between 16 and 120
+    const ageValue = (e.currentTarget as HTMLFormElement).querySelector('input[name="age"]') as HTMLInputElement | null;
+    const age = ageValue?.value ?? '';
+    const ageNum = parseInt(age, 10);
+    if (!age) {
+      newErrors.age = 'L\'âge est obligatoire';
+    } else if (Number.isNaN(ageNum) || !Number.isInteger(ageNum)) {
+      newErrors.age = 'L\'âge doit être un nombre entier';
+    } else if (ageNum < 16 || ageNum > 120) {
+      newErrors.age = 'L\'âge doit être compris entre 16 et 120 ans';
+    }
+
+    // Genre
+    if (!formData.gender) newErrors.gender = 'Le genre est obligatoire';
+
+    // Password stricter: min 8, majuscule, minuscule, chiffre
+    const pwdInput = (e.currentTarget as HTMLFormElement).querySelector('input[name="password"]') as HTMLInputElement | null;
+    const pwd = pwdInput?.value ?? '';
+    if (!pwd) {
+      newErrors.password = 'Le mot de passe est obligatoire';
+    } else if (!/^.*(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/.test(pwd)) {
+      newErrors.password = 'Mot de passe invalide — minimum 8 caractères, une majuscule, une minuscule et un chiffre';
+    }
+
+    if (!formData.acceptTerms) newErrors.terms = 'Veuillez accepter les conditions d\'utilisation';
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      // focus first error if exists
+      const firstKey = Object.keys(newErrors)[0];
+      const el = document.querySelector(`[name="${firstKey}"]`) as HTMLElement | null;
+      if (el) el.focus();
       return;
     }
 
     setLoading(true);
 
-    // Simulate API call
+    // Since user is already registered and verified, just navigate to dashboard
     setTimeout(() => {
       setLoading(false);
-      toast.success('Inscription finalisée avec succès !');
-      navigate('/dashboard');
+      toast.success('Profil complété avec succès !');
+      navigate('/auth/login');
     }, 1500);
   };
 
@@ -105,50 +137,92 @@ const FinalizeRegistration = () => {
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     placeholder="Numéro de téléphone"
                     className="flex-1"
-                    required
+                      name="phone"
+                      error={errors.phone}
+                      required
                   />
                 </div>
               </div>
+                <LeySelect
+                  label="Pays de résidence"
+                  value={formData.country}
+                  onChange={(e) => handleInputChange('country', e.target.value)}
+                  options={[
+                    { value: '', label: 'Sélectionner votre pays' },
+                    { value: 'BJ', label: 'Bénin' },
+                    { value: 'BF', label: 'Burkina Faso' },
+                    { value: 'CI', label: 'Côte d\'Ivoire' },
+                    { value: 'GN', label: 'Guinée' },
+                    { value: 'ML', label: 'Mali' },
+                    { value: 'NE', label: 'Niger' },
+                    { value: 'SN', label: 'Sénégal' },
+                    { value: 'TG', label: 'Togo' },
+                    { value: 'CM', label: 'Cameroun' },
+                    { value: 'GA', label: 'Gabon' },
+                    { value: 'GQ', label: 'Guinée équatoriale' },
+                    { value: 'CF', label: 'République centrafricaine' },
+                    { value: 'CG', label: 'République du Congo' },
+                    { value: 'CD', label: 'République démocratique du Congo' },
+                    { value: 'TD', label: 'Tchad' },
+                  ]}
+                  name="country"
+                  error={errors.country}
+                  required
+                />
 
-              <LeySelect
-                label="Pays de résidence"
-                value={formData.country}
-                onChange={(e) => handleInputChange('country', e.target.value)}
-                options={[
-                  { value: '', label: 'Sélectionner votre pays' },
-                  { value: 'CI', label: 'Côte d\'Ivoire' },
-                  { value: 'SN', label: 'Sénégal' },
-                  { value: 'BF', label: 'Burkina Faso' },
-                  { value: 'ML', label: 'Mali' },
-                  { value: 'FR', label: 'France' },
-                ]}
-                required
-              />
+                <LeySelect
+                  label="Situation"
+                  value={formData.profession}
+                  onChange={(e) => handleInputChange('profession', e.target.value)}
+                  options={[
+                    { value: '', label: 'Sélectionner votre situation' },
+                    { value: 'entrepreneur', label: 'Entrepreneur' },
+                    { value: 'salarie', label: 'Salarié' },
+                    { value: 'sans_emploi', label: 'Sans emploi' },
+                  ]}
+                  name="profession"
+                  error={errors.profession}
+                  required
+                />
 
-              <LeySelect
-                label="Situation professionnelle"
-                value={formData.profession}
-                onChange={(e) => handleInputChange('profession', e.target.value)}
-                options={[
-                  { value: '', label: 'Votre profession' },
-                  { value: 'employe', label: 'Employé' },
-                  { value: 'independant', label: 'Travailleur indépendant' },
-                  { value: 'entrepreneur', label: 'Entrepreneur' },
-                  { value: 'etudiant', label: 'Étudiant' },
-                  { value: 'retraite', label: 'Retraité' },
-                ]}
-                required
-              />
+                <div className="grid grid-cols-2 gap-4">
+                  <LeyInput
+                    label="Âge"
+                    type="number"
+                    name="age"
+                    placeholder="Âge"
+                    value={String(formData.age ?? '')}
+                    onChange={(e) => handleInputChange('age', e.target.value)}
+                    error={errors.age}
+                    required
+                  />
+
+                  <LeySelect
+                    label="Genre"
+                    name="gender"
+                    value={formData.gender}
+                    onChange={(e) => handleInputChange('gender', e.target.value)}
+                    options={[
+                      { value: '', label: 'Sélectionner' },
+                      { value: 'male', label: 'Homme' },
+                      { value: 'female', label: 'Femme' },
+                    ]}
+                    error={errors.gender}
+                    required
+                  />
+                </div>
 
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Mot de passe</label>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Votre mot de passe doit comporter 6 caractères ou plus, incluant au moins une
-                  majuscule, une minuscule, un chiffre et un symbole spécial (@ # $ % & etc.)
+                  Votre mot de passe doit comporter 8 caractères ou plus, incluant au moins une
+                  majuscule, une minuscule et un chiffre
                 </p>
                 <LeyInput
                   type="password"
-                  placeholder="6 caractères minimum"
+                  name="password"
+                  placeholder="8 caractères minimum"
+                  error={errors.password}
                   required
                 />
               </div>
@@ -161,9 +235,10 @@ const FinalizeRegistration = () => {
                   className="w-4 h-4 mt-1 text-primary border-border rounded focus:ring-primary/20"
                 />
                 <span className="text-sm text-foreground">
-                  J'ai lu et j'accepte les conditions d'utilisation de LeyInvest
+                  J'ai lu et j'accepte <Link to="/terms" className="text-primary underline">les conditions d'utilisation de LeyInvest</Link>
                 </span>
               </label>
+              {errors.terms && <p className="text-sm text-destructive">{errors.terms}</p>}
 
               <LeyButton
                 type="submit"

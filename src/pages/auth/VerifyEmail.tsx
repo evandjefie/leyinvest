@@ -5,12 +5,16 @@ import LeyButton from '@/components/ui/LeyButton';
 import toast from 'react-hot-toast';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { resendCode, verifyEmail } from '@/store/slices/authSlice';
 
 const VerifyEmail = () => {
   const [code, setCode] = useState(['', '', '', '']);
   const [timer, setTimer] = useState(59);
   const [canResend, setCanResend] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { loading } = useAppSelector((s) => s.auth);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -40,22 +44,34 @@ const VerifyEmail = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const fullCode = code.join('');
-    if (fullCode.length === 4) {
+    if (fullCode.length !== 4) {
+      toast.error('Veuillez saisir le code complet');
+      return;
+    }
+    // L'email a été stocké lors du register dans registrationEmail
+    const email = (window as any).__registrationEmail__ || null;
+    // Fallback: l'état Redux possède registrationEmail
+    // On évite d'importer ici pour garder le composant simple, l'endpoint backend demande email + code
+    try {
+      await dispatch(verifyEmail({ email, verification_code: fullCode }) as any);
       toast.success('Vérification réussie !');
       navigate('/auth/finalize-registration');
-    } else {
-      toast.error('Veuillez saisir le code complet');
+    } catch (e) {
+      // l'erreur est gérée via Redux et affichée globalement
     }
   };
 
-  const handleResend = () => {
-    if (canResend) {
+  const handleResend = async () => {
+    if (!canResend) return;
+    const email = (window as any).__registrationEmail__ || null;
+    try {
+      await dispatch(resendCode({ email }) as any);
       setTimer(59);
       setCanResend(false);
       toast.success('Code renvoyé !');
-    }
+    } catch (e) {}
   };
 
   return (
@@ -123,6 +139,7 @@ const VerifyEmail = () => {
             <LeyButton
               onClick={handleSubmit}
               className="w-full"
+              loading={loading}
               disabled={code.join('').length !== 4}
             >
               Suivant

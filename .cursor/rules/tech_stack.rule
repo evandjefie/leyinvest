@@ -1,0 +1,23 @@
+# REGLES TECHNIQUES ET CONVENTIONS DE CODAGE POUR LEYINVEST
+
+# 1. Technologies
+1. Langage Principal: Utiliser OBLIGATOIREMENT TypeScript (.ts, .tsx). Définir les interfaces dans src/types/.
+2. UI: Utiliser React avec des composants fonctionnels et des Hooks.
+3. Style: Utiliser Tailwind CSS pour le stylisme. Éviter les styles inline ou les modules CSS locaux.
+4. HTTP: Utiliser la librairie AXIOS pour toutes les requêtes.
+
+# 2. Architecture et Nommage
+5. Logique Métier (Features): La logique métier sera implémentée dans les dossiers existants:
+    - Composants d'interface (UI) et génériques : src/components/ui
+    - Pages/Routes : src/pages/
+    - Logique d'état globale : src/store/slices/
+    - Services d'API : src/services/
+6. Conventions de Nommage:
+    - Composants React: Utiliser **PascalCase** (ex: `LoginButton.tsx`). Placer les composants génériques dans src/components/ui/.
+    - Fichiers utilitaires et de logique (non-React): Utiliser **kebab-case** (ex: `auth-service.ts`).
+    - Redux Slices: Nommer les fichiers **`[nom]Slice.ts`** (ex: `authSlice.ts`).
+
+# 3. État et Données
+7. État Global: Utiliser OBLIGATOIREMENT Redux Toolkit (dans src/store/slices/).
+8. Requêtes API: Toutes les fonctions d'appel API DOIVENT résider dans **src/services/**. Ne JAMAIS faire de requêtes directes dans les composants.
+9. Configuration Redux: Le store principal est configuré dans **src/store/**.
