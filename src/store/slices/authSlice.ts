@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import apiService from '@/services/api';
-import { RegisterRequest, LoginRequest, VerifyEmailRequest, ChangePasswordRequest } from '@/types/api';
+import { authApi } from '@/services/authApi';
+import { RegisterRequest, LoginRequest, VerifyEmailRequest, ChangePasswordRequest, ResendCodeRequest } from '@/types/api';
 
 interface User {
   id: number;
@@ -31,10 +31,10 @@ export const registerUser = createAsyncThunk(
   'auth/register',
   async (userData: RegisterRequest, { rejectWithValue }) => {
     try {
-      const response = await apiService.register(userData);
+      const response = await authApi.register(userData);
       return { ...response, email: userData.email };
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Erreur d\'inscription');
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Erreur d\'inscription');
     }
   }
 );
@@ -43,9 +43,31 @@ export const verifyEmail = createAsyncThunk(
   'auth/verifyEmail',
   async (data: VerifyEmailRequest, { rejectWithValue }) => {
     try {
-      return await apiService.verifyEmail(data);
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Erreur de vérification');
+      return await authApi.verifyEmail(data);
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Erreur de vérification');
+    }
+  }
+);
+
+export const resendCode = createAsyncThunk(
+  'auth/resendCode',
+  async (data: ResendCodeRequest, { rejectWithValue }) => {
+    try {
+      return await authApi.resendCode(data);
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Erreur lors du renvoi du code');
+    }
+  }
+);
+
+export const completeProfile = createAsyncThunk(
+  'auth/completeProfile',
+  async (data: any, { rejectWithValue }) => {
+    try {
+      return await authApi.completeProfile(data);
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Erreur lors de la finalisation du profil');
     }
   }
 );
@@ -54,11 +76,11 @@ export const loginUser = createAsyncThunk(
   'auth/login',
   async (credentials: LoginRequest, { rejectWithValue }) => {
     try {
-      const response = await apiService.login(credentials);
-      apiService.setToken(response.access_token);
+      const response = await authApi.login(credentials);
+      localStorage.setItem('access_token', response.access_token);
       return response;
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Erreur de connexion');
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Erreur de connexion');
     }
   }
 );
@@ -67,10 +89,11 @@ export const logoutUser = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
-      await apiService.logout();
+      await authApi.logout();
     } catch (error) {
       // Continue with logout even if API call fails
-      apiService.clearToken();
+    } finally {
+      localStorage.removeItem('access_token');
     }
   }
 );
@@ -79,9 +102,9 @@ export const changePassword = createAsyncThunk(
   'auth/changePassword',
   async (data: ChangePasswordRequest, { rejectWithValue }) => {
     try {
-      return await apiService.changePassword(data);
-    } catch (error) {
-      return rejectWithValue(error instanceof Error ? error.message : 'Erreur de changement de mot de passe');
+      return await authApi.changePassword(data);
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Erreur de changement de mot de passe');
     }
   }
 );
@@ -124,6 +147,34 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(verifyEmail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      
+    // Resend Code
+      .addCase(resendCode.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(resendCode.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(resendCode.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      
+    // Complete Profile
+      .addCase(completeProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(completeProfile.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(completeProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })

@@ -55,11 +55,15 @@ const VerifyEmail = () => {
     // Fallback: l'état Redux possède registrationEmail
     // On évite d'importer ici pour garder le composant simple, l'endpoint backend demande email + code
     try {
-      await dispatch(verifyEmail({ email, verification_code: fullCode }) as any);
-      toast.success('Vérification réussie !');
-      navigate('/auth/finalize-registration');
+      const result = await dispatch(verifyEmail({ email, verification_code: fullCode }));
+      if (verifyEmail.fulfilled.match(result)) {
+        toast.success('Vérification réussie !');
+        navigate('/auth/complete-profile');
+      } else {
+        toast.error(result.payload as string);
+      }
     } catch (e) {
-      // l'erreur est gérée via Redux et affichée globalement
+      toast.error('Erreur lors de la vérification');
     }
   };
 
@@ -67,11 +71,17 @@ const VerifyEmail = () => {
     if (!canResend) return;
     const email = (window as any).__registrationEmail__ || null;
     try {
-      await dispatch(resendCode({ email }) as any);
-      setTimer(59);
-      setCanResend(false);
-      toast.success('Code renvoyé !');
-    } catch (e) {}
+      const result = await dispatch(resendCode({ email }));
+      if (resendCode.fulfilled.match(result)) {
+        setTimer(59);
+        setCanResend(false);
+        toast.success('Code renvoyé !');
+      } else {
+        toast.error(result.payload as string);
+      }
+    } catch (e) {
+      toast.error('Erreur lors du renvoi du code');
+    }
   };
 
   return (

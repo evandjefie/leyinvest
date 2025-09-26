@@ -32,6 +32,10 @@ export interface ResendCodeRequest {
   email: string;
 }
 
+export interface ResendCodeResponse {
+  message: string;
+}
+
 export interface LoginRequest {
   email: string;
   password: string;

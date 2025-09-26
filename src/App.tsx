@@ -17,7 +17,7 @@ import VerifyEmail from "./pages/auth/VerifyEmail";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import VerifyCodeReset from "./pages/auth/VerifyCodeReset";
-import FinalizeRegistration from "./pages/auth/FinalizeRegistration";
+import CompleteProfile from "./pages/auth/CompleteProfile";
 import NotFound from "./pages/NotFound";
 
 // Layout
@@ -39,7 +39,7 @@ const App = () => (
             <Route path="/auth/register" element={<Register />} />
             <Route path="/auth/verify-email" element={<VerifyEmail />} />
             <Route path="/auth/verify-code-reset" element={<VerifyCodeReset />} />
-            <Route path="/auth/finalize-registration" element={<FinalizeRegistration />} />
+            <Route path="/auth/complete-profile" element={<CompleteProfile />} />
             <Route path="/auth/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/reset-password" element={<ResetPassword />} />
             

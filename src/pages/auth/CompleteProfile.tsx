@@ -8,18 +8,24 @@ import LeySelect from '@/components/ui/LeySelect';
 import toast from 'react-hot-toast';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { completeProfile } from '@/store/slices/authSlice';
 
-const FinalizeRegistration = () => {
+const CompleteProfile = () => {
   const [formData, setFormData] = useState({
     phone: '',
     countryCode: '+225',
     country: '',
     profession: '',
+    age: '',
+    gender: '',
     acceptTerms: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { loading: authLoading } = useAppSelector((s) => s.auth);
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -74,12 +80,27 @@ const FinalizeRegistration = () => {
 
     setLoading(true);
 
-    // Since user is already registered and verified, just navigate to dashboard
-    setTimeout(() => {
+    const profileData = {
+      age: parseInt(formData.age, 10),
+      genre: formData.gender === 'male' ? 'Homme' : 'Femme',
+      numero_whatsapp: formData.phone,
+      pays_residence: formData.country,
+      situation_professionnelle: formData.profession,
+    };
+
+    try {
+      const result = await dispatch(completeProfile(profileData));
+      if (completeProfile.fulfilled.match(result)) {
+        toast.success('Profil complété avec succès !');
+        navigate('/dashboard');
+      } else {
+        toast.error(result.payload as string);
+      }
+    } catch (error) {
+      toast.error('Erreur lors de la finalisation du profil');
+    } finally {
       setLoading(false);
-      toast.success('Profil complété avec succès !');
-      navigate('/auth/login');
-    }, 1500);
+    }
   };
 
   return (
@@ -243,7 +264,7 @@ const FinalizeRegistration = () => {
               <LeyButton
                 type="submit"
                 className="w-full"
-                loading={loading}
+                loading={loading || authLoading}
               >
                 S'inscrire
               </LeyButton>
@@ -275,4 +296,4 @@ const FinalizeRegistration = () => {
   );
 };
 
-export default FinalizeRegistration;
+export default CompleteProfile;
