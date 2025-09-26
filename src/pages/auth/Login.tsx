@@ -13,7 +13,6 @@ import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   
@@ -24,12 +23,15 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const nextErrors: { email?: string; password?: string } = {};
-    if (!email) nextErrors.email = 'L\'email est obligatoire';
-    if (!password) nextErrors.password = 'Le mot de passe est obligatoire';
-    if (password && password.length < 6) nextErrors.password = 'Le mot de passe doit contenir au moins 6 caractères';
-    setFieldErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
+    if (!email || !password) {
+      toast.error('Veuillez remplir tous les champs');
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error('Le mot de passe doit contenir au moins 6 caractères');
+      return;
+    }
 
     dispatch(clearError());
 
@@ -107,7 +109,6 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Entrer votre mail"
-                error={fieldErrors.email}
                 required
               />
 
@@ -117,7 +118,6 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Entrer votre mot de passe"
-                error={fieldErrors.password}
                 suffix={
                   <button
                     type="button"

@@ -220,6 +220,23 @@ const Register = () => {
                     required
                   />
 
+                  <LeyInput
+                    label="Numéro whatsapp"
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    placeholder="Numéro de téléphone"
+                    required
+                  />
+
+                  <LeyInput
+                    label="Age"
+                    type="number"
+                    value={formData.age}
+                    onChange={(e) => handleInputChange('age', e.target.value)}
+                    placeholder="Votre âge"
+                    required
+                  />
+
                   <LeyButton
                     type="submit"
                     className="w-full"
@@ -255,11 +272,14 @@ const Register = () => {
                     onChange={(e) => handleInputChange('country', e.target.value)}
                     options={[
                       { value: '', label: 'Sélectionner votre pays' },
-                      { value: 'Côte d\'Ivoire', label: 'Côte d\'Ivoire' },
-                      { value: 'Sénégal', label: 'Sénégal' },
+                      { value: 'Bénin', label: 'Bénin' },
                       { value: 'Burkina Faso', label: 'Burkina Faso' },
+                      { value: 'Côte d\'Ivoire', label: 'Côte d\'Ivoire' },
+                      { value: 'Guinée-Bissau', label: 'Guinée-Bissau' },
                       { value: 'Mali', label: 'Mali' },
-                      { value: 'France', label: 'France' },
+                      { value: 'Niger', label: 'Niger' },
+                      { value: 'Sénégal', label: 'Sénégal' },
+                      { value: 'Togo', label: 'Togo' },                     
                     ]}
                     error={errorsStep2.country}
                     required
