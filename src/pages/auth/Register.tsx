@@ -86,7 +86,7 @@ const Register = () => {
         genre: formData.gender as 'Homme' | 'Femme',
         email: formData.email,
         numero_whatsapp: formData.phone,
-        pays_residence: formData.country,
+        pays_residence: formData.country as 'Bénin' | 'Burkina Faso' | 'Côte d\'Ivoire' | 'Guinée-Bissau' | 'Mali' | 'Niger' | 'Sénégal' | 'Togo',
         situation_professionnelle: formData.profession,
         mot_de_passe: formData.password,
       };
@@ -201,42 +201,6 @@ const Register = () => {
                     required
                   />
 
-                  <LeyInput
-                    label="Numéro whatsapp"
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    placeholder="Numéro de téléphone"
-                    error={errorsStep1.phone}
-                    required
-                  />
-
-                  <LeyInput
-                    label="Age"
-                    type="number"
-                    value={formData.age}
-                    onChange={(e) => handleInputChange('age', e.target.value)}
-                    placeholder="Votre âge"
-                    error={errorsStep1.age}
-                    required
-                  />
-
-                  <LeyInput
-                    label="Numéro whatsapp"
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    placeholder="Numéro de téléphone"
-                    required
-                  />
-
-                  <LeyInput
-                    label="Age"
-                    type="number"
-                    value={formData.age}
-                    onChange={(e) => handleInputChange('age', e.target.value)}
-                    placeholder="Votre âge"
-                    required
-                  />
-
                   <LeyButton
                     type="submit"
                     className="w-full"
@@ -266,6 +230,17 @@ const Register = () => {
                     required
                   />
 
+                  <LeyInput
+                    label="Age"
+                    type="number"
+                    value={formData.age}
+                    onChange={(e) => handleInputChange('age', e.target.value)}
+                    placeholder="Votre âge"
+                    error={errorsStep1.age}
+                    required
+                  />
+                  
+
                   <LeySelect
                     label="Pays de résidence"
                     value={formData.country}
@@ -282,6 +257,15 @@ const Register = () => {
                       { value: 'Togo', label: 'Togo' },                     
                     ]}
                     error={errorsStep2.country}
+                    required
+                  />
+
+                  <LeyInput
+                    label="Numéro whatsapp"
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    placeholder="Numéro de téléphone"
+                    error={errorsStep1.phone}
                     required
                   />
 
@@ -329,7 +313,7 @@ const Register = () => {
                       className="w-4 h-4 mt-1 text-primary border-border rounded focus:ring-primary/20"
                     />
                     <span className="text-sm text-foreground">
-                      J'ai lu et j'accepte les conditions d'utilisation de LeyInvest
+                      J'ai lu et j'accepte <Link to="/terms" className="text-primary underline">les conditions d'utilisation de LeyInvest</Link>
                     </span>
                   </label>
 
