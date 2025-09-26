@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import LeyButton from '@/components/ui/LeyButton';
 import LeyInput from '@/components/ui/LeyInput';
 import LeySelect from '@/components/ui/LeySelect';
-import toast from 'react-hot-toast';
+import { toast } from '@/hooks/use-toast';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -91,13 +91,24 @@ const CompleteProfile = () => {
     try {
       const result = await dispatch(completeProfile(profileData));
       if (completeProfile.fulfilled.match(result)) {
-        toast.success('Profil complété avec succès !');
+        toast({
+          title: "Profil complété !",
+          description: "Votre compte a été créé avec succès.",
+        });
         navigate('/dashboard');
       } else {
-        toast.error(result.payload as string);
+        toast({
+          title: "Erreur",
+          description: result.payload as string,
+          variant: "destructive"
+        });
       }
     } catch (error) {
-      toast.error('Erreur lors de la finalisation du profil');
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la finalisation du profil",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }

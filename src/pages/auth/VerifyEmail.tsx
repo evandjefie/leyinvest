@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import LeyButton from '@/components/ui/LeyButton';
-import toast from 'react-hot-toast';
+import { toast } from '@/hooks/use-toast';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -47,7 +47,11 @@ const VerifyEmail = () => {
   const handleSubmit = async () => {
     const fullCode = code.join('');
     if (fullCode.length !== 4) {
-      toast.error('Veuillez saisir le code complet');
+      toast({
+        title: "Erreur de validation",
+        description: "Veuillez saisir le code complet",
+        variant: "destructive"
+      });
       return;
     }
     // L'email a été stocké lors du register dans registrationEmail
@@ -57,13 +61,24 @@ const VerifyEmail = () => {
     try {
       const result = await dispatch(verifyEmail({ email, verification_code: fullCode }));
       if (verifyEmail.fulfilled.match(result)) {
-        toast.success('Vérification réussie !');
+        toast({
+          title: "Email vérifié !",
+          description: "Votre email a été vérifié avec succès.",
+        });
         navigate('/auth/complete-profile');
       } else {
-        toast.error(result.payload as string);
+        toast({
+          title: "Erreur de vérification",
+          description: result.payload as string,
+          variant: "destructive"
+        });
       }
     } catch (e) {
-      toast.error('Erreur lors de la vérification');
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la vérification",
+        variant: "destructive"
+      });
     }
   };
 
@@ -75,12 +90,23 @@ const VerifyEmail = () => {
       if (resendCode.fulfilled.match(result)) {
         setTimer(59);
         setCanResend(false);
-        toast.success('Code renvoyé !');
+        toast({
+          title: "Code renvoyé !",
+          description: "Un nouveau code de vérification a été envoyé à votre email.",
+        });
       } else {
-        toast.error(result.payload as string);
+        toast({
+          title: "Erreur",
+          description: result.payload as string,
+          variant: "destructive"
+        });
       }
     } catch (e) {
-      toast.error('Erreur lors du renvoi du code');
+      toast({
+        title: "Erreur",
+        description: "Erreur lors du renvoi du code",
+        variant: "destructive"
+      });
     }
   };
 

@@ -6,7 +6,7 @@ import LeyButton from '@/components/ui/LeyButton';
 import LeyInput from '@/components/ui/LeyInput';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { loginUser, clearError } from '@/store/slices/authSlice';
-import toast from 'react-hot-toast';
+import { toast } from '@/hooks/use-toast';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
 
@@ -24,12 +24,20 @@ const Login = () => {
     e.preventDefault();
     
     if (!email || !password) {
-      toast.error('Veuillez remplir tous les champs');
+      toast({
+        title: "Erreur de validation",
+        description: "Veuillez remplir tous les champs",
+        variant: "destructive"
+      });
       return;
     }
 
     if (password.length < 6) {
-      toast.error('Le mot de passe doit contenir au moins 6 caractères');
+      toast({
+        title: "Erreur de validation",
+        description: "Le mot de passe doit contenir au moins 6 caractères",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -38,7 +46,10 @@ const Login = () => {
     try {
       const result = await dispatch(loginUser({ email, password }));
       if (loginUser.fulfilled.match(result)) {
-        toast.success('Connexion réussie !');
+        toast({
+          title: "Connexion réussie !",
+          description: "Vous êtes maintenant connecté.",
+        });
         navigate('/dashboard');
       }
     } catch (err) {
@@ -47,7 +58,10 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    toast.success('Connexion avec Google (Demo)');
+    toast({
+      title: "Bientôt disponible",
+      description: "La connexion avec Google sera bientôt disponible.",
+    });
   };
 
   return (
