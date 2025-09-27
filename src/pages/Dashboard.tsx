@@ -52,7 +52,7 @@ const Dashboard = () => {
         >
           <LeyCard className="space-y-1 bg-[#F6F6F6]">
             <p className="text-sm text-muted-foreground">Montant investi</p>
-            <p className="text-2xl font-bold text-foreground">XOF {stats.totalInvested.toLocaleString()}</p>
+            <p className="text-2xl font-semibold text-foreground">XOF {stats.totalInvested.toLocaleString()}</p>
           </LeyCard>
         </motion.div>
 
@@ -64,7 +64,7 @@ const Dashboard = () => {
         >
           <LeyCard className="space-y-1 bg-[#F6F6F6]">
             <p className="text-sm text-muted-foreground">Rendement</p>
-            <p className="text-2xl font-bold text-foreground">{stats.returnPercentage} %</p>
+            <p className="text-2xl font-semibold text-foreground">{stats.returnPercentage} %</p>
           </LeyCard>
         </motion.div>
 
@@ -76,10 +76,23 @@ const Dashboard = () => {
         >
           <LeyCard className="space-y-1 bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200">
             <p className="text-sm font-medium text-teal-700">Gains / Pertes</p>
-            <p className="text-2xl font-bold text-teal-800">XOF {stats.totalReturn.toLocaleString()}</p>
+            <p className="text-2xl font-semibold text-teal-800">XOF {stats.totalReturn.toLocaleString()}</p>
           </LeyCard>
         </motion.div>
 
+        {/* Valeur totale - Grande carte */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="lg:col-span-1 lg:row-span-2"
+        >
+          <LeyCard className="space-y-1 bg-gradient-to-tl from-[#30B59B] to-[#D1A55E] text-white h-full">
+            <p className="text-sm text-green-100">Valeur totale</p>
+            <p className="text-4xl font-semibold text-white">XOF {stats.totalValue.toLocaleString()}</p>
+          </LeyCard>
+        </motion.div>
+        
         {/* Capital */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -88,7 +101,7 @@ const Dashboard = () => {
         >
           <LeyCard className="space-y-1 bg-[#F6F6F6]">
             <p className="text-sm text-muted-foreground">Capital</p>
-            <p className="text-2xl font-bold text-foreground">XOF {stats.totalInvested.toLocaleString()}</p>
+            <p className="text-2xl font-semibold text-foreground">XOF {stats.totalInvested.toLocaleString()}</p>
           </LeyCard>
         </motion.div>
 
@@ -100,7 +113,7 @@ const Dashboard = () => {
         >
           <LeyCard className="space-y-1 bg-[#F6F6F6]">
             <p className="text-sm text-muted-foreground">Liquidité</p>
-            <p className="text-2xl font-bold text-foreground">XOF {stats.totalValue.toLocaleString()}</p>
+            <p className="text-2xl font-semibold text-foreground">XOF {stats.totalValue.toLocaleString()}</p>
           </LeyCard>
         </motion.div>
 
@@ -112,22 +125,10 @@ const Dashboard = () => {
         >
           <LeyCard className="space-y-1 bg-[#F6F6F6]">
             <p className="text-sm text-muted-foreground">Rentabilité</p>
-            <p className="text-2xl font-bold text-foreground">{stats.returnPercentage} %</p>
+            <p className="text-2xl font-semibold text-foreground">{stats.returnPercentage} %</p>
           </LeyCard>
         </motion.div>
 
-        {/* Valeur totale - Grande carte */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="lg:col-span-1 lg:row-span-2"
-        >
-          <LeyCard className="space-y-1 bg-gradient-to-b from-[#30B59B] to-[#D1A55E] text-white h-full">
-            <p className="text-sm text-green-100">Valeur totale</p>
-            <p className="text-4xl font-bold text-white">XOF {stats.totalValue.toLocaleString()}</p>
-          </LeyCard>
-        </motion.div>
       </div>
 
       {/* Top 5 and Flop 5 Tables */}
@@ -190,12 +191,12 @@ const Dashboard = () => {
             </div>
             <div className="overflow-hidden rounded-lg">
               <table className="w-full">
-                <thead className="bg-blue-50">
-                  <tr>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Entreprise</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Ouverture</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Clôture</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Variation</th>
+                <thead className="bg-teal-50">
+                <tr>
+                    <th className="text-left py-3 px-4 text-sm font-bold text-gray-700">Entreprise</th>
+                    <th className="text-left py-3 px-4 text-sm font-bold text-gray-700">Ouverture</th>
+                    <th className="text-left py-3 px-4 text-sm font-bold text-gray-700">Clôture</th>
+                    <th className="text-left py-3 px-4 text-sm font-bold text-gray-700">Variation</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -236,7 +237,7 @@ const Dashboard = () => {
               {evaluations.map((evaluation, index) => (
                 <div
                   key={evaluation.term}
-                  className={`flex items-center justify-between p-4 rounded-lg ${evaluation.colors} bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer border border-gray-100`}
+                  className={`flex items-center justify-between p-4 rounded-lg ${evaluation.colors} hover:bg-teal-100 transition-colors cursor-pointer border border-gray-100`}
                 >
                   <span className="font-medium text-gray-700">{evaluation.term}</span>
                   <ChevronRight className="w-5 h-5 text-gray-400" />

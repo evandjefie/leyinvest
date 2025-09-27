@@ -24,12 +24,6 @@ const RegisterStep1 = () => {
       nom: '',
       prenom: '',
       email: '',
-      numero_whatsapp: '',
-      age: 18,
-      genre: undefined,
-      pays_residence: '',
-      situation_professionnelle: '',
-      mot_de_passe: '',
     }
   });
 
@@ -88,7 +82,7 @@ const RegisterStep1 = () => {
                 </svg>
               }
             >
-              S'inscrire avec Google
+              Continuer avec Google
             </LeyButton>
 
             <div className="relative">
@@ -122,84 +116,6 @@ const RegisterStep1 = () => {
                 {...register('email')}
                 placeholder="Votre email"
                 error={errors.email?.message}
-              />
-
-              <LeyInput
-                label="Numéro WhatsApp"
-                {...register('numero_whatsapp')}
-                placeholder="Numéro de téléphone"
-                error={errors.numero_whatsapp?.message}
-              />
-
-              <div className="grid grid-cols-2 gap-4">
-                <LeyInput
-                  label="Âge"
-                  type="number"
-                  {...register('age', { valueAsNumber: true })}
-                  placeholder="Votre âge"
-                  error={errors.age?.message}
-                />
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-foreground">
-                    Genre
-                  </label>
-                  <select
-                    {...register('genre')}
-                    className="input-field w-full"
-                  >
-                    <option value="">Sélectionner</option>
-                    <option value="Homme">Homme</option>
-                    <option value="Femme">Femme</option>
-                  </select>
-                  {errors.genre && <p className="text-sm text-destructive">{errors.genre.message}</p>}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground">
-                  Pays de résidence
-                </label>
-                <select
-                  {...register('pays_residence')}
-                  className="input-field w-full"
-                >
-                  <option value="">Sélectionner votre pays</option>
-                  <option value="Bénin">Bénin</option>
-                  <option value="Burkina Faso">Burkina Faso</option>
-                  <option value="Côte d'Ivoire">Côte d'Ivoire</option>
-                  <option value="Guinée-Bissau">Guinée-Bissau</option>
-                  <option value="Mali">Mali</option>
-                  <option value="Niger">Niger</option>
-                  <option value="Sénégal">Sénégal</option>
-                  <option value="Togo">Togo</option>
-                </select>
-                {errors.pays_residence && <p className="text-sm text-destructive">{errors.pays_residence.message}</p>}
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground">
-                  Situation professionnelle
-                </label>
-                <select
-                  {...register('situation_professionnelle')}
-                  className="input-field w-full"
-                >
-                  <option value="">Votre profession</option>
-                  <option value="Employé">Employé</option>
-                  <option value="Travailleur indépendant">Travailleur indépendant</option>
-                  <option value="Entrepreneur">Entrepreneur</option>
-                  <option value="Étudiant">Étudiant</option>
-                  <option value="Retraité">Retraité</option>
-                </select>
-                {errors.situation_professionnelle && <p className="text-sm text-destructive">{errors.situation_professionnelle.message}</p>}
-              </div>
-
-              <LeyInput
-                label="Mot de passe"
-                type="password"
-                {...register('mot_de_passe')}
-                placeholder="Au moins 6 caractères"
-                error={errors.mot_de_passe?.message}
               />
 
               <LeyButton

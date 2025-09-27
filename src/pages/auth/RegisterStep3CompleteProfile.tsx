@@ -27,7 +27,7 @@ const RegisterStep3CompleteProfile = () => {
       genre: undefined,
       pays_residence: '',
       situation_professionnelle: '',
-      mot_de_passe: '',
+      mot_de_passe: '',      
     }
   });
 
@@ -150,17 +150,17 @@ const RegisterStep3CompleteProfile = () => {
                       { value: '+223', label: '+223' },
                       { value: '+221', label: '+221' },
                     ]}
-                    className="w-24"
+                    className=""
                   />
                   <LeyInput
                     value={null}
                     onChange={(e) => null}
-                    type='number'
+                    // type='number'
                     minLength={8}
                     maxLength={10}
                     {...register('numero_whatsapp')}
                     // placeholder="Numéro de téléphone"
-                    className="flex-1"
+                    className="w-full"
                     name="phone"
                     error={null}
                     required
