@@ -8,27 +8,33 @@ import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { resendCode, verifyEmail } from '@/store/slices/authSlice';
 
-const VerifyEmail = () => {
+const RegisterStep2VerifyEmail = () => {
   const [code, setCode] = useState(['', '', '', '']);
   const [timer, setTimer] = useState(59);
   const [canResend, setCanResend] = useState(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((s) => s.auth);
+  const { loading, error, registrationEmail } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTimer((prev) => {
-        if (prev <= 1) {
-          setCanResend(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+    if (!registrationEmail) {
+      navigate('/auth/register');
+      return;
+    }
 
-    return () => clearInterval(interval);
-  }, []);
+    let interval: NodeJS.Timeout;
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    } else {
+      setCanResend(true);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [timer, navigate, registrationEmail]);
 
   const handleCodeChange = (index: number, value: string) => {
     if (value.length <= 1 && /^\d*$/.test(value)) {
@@ -54,18 +60,25 @@ const VerifyEmail = () => {
       });
       return;
     }
-    // L'email a été stocké lors du register dans registrationEmail
-    const email = (window as any).__registrationEmail__ || null;
-    // Fallback: l'état Redux possède registrationEmail
-    // On évite d'importer ici pour garder le composant simple, l'endpoint backend demande email + code
+    
+    if (!registrationEmail) {
+      toast({
+        title: "Erreur",
+        description: "Email non trouvé, veuillez vous réinscrire",
+        variant: "destructive"
+      });
+      navigate('/auth/register');
+      return;
+    }
+
     try {
-      const result = await dispatch(verifyEmail({ email, verification_code: fullCode }));
+      const result = await dispatch(verifyEmail({ email: registrationEmail, verification_code: fullCode }));
       if (verifyEmail.fulfilled.match(result)) {
         toast({
           title: "Email vérifié !",
           description: "Votre email a été vérifié avec succès.",
         });
-        navigate('/auth/complete-profile');
+        navigate('/auth/register/step3/complete-profile');
       } else {
         toast({
           title: "Erreur de vérification",
@@ -83,30 +96,30 @@ const VerifyEmail = () => {
   };
 
   const handleResend = async () => {
-    if (!canResend) return;
-    const email = (window as any).__registrationEmail__ || null;
-    try {
-      const result = await dispatch(resendCode({ email }));
-      if (resendCode.fulfilled.match(result)) {
-        setTimer(59);
-        setCanResend(false);
-        toast({
-          title: "Code renvoyé !",
-          description: "Un nouveau code de vérification a été envoyé à votre email.",
-        });
-      } else {
+    if (canResend && registrationEmail) {
+      try {
+        const result = await dispatch(resendCode({ email: registrationEmail }));
+        if (resendCode.fulfilled.match(result)) {
+          setTimer(59);
+          setCanResend(false);
+          toast({
+            title: "Code renvoyé",
+            description: "Un nouveau code a été envoyé à votre email.",
+          });
+        } else {
+          toast({
+            title: "Erreur",
+            description: result.payload as string,
+            variant: "destructive"
+          });
+        }
+      } catch (e) {
         toast({
           title: "Erreur",
-          description: result.payload as string,
+          description: "Erreur lors du renvoi du code",
           variant: "destructive"
         });
       }
-    } catch (e) {
-      toast({
-        title: "Erreur",
-        description: "Erreur lors du renvoi du code",
-        variant: "destructive"
-      });
     }
   };
 
@@ -125,24 +138,17 @@ const VerifyEmail = () => {
             <div className="flex justify-center">
               <img src={logoLeycom} alt="LeyInvest" className="h-16" />
             </div>
-            <div>
-              {/* <p className="text-muted-foreground mt-2">Votre partenaire d'investissement BRVM</p> */}
-            </div>
           </div>
 
           <div className="space-y-6">
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold text-foreground">
-                Vérification de votre adresse mail
-              </h2>
-              <p className="text-muted-foreground">
-                Veuillez entrer le code envoyé au{' '}
-                <span className="text-primary font-medium">utilisateur@gmail.com</span>
-              </p>
-            </div>
+            <h2 className="text-2xl font-bold text-center text-foreground">
+              Vérifiez votre email
+            </h2>
+            <p className="text-center text-muted-foreground">
+              Nous avons envoyé un code de vérification à <span className="font-medium text-foreground">{registrationEmail}</span>
+            </p>
 
-            {/* Code Input */}
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center gap-3">
               {code.map((digit, index) => (
                 <input
                   key={index}
@@ -151,35 +157,42 @@ const VerifyEmail = () => {
                   maxLength={1}
                   value={digit}
                   onChange={(e) => handleCodeChange(index, e.target.value)}
-                  className="w-16 h-16 text-center text-2xl font-bold border-2 border-border rounded-xl focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition-all duration-300"
+                  className="w-14 h-14 text-center text-2xl font-bold border border-border rounded-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
                 />
               ))}
-            </div>
-
-            {/* Resend Timer */}
-            <div className="text-center">
-              <button
-                onClick={handleResend}
-                disabled={!canResend}
-                className={`text-sm ${
-                  canResend 
-                    ? 'text-primary hover:text-primary-dark cursor-pointer' 
-                    : 'text-muted-foreground cursor-not-allowed'
-                } transition-colors`}
-              >
-                Renvoyer un code dans {timer > 0 ? `00:${timer.toString().padStart(2, '0')}` : ''}
-                {canResend && 'Renvoyer le code'}
-              </button>
             </div>
 
             <LeyButton
               onClick={handleSubmit}
               className="w-full"
               loading={loading}
-              disabled={code.join('').length !== 4}
             >
-              Suivant
+              Vérifier
             </LeyButton>
+
+            {error && (
+              <div className="text-destructive text-sm text-center">
+                {error}
+              </div>
+            )}
+
+            <div className="text-center">
+              <p className="text-muted-foreground text-sm">
+                Vous n'avez pas reçu de code ? 
+                {canResend ? (
+                  <button 
+                    onClick={handleResend}
+                    className="text-primary hover:text-primary/80 font-medium ml-1"
+                  >
+                    Renvoyer le code
+                  </button>
+                ) : (
+                  <span className="text-muted-foreground ml-1">
+                    Renvoyer le code dans {timer}s
+                  </span>
+                )}
+              </p>
+            </div>
           </div>
         </motion.div>
       </div>
@@ -197,4 +210,4 @@ const VerifyEmail = () => {
   );
 };
 
-export default VerifyEmail;
+export default RegisterStep2VerifyEmail;

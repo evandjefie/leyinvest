@@ -59,7 +59,7 @@ npm run build
 
 ### Règles de validation
 - **Âge**: Entier strictement positif (16-120 ans)
-- **Mot de passe**: Minimum 6 caractères
+- **Mot de passe**: Minimum 8 caractères
 - **Email**: Format email valide
 - **Téléphone**: 8-15 chiffres
 - **Nom/Prénom**: 1-50 caractères

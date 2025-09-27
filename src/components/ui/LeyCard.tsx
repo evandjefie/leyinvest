@@ -16,6 +16,7 @@ const LeyCard = ({
   hoverable = false 
 }: LeyCardProps) => {
   const variants = {
+    default1: '',
     default: 'card-ley',
     gradient: 'card-gradient',
     stats: 'bg-primary text-primary-foreground rounded-2xl p-6 shadow-primary',

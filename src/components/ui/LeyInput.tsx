@@ -30,7 +30,7 @@ const LeyInput = forwardRef<HTMLInputElement, LeyInputProps>(
               'input-field w-full',
               icon && 'pl-10',
               suffix && 'pr-10',
-              error && 'border-destructive focus:border-destructive focus:ring-destructive/20',
+              error && 'border-destructive focus:border-destructive focus:ring-destructive focus:ring-opacity-20',
               className
             )}
             {...props}

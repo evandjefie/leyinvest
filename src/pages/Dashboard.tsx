@@ -2,18 +2,14 @@ import { motion } from 'framer-motion';
 import { ChevronRight, ExternalLink } from 'lucide-react';
 import LeyCard from '@/components/ui/LeyCard';
 import { useAppSelector } from '@/store/hooks';
-import { useState } from 'react';
-import TradeModal from '@/components/ui/TradeModal';
 
 const Dashboard = () => {
   const { stats, top5, flop5 } = useAppSelector((state) => state.portfolio);
-  const [showBuyModal, setShowBuyModal] = useState(false);
-  const [showSellModal, setShowSellModal] = useState(false);
 
   const evaluations = [
-    { term: 'Court terme', icon: ChevronRight },
-    { term: 'Moyen terme', icon: ChevronRight },
-    { term: 'Long terme', icon: ChevronRight },
+    { term: 'Court terme', icon: ChevronRight, colors: 'bg-[#E9F3FF]' },
+    { term: 'Moyen terme', icon: ChevronRight, colors: 'bg-[#EEFCF9]' },
+    { term: 'Long terme', icon: ChevronRight, colors: 'bg-[#FFF8EC]' },
   ];
 
   const publications = [
@@ -40,95 +36,108 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="space-y-8 p-6">
+    <div className="space-y-8 p-6 bg-[#F0F5F4]">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Vue d'ensemble de vos investissements</h1>
-        <div className="flex gap-3">
-          <button 
-            onClick={() => setShowBuyModal(true)}
-            className="bg-foreground text-background px-4 py-2 rounded-lg text-sm font-medium hover:bg-foreground/90 transition-colors flex items-center gap-2"
-          >
-            <div className="w-5 h-5 bg-background text-foreground rounded-full flex items-center justify-center text-xs font-bold">1</div>
-            Enregistrer achat
-          </button>
-          <button 
-            onClick={() => setShowSellModal(true)}
-            className="bg-amber-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-600 transition-colors flex items-center gap-2"
-          >
-            <div className="w-5 h-5 bg-white text-amber-500 rounded-full flex items-center justify-center text-xs font-bold">$</div>
-            Enregistrer vente
-          </button>
-        </div>
+        <h1 className="text-3xl text-[#0B3C3D] font-semibold text-foreground">Vue d'ensemble de vos investissements</h1>
       </div>
 
       {/* Investment Overview */}
-      <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-6">
+      <div className="bg-background text-primary-foreground rounded-2xl p-6 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-6">
+        {/* Montant investi */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <LeyCard className="space-y-3 bg-white">
+          <LeyCard className="space-y-1 bg-[#F6F6F6]">
             <p className="text-sm text-muted-foreground">Montant investi</p>
             <p className="text-2xl font-bold text-foreground">XOF {stats.totalInvested.toLocaleString()}</p>
-            <div className="flex items-center gap-2">
-              <p className="text-sm text-muted-foreground">Rendement</p>
-              <span className="text-sm font-medium text-green-600">{stats.returnPercentage} %</span>
-            </div>
           </LeyCard>
         </motion.div>
 
+        {/* Rendement */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <LeyCard className="space-y-3 bg-white">
-            <p className="text-sm text-muted-foreground">Montant investi</p>
-            <p className="text-2xl font-bold text-foreground">XOF {stats.totalInvested.toLocaleString()}</p>
-            <div className="flex items-center gap-2">
-              <p className="text-sm text-muted-foreground">Rendement</p>
-              <span className="text-sm font-medium text-green-600">{stats.returnPercentage} %</span>
-            </div>
+          <LeyCard className="space-y-1 bg-[#F6F6F6]">
+            <p className="text-sm text-muted-foreground">Rendement</p>
+            <p className="text-2xl font-bold text-foreground">{stats.returnPercentage} %</p>
           </LeyCard>
         </motion.div>
 
+        {/* Gains / Pertes */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <LeyCard className="space-y-3 bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200">
+          <LeyCard className="space-y-1 bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200">
             <p className="text-sm font-medium text-teal-700">Gains / Pertes</p>
             <p className="text-2xl font-bold text-teal-800">XOF {stats.totalReturn.toLocaleString()}</p>
-            <div className="flex items-center gap-2">
-              <p className="text-sm text-muted-foreground">Rendement</p>
-              <span className="text-sm font-medium text-teal-600">{stats.returnPercentage} %</span>
-            </div>
           </LeyCard>
         </motion.div>
 
+        {/* Capital */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <LeyCard className="space-y-3 bg-gradient-to-r from-green-500 to-green-600 text-white">
+          <LeyCard className="space-y-1 bg-[#F6F6F6]">
+            <p className="text-sm text-muted-foreground">Capital</p>
+            <p className="text-2xl font-bold text-foreground">XOF {stats.totalInvested.toLocaleString()}</p>
+          </LeyCard>
+        </motion.div>
+
+        {/* Liquidité */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <LeyCard className="space-y-1 bg-[#F6F6F6]">
+            <p className="text-sm text-muted-foreground">Liquidité</p>
+            <p className="text-2xl font-bold text-foreground">XOF {stats.totalValue.toLocaleString()}</p>
+          </LeyCard>
+        </motion.div>
+
+        {/* Rentabilité */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <LeyCard className="space-y-1 bg-[#F6F6F6]">
+            <p className="text-sm text-muted-foreground">Rentabilité</p>
+            <p className="text-2xl font-bold text-foreground">{stats.returnPercentage} %</p>
+          </LeyCard>
+        </motion.div>
+
+        {/* Valeur totale - Grande carte */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="lg:col-span-1 lg:row-span-2"
+        >
+          <LeyCard className="space-y-1 bg-gradient-to-b from-[#30B59B] to-[#D1A55E] text-white h-full">
             <p className="text-sm text-green-100">Valeur totale</p>
-            <p className="text-2xl font-bold text-white">XOF {stats.totalValue.toLocaleString()}</p>
+            <p className="text-4xl font-bold text-white">XOF {stats.totalValue.toLocaleString()}</p>
           </LeyCard>
         </motion.div>
       </div>
 
       {/* Top 5 and Flop 5 Tables */}
-      <div className="grid lg:grid-cols-2 grid-cols-1 gap-8">
+      <div className="card-ley bg-background grid lg:grid-cols-2 grid-cols-1 gap-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <LeyCard className="space-y-4 bg-white">
+          <LeyCard className="space-y-4 p-3" variant='default1'>
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-800">Top 5</h3>
               <button className="text-teal-600 hover:text-teal-700 text-sm font-medium transition-colors">
@@ -139,10 +148,10 @@ const Dashboard = () => {
               <table className="w-full">
                 <thead className="bg-teal-50">
                   <tr>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Entreprise</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Ouverture</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Clôture</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">Variation</th>
+                    <th className="text-left py-3 px-4 text-sm font-bold text-gray-700">Entreprise</th>
+                    <th className="text-left py-3 px-4 text-sm font-bold text-gray-700">Ouverture</th>
+                    <th className="text-left py-3 px-4 text-sm font-bold text-gray-700">Clôture</th>
+                    <th className="text-left py-3 px-4 text-sm font-bold text-gray-700">Variation</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -172,7 +181,7 @@ const Dashboard = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <LeyCard className="space-y-4 bg-white">
+          <LeyCard className="space-y-4 p-3" variant='default1'>
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-800">Flop 5</h3>
               <button className="text-teal-600 hover:text-teal-700 text-sm font-medium transition-colors">
@@ -219,13 +228,15 @@ const Dashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
         >
+          <div className="flex items-center justify-between">
+            <h3 className="text-3xl text-[#0B3C3D] font-semibold text-foreground">Nos évaluations</h3>
+          </div>
           <LeyCard className="space-y-4 bg-white">
-            <h3 className="text-lg font-semibold text-gray-800">Nos évaluations</h3>
-            <div className="space-y-3">
+            <div className="space-y-1">
               {evaluations.map((evaluation, index) => (
                 <div
                   key={evaluation.term}
-                  className="flex items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer border border-gray-100"
+                  className={`flex items-center justify-between p-4 rounded-lg ${evaluation.colors} bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer border border-gray-100`}
                 >
                   <span className="font-medium text-gray-700">{evaluation.term}</span>
                   <ChevronRight className="w-5 h-5 text-gray-400" />
@@ -240,19 +251,21 @@ const Dashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
         >
-          <LeyCard className="space-y-4 bg-white">
+          <div className="flex items-center justify-between">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-800">Publications officielles</h3>
-              <button className="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors flex items-center gap-2">
-                Actualités du marché
-                <ExternalLink className="w-4 h-4" />
-              </button>
+              <h3 className="text-3xl text-[#0B3C3D] font-semibold text-foreground">Publications officielles</h3>
             </div>
-            <div className="space-y-3">
+            <button className="bg-[#0B3C3D] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors flex items-center gap-2">
+              Actualités du marché
+              <ExternalLink className="w-4 h-4" />
+            </button>
+          </div>
+          <LeyCard className="space-y-4" variant='default1'>
+            <div className="space-y-1">
               {publications.map((pub, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-100"
+                  className="flex items-center justify-between p-2 rounded-lg bg-background hover:bg-gray-100 transition-colors border border-gray-100"
                 >
                   <div className="flex-1">
                     <p className="font-medium text-sm text-gray-800">{pub.title}</p>
@@ -268,21 +281,6 @@ const Dashboard = () => {
         </motion.div>
       </div>
 
-      {showBuyModal && (
-        <TradeModal 
-          isOpen={showBuyModal} 
-          onClose={() => setShowBuyModal(false)}
-          type="buy"
-        />
-      )}
-
-      {showSellModal && (
-        <TradeModal 
-          isOpen={showSellModal} 
-          onClose={() => setShowSellModal(false)}
-          type="sell"
-        />
-      )}
     </div>
   );
 };

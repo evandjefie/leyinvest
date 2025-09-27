@@ -2,49 +2,38 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import LeyButton from '@/components/ui/LeyButton';
 import LeyInput from '@/components/ui/LeyInput';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { loginUser, clearError } from '@/store/slices/authSlice';
 import { toast } from '@/hooks/use-toast';
+import { loginSchema, LoginFormValues } from '@/lib/validations/auth';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!email || !password) {
-      toast({
-        title: "Erreur de validation",
-        description: "Veuillez remplir tous les champs",
-        variant: "destructive"
-      });
-      return;
+  
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
     }
+  });
 
-    if (password.length < 6) {
-      toast({
-        title: "Erreur de validation",
-        description: "Le mot de passe doit contenir au moins 6 caractères",
-        variant: "destructive"
-      });
-      return;
-    }
-
+  const onSubmit = async (data: LoginFormValues) => {
     dispatch(clearError());
 
     try {
-      const result = await dispatch(loginUser({ email, password }));
+      const result = await dispatch(loginUser({ email: data.email, password: data.password }));
       if (loginUser.fulfilled.match(result)) {
         toast({
           title: "Connexion réussie !",
@@ -116,22 +105,22 @@ const Login = () => {
             </div>
 
             {/* Login Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <LeyInput
                 label="Email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                {...register('email')}
                 placeholder="Entrer votre mail"
+                error={errors.email?.message}
                 required
               />
 
               <LeyInput
                 label="Mot de passe"
                 type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register('password')}
                 placeholder="Entrer votre mot de passe"
+                error={errors.password?.message}
                 suffix={
                   <button
                     type="button"
@@ -150,7 +139,7 @@ const Login = () => {
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 text-primary border-border rounded focus:ring-primary/20"
+                    className="w-4 h-4 text-primary border-border rounded focus:ring-primary focus:ring-opacity-20"
                   />
                   <span className="text-sm text-foreground">Se souvenir de moi</span>
                 </label>

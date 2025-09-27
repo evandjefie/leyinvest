@@ -12,12 +12,12 @@ import Dashboard from "./pages/Dashboard";
 import Portfolio from "./pages/Portfolio";
 import Analysis from "./pages/Analysis";
 import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
-import VerifyEmail from "./pages/auth/VerifyEmail";
+import RegisterStep1 from "./pages/auth/RegisterStep1";
+import RegisterStep2VerifyEmail from "./pages/auth/RegisterStep2VerifyEmail";
+import RegisterStep3CompleteProfile from "./pages/auth/RegisterStep3CompleteProfile";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import VerifyCodeReset from "./pages/auth/VerifyCodeReset";
-import CompleteProfile from "./pages/auth/CompleteProfile";
 import NotFound from "./pages/NotFound";
 
 // Layout
@@ -36,10 +36,10 @@ const App = () => (
           <Routes>
             {/* Auth Routes */}
             <Route path="/auth/login" element={<Login />} />
-            <Route path="/auth/register" element={<Register />} />
-            <Route path="/auth/verify-email" element={<VerifyEmail />} />
+            <Route path="/auth/register" element={<RegisterStep1 />} />
+            <Route path="/auth/register/step2/verify-email" element={<RegisterStep2VerifyEmail />} />
+            <Route path="/auth/register/step3/complete-profile" element={<RegisterStep3CompleteProfile />} />
             <Route path="/auth/verify-code-reset" element={<VerifyCodeReset />} />
-            <Route path="/auth/complete-profile" element={<CompleteProfile />} />
             <Route path="/auth/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/reset-password" element={<ResetPassword />} />
             
@@ -52,19 +52,19 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <MainLayout>
+              // <ProtectedRoute>
+                // <MainLayout>
                   <Dashboard />
-                </MainLayout>
-              </ProtectedRoute>
+                // </MainLayout>
+              // </ProtectedRoute>
             } />
-            <Route path="/portfolio" element={
+            {/* <Route path="/portfolio" element={
               <ProtectedRoute>
                 <MainLayout>
                   <Portfolio />
                 </MainLayout>
               </ProtectedRoute>
-            } />
+            } /> */}
             <Route path="/analysis" element={
               <ProtectedRoute>
                 <MainLayout>

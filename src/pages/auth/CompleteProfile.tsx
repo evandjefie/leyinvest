@@ -264,7 +264,7 @@ const CompleteProfile = () => {
                   type="checkbox"
                   checked={formData.acceptTerms}
                   onChange={(e) => handleInputChange('acceptTerms', e.target.checked)}
-                  className="w-4 h-4 mt-1 text-primary border-border rounded focus:ring-primary/20"
+                  className="w-4 h-4 mt-1 text-primary border-border rounded focus:ring-primary focus:ring-opacity-20"
                 />
                 <span className="text-sm text-foreground">
                   J'ai lu et j'accepte <Link to="/terms" className="text-primary underline">les conditions d'utilisation de LeyInvest</Link>

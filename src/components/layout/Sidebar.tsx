@@ -48,7 +48,7 @@ const Sidebar = () => {
 
       {/* User Profile */}
       <div className="p-4 border-t border-border">
-        <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/50 transition-colors cursor-pointer">
+        <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary hover:bg-opacity-50 transition-colors cursor-pointer">
           <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
             <User className="w-4 h-4 text-primary-foreground" />
           </div>

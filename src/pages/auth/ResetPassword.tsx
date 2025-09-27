@@ -2,46 +2,37 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import LeyButton from '@/components/ui/LeyButton';
 import LeyInput from '@/components/ui/LeyInput';
-import toast from 'react-hot-toast';
+import { toast } from '@/hooks/use-toast';
+import { resetPasswordSchema, ResetPasswordFormValues } from '@/lib/validations/auth';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
 import SuccessModal from '@/components/ui/SuccessModal';
 
 const ResetPassword = () => {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
+  
+  const { register, handleSubmit, formState: { errors } } = useForm<ResetPasswordFormValues>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: {
+      password: '',
+      confirmPassword: '',
+    }
+  });
 
   const handleModalClose = () => {
     setShowSuccessModal(false);
     navigate('/auth/login');
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const newErrors: Record<string, string> = {};
-
-    if (password.length < 6) {
-      newErrors.password = 'Le mot de passe doit contenir au moins 6 caractères';
-    }
-
-    if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'Les mots de passe ne correspondent pas';
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
+  const onSubmit = async (data: ResetPasswordFormValues) => {
     setLoading(true);
 
     // Simulate API call
@@ -85,7 +76,7 @@ const ResetPassword = () => {
               Réinitialisation du mot de passe
             </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Nouveau mot de passe
@@ -96,11 +87,7 @@ const ResetPassword = () => {
                 </p>
                 <LeyInput
                   type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    if (errors.password) setErrors(prev => ({ ...prev, password: '' }));
-                  }}
+                  {...register('password')}
                   placeholder="Entrer votre mot de passe"
                   suffix={
                     <button
@@ -111,7 +98,7 @@ const ResetPassword = () => {
                       {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
                   }
-                  error={errors.password}
+                  error={errors.password?.message}
                   required
                 />
               </div>
@@ -119,11 +106,7 @@ const ResetPassword = () => {
               <LeyInput
                 label="Confirmation le nouveau mot de passe"
                 type={showConfirmPassword ? 'text' : 'password'}
-                value={confirmPassword}
-                onChange={(e) => {
-                  setConfirmPassword(e.target.value);
-                  if (errors.confirmPassword) setErrors(prev => ({ ...prev, confirmPassword: '' }));
-                }}
+                {...register('confirmPassword')}
                 placeholder="Répéter votre mot de passe"
                 suffix={
                   <button
@@ -134,7 +117,7 @@ const ResetPassword = () => {
                     {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 }
-                error={errors.confirmPassword}
+                error={errors.confirmPassword?.message}
                 required
               />
 

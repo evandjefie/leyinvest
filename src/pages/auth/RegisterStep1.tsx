@@ -3,36 +3,22 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import LeyButton from '@/components/ui/LeyButton';
 import LeyInput from '@/components/ui/LeyInput';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { registerUser, setRegistrationEmail } from '@/store/slices/authSlice';
 import { RegisterRequest } from '@/types/api';
 import { toast } from '@/hooks/use-toast';
+import { registerSchema, RegisterFormValues } from '@/lib/validations/auth';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
 
-const registerSchema = z.object({
-  nom: z.string().min(1, 'Le nom est obligatoire').max(50, 'Le nom ne peut pas dépasser 50 caractères'),
-  prenom: z.string().min(1, 'Le prénom est obligatoire').max(50, 'Le prénom ne peut pas dépasser 50 caractères'),
-  email: z.string().email('Format d\'email invalide').min(1, 'L\'email est obligatoire'),
-  numero_whatsapp: z.string().min(8, 'Le numéro WhatsApp doit contenir au moins 8 chiffres').max(15, 'Le numéro WhatsApp ne peut pas dépasser 15 chiffres'),
-  age: z.number().int('L\'âge doit être un nombre entier').min(16, 'Vous devez avoir au moins 16 ans').max(120, 'L\'âge ne peut pas dépasser 120 ans'),
-  genre: z.enum(['Homme', 'Femme'], { required_error: 'Le genre est obligatoire' }),
-  pays_residence: z.string().min(1, 'Le pays de résidence est obligatoire'),
-  situation_professionnelle: z.string().min(1, 'La situation professionnelle est obligatoire'),
-  mot_de_passe: z.string().min(6, 'Le mot de passe doit contenir au moins 8 caractères').max(100, 'Le mot de passe ne peut pas dépasser 100 caractères'),
-});
-
-type RegisterForm = z.infer<typeof registerSchema>;
-
-const Register = () => {
+const RegisterStep1 = () => {
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<RegisterForm>({
+  const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       nom: '',
@@ -47,7 +33,7 @@ const Register = () => {
     }
   });
 
-  const onSubmit = async (data: RegisterForm) => {
+  const onSubmit = async (data: RegisterFormValues) => {
     try {
       const result = await dispatch(registerUser(data as RegisterRequest));
       if (registerUser.fulfilled.match(result)) {
@@ -56,7 +42,7 @@ const Register = () => {
           title: "Inscription réussie !",
           description: "Un code de vérification a été envoyé à votre email.",
         });
-        navigate('/auth/verify-email');
+        navigate('/auth/register/step2/verify-email');
       }
     } catch (err) {
       console.error('Registration error:', err);
@@ -212,7 +198,7 @@ const Register = () => {
                 label="Mot de passe"
                 type="password"
                 {...register('mot_de_passe')}
-                placeholder="Au moins 8 caractères"
+                placeholder="Au moins 6 caractères"
                 error={errors.mot_de_passe?.message}
               />
 
@@ -256,4 +242,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default RegisterStep1;
