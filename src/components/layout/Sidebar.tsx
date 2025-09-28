@@ -1,12 +1,12 @@
-import { Home, Briefcase, TrendingUp, User, Settings, Bell } from 'lucide-react';
+import { LayoutDashboard, Wallet, TrendingUp, User, Settings, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import { motion } from 'framer-motion';
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'Portefeuille', href: '/portfolio', icon: Briefcase },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Portefeuille', href: '/portfolio', icon: Wallet },
   { name: 'Analyse', href: '/analysis', icon: TrendingUp },
 ];
 
@@ -34,12 +34,17 @@ const Sidebar = () => {
               <motion.div
                 whileHover={{ x: 4 }}
                 className={cn(
-                  'nav-item',
+                  'nav-item flex',
                   isActive && 'active'
                 )}
               >
+                {/* <div className='p-3 bg-primary'></div> */}
                 <Icon className="w-5 h-5" />
-                <span>{item.name}</span>
+                <span
+                  className=""
+                >
+                  {item.name}
+                  </span>
               </motion.div>
             </Link>
           );

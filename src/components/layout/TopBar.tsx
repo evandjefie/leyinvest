@@ -1,4 +1,4 @@
-import { Bell, Settings, User } from 'lucide-react';
+import { ArrowUpToLine, ArrowDownToLine, Bell, Settings, User } from 'lucide-react';
 import LeyButton from '../ui/LeyButton';
 
 interface TopBarProps {
@@ -10,27 +10,27 @@ const TopBar = ({ onBuyClick, onSellClick }: TopBarProps) => {
   return (
     <div className="h-16 bg-white border-b border-border flex items-center justify-between px-6">
       <div className="flex items-center gap-4">
-        <h2 className="text-lg font-semibold text-foreground">Vue d'ensemble de vos investissements</h2>
+        {/* <h2 className="text-lg font-semibold text-foreground">Vue d'ensemble de vos investissements</h2> */}
       </div>
       
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
           <LeyButton 
-            variant="secondary" 
-            size="sm" 
+            variant="primary"
+            size="sm"
             className="flex items-center gap-2"
-            onClick={onBuyClick}
+            onClick={onBuyClick}  
           >
-            <div className="w-2 h-2 bg-primary rounded-full"></div>
+            <ArrowUpToLine/>
             Enregistrer achat
           </LeyButton>
           <LeyButton 
             variant="secondary" 
             size="sm" 
-            className="flex items-center gap-2"
+            className="bg-[#FFD796] flex items-center gap-2"
             onClick={onSellClick}
           >
-            <div className="w-2 h-2 bg-muted-foreground rounded-full"></div>
+            <ArrowDownToLine/>
             Enregistrer vente
           </LeyButton>
         </div>

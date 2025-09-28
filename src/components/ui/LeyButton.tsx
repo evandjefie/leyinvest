@@ -25,6 +25,7 @@ const LeyButton = ({
   const variants = {
     primary: 'btn-primary',
     secondary: 'btn-secondary',
+    tertiary: 'btn-tertiary',
     google: 'btn-google',
     ghost: 'hover:bg-primary hover:bg-opacity-5 text-foreground rounded-xl px-4 py-2',
   };

@@ -32,6 +32,12 @@ export default {
           DEFAULT: "var(--secondary)",
           foreground: "var(--secondary-foreground)",
         },
+        tertiary: {
+          DEFAULT: "var(--primary)",
+          foreground: "var(--primary-foreground)",
+          light: "var(--primary-light)",
+          dark: "var(--primary-dark)",
+        },
         destructive: {
           DEFAULT: "var(--destructive)",
           foreground: "var(--destructive-foreground)",
