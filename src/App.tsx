@@ -52,19 +52,19 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/dashboard" element={
-              // <ProtectedRoute>
-                // <MainLayout>
+              <ProtectedRoute>
+                <MainLayout>
                   <Dashboard />
-                // </MainLayout>
-              // </ProtectedRoute>
+                </MainLayout>
+              </ProtectedRoute>
             } />
-            {/* <Route path="/portfolio" element={
+            <Route path="/portfolio" element={
               <ProtectedRoute>
                 <MainLayout>
                   <Portfolio />
                 </MainLayout>
               </ProtectedRoute>
-            } /> */}
+            } />
             <Route path="/analysis" element={
               <ProtectedRoute>
                 <MainLayout>

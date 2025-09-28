@@ -120,35 +120,49 @@ const TradeModal = ({ isOpen, onClose, type = 'buy' }: TradeModalProps) => {
             />
           </div>
 
-          <LeyInput
-            label="Quantité"
-            type="number"
-            placeholder="Nombre d'actions"
-            value={formData.quantity}
-            onChange={(e) => handleInputChange('quantity')(e.target.value)}
-            error={errors.quantity}
-            required
-          />
-
-          <LeyInput
-            label="Prix par action (FCFA)"
-            type="number"
-            placeholder="0"
-            value={formData.price}
-            onChange={(e) => handleInputChange('price')(e.target.value)}
-            error={errors.price}
-            required
-          />
-
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Quantité <span className="text-destructive">*</span>
+            </label>
             <LeyInput
-              label={type === 'buy' ? "Montant de l'achat" : "Montant de la vente"}
               type="number"
-              placeholder="0"
-              value={formData.totalAmount}
-              onChange={(e) => handleInputChange('totalAmount')(e.target.value)}
-              error={errors.totalAmount}
+              placeholder="Nombre d'actions"
+              value={formData.quantity}
+              onChange={(e) => handleInputChange('quantity')(e.target.value)}
+              error={errors.quantity}
               required
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Prix par action (FCFA) <span className="text-destructive">*</span>
+            </label>
+            <LeyInput
+              // label="Prix par action (FCFA)"
+              type="number"
+              placeholder="0"
+              value={formData.price}
+              onChange={(e) => handleInputChange('price')(e.target.value)}
+              error={errors.price}
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              {type === 'buy' ? "Montant de l'achat" : "Montant de la vente"} <span className="text-destructive">*</span>
+            </label>
+              <LeyInput
+                // label={type === 'buy' ? "Montant de l'achat" : "Montant de la vente"}
+                type="number"
+                placeholder="0"
+                value={formData.totalAmount}
+                onChange={(e) => handleInputChange('totalAmount')(e.target.value)}
+                error={errors.totalAmount}
+                required
+              />
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
