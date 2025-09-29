@@ -75,7 +75,7 @@ npm run build
 
 Variables d'environnement:
 ```env
-VITE_API_BASE_URL=https://leyinvest-backend.onrender.com/api/v1/
+VITE_API_BASE_URL=
 ```
 
 ## 📱 Pages

@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import env from '@/config/env';
+// import env from '@/config/env';
 
 export enum ErrorType {
   NETWORK_ERROR = 'NETWORK_ERROR',
@@ -128,12 +128,15 @@ export const handleApiError = (error: any): APIError => {
   }
 };
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export const axiosInstance: AxiosInstance = axios.create({
-  baseURL: env.API_BASE_URL,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
   withCredentials: false,
+  timeout: 30000,
 });
 
 axiosInstance.interceptors.request.use((config) => {
