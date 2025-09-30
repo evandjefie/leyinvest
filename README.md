@@ -2,6 +2,12 @@
 
 LeyInvest est une plateforme moderne d'investissement sur la Bourse Régionale des Valeurs Mobilières (BRVM), développée avec React et TypeScript.
 
+## 📱 Comment utiliser l'application localement
+
+### Prérequis
+- Node.js 18+ et npm installés
+- Backend API disponible (voir configuration ci-dessous)
+
 ## 🚀 Technologies
 
 - **Frontend**: React 18 + TypeScript + Vite
@@ -42,17 +48,30 @@ LeyInvest est une plateforme moderne d'investissement sur la Bourse Régionale d
 - `GET /users/me/` - Profil utilisateur
 - `DELETE /users/me/` - Supprimer compte
 
-## 🔧 Installation
+### Installation
 
 ```bash
+# Cloner le repository
+git clone <repository-url>
+cd leyinvest
+
 # Installer les dépendances
 npm install
+
+# Configurer les variables d'environnement
+# Créer un fichier .env à la racine du projet
+echo "VITE_API_BASE_URL=https://backend.com" > .env
 
 # Lancer le serveur de développement
 npm run dev
 
-# Build pour la production
+# L'application sera accessible sur http://localhost:5173
+```
+
+### Build pour la production
+```bash
 npm run build
+# Les fichiers compilés seront dans le dossier dist/
 ```
 
 ## 📝 Validation des formulaires
@@ -85,13 +104,75 @@ VITE_API_BASE_URL=
 - **Portfolio**: Gestion du portefeuille
 - **Analysis**: Analyse des investissements
 
+## ✅ Fonctionnalités développées
+
+### Authentification complète
+- ✅ Inscription en 3 étapes (Step1 → Verify Email → Complete Profile)
+- ✅ Connexion avec gestion d'erreurs avancée
+- ✅ Modal d'erreur pour comptes inexistants avec lien vers inscription
+- ✅ Vérification email avec code à 4 chiffres
+- ✅ Renvoi de code de vérification
+- ✅ Changement de mot de passe
+- ✅ Déconnexion
+
+### Interface utilisateur
+- ✅ Dashboard avec statistiques d'investissement
+  - Vue d'ensemble des investissements
+  - Top 5 et Flop 5 des entreprises
+  - Évaluations (court, moyen, long terme)
+  - Publications officielles
+- ✅ Page Portefeuille
+  - Graphique de performance vs BRVM Composite
+  - Tableau détaillé des positions
+  - Indicateurs de gains/pertes
+- ✅ Page Analyse
+  - Analyse par secteurs
+  - Prévision de rendements
+  - Calendrier de paiement des dividendes
+- ✅ Design responsive (mobile, tablette, desktop)
+- ✅ Profil utilisateur dans la sidebar
+
+### Architecture technique
+- ✅ Services API centralisés (authApi, userApi)
+- ✅ Gestion d'erreurs détaillée (CORS, network, timeout)
+- ✅ Cache hors ligne avec IndexedDB
+- ✅ Redux Toolkit pour la gestion d'état
+- ✅ Validation Zod pour les formulaires
+- ✅ Toasts et modals pour les notifications
+
+## 🚧 Prochaines étapes à développer
+
+### Fonctionnalités métier
+- [ ] Page détaillée d'une entreprise avec historique
+- [ ] Système de trading (achat/vente d'actions)
+- [ ] Notifications en temps réel des mouvements du marché
+- [ ] Alertes personnalisées (prix, dividendes)
+- [ ] Historique des transactions
+- [ ] Export des données (PDF, Excel)
+- [ ] Graphiques avancés avec indicateurs techniques
+
+### Profil utilisateur
+- [ ] Modification du profil utilisateur
+- [ ] Photo de profil
+- [ ] Préférences de notification
+- [ ] Paramètres de sécurité (2FA)
+- [ ] Suppression de compte
+
+### Optimisations
+- [ ] Tests unitaires et E2E
+- [ ] PWA (Progressive Web App)
+- [ ] Mode hors ligne complet
+- [ ] Performance optimisée (lazy loading, code splitting)
+- [ ] Accessibilité WCAG AA
+
 ## 🔒 Sécurité
 
-- Tokens JWT stockés en localStorage
-- Intercepteurs Axios pour authentification
-- Validation côté client et serveur
-- Gestion des erreurs d'authentification
+- Tokens JWT stockés en localStorage avec refresh automatique
+- Intercepteurs Axios pour authentification automatique
+- Validation Zod côté client et serveur
+- Gestion des erreurs d'authentification avec redirections
 - Cache sécurisé avec IndexedDB
+- Protection CSRF et XSS
 
 ## 🎨 Design System
 

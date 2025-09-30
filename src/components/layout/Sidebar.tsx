@@ -1,8 +1,9 @@
-import { LayoutDashboard, Wallet, TrendingUp, User, Settings, Bell } from 'lucide-react';
+import { LayoutDashboard, Wallet, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import { motion } from 'framer-motion';
+import UserProfile from './UserProfile';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -52,17 +53,7 @@ const Sidebar = () => {
       </nav>
 
       {/* User Profile */}
-      <div className="p-4 border-t border-border">
-        <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary hover:bg-opacity-50 transition-colors cursor-pointer">
-          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-            <User className="w-4 h-4 text-primary-foreground" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground">Utilisateur</p>
-            <p className="text-xs text-muted-foreground truncate">user@example.com</p>
-          </div>
-        </div>
-      </div>
+      <UserProfile />
     </div>
   );
 };

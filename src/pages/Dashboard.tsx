@@ -36,14 +36,14 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="space-y-8 p-6 bg-[#F0F5F4]">
+    <div className="space-y-6 md:space-y-8 p-4 md:p-6 bg-[#F0F5F4]">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-3xl text-[#0B3C3D] font-semibold text-foreground">Vue d'ensemble de vos investissements</h1>
       </div>
 
       {/* Investment Overview */}
-      <div className="bg-background text-primary-foreground rounded-2xl p-6 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-6">
+      <div className="bg-background text-primary-foreground rounded-2xl p-3 md:p-6 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4 md:gap-6">
         {/* Montant investi */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -138,7 +138,7 @@ const Dashboard = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <LeyCard className="space-y-4 p-3" variant='default1'>
+          <LeyCard className="space-y-4 p-3" variant='default'>
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-800">Top 5</h3>
               <button className="text-teal-600 hover:text-teal-700 text-sm font-medium transition-colors">
@@ -182,7 +182,7 @@ const Dashboard = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <LeyCard className="space-y-4 p-3" variant='default1'>
+          <LeyCard className="space-y-4 p-3" variant='default'>
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-800">Flop 5</h3>
               <button className="text-teal-600 hover:text-teal-700 text-sm font-medium transition-colors">
@@ -261,7 +261,7 @@ const Dashboard = () => {
               <ExternalLink className="w-4 h-4" />
             </button>
           </div>
-          <LeyCard className="space-y-4" variant='default1'>
+          <LeyCard className="space-y-4" variant='default'>
             <div className="space-y-1">
               {publications.map((pub, index) => (
                 <div
