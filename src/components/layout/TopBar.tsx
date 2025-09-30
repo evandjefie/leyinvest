@@ -1,5 +1,7 @@
 import { ArrowUpToLine, ArrowDownToLine, Bell, Settings, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import LeyButton from '../ui/LeyButton';
+import logoLeycom from '@/assets/logo_leycom.svg';
 
 interface TopBarProps {
   onBuyClick?: () => void;
@@ -8,13 +10,16 @@ interface TopBarProps {
 
 const TopBar = ({ onBuyClick, onSellClick }: TopBarProps) => {
   return (
-    <div className="h-16 bg-white border-b border-border flex items-center justify-between px-6">
-      <div className="flex items-center gap-4">
-        {/* <h2 className="text-lg font-semibold text-foreground">Vue d'ensemble de vos investissements</h2> */}
+    <div className="h-16 bg-white border-b border-border flex items-center justify-between px-4 md:px-6">
+      {/* Logo on mobile */}
+      <div className="md:hidden">
+        <img src={logoLeycom} alt="LeyInvest" className="h-8" />
       </div>
       
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
+      <div className="hidden md:block flex-1"></div>
+      
+      <div className="flex items-center gap-2 md:gap-4">
+        <div className="hidden md:flex items-center gap-2">
           <LeyButton 
             variant="primary"
             size="sm"
@@ -36,9 +41,9 @@ const TopBar = ({ onBuyClick, onSellClick }: TopBarProps) => {
         </div>
         
         <div className="flex items-center gap-2">
-          <button className="p-2 hover:bg-secondary rounded-lg transition-colors">
+          <Link to="/profile" className="p-2 hover:bg-secondary rounded-lg transition-colors">
             <User className="w-5 h-5 text-muted-foreground" />
-          </button>
+          </Link>
           <button className="p-2 hover:bg-secondary rounded-lg transition-colors">
             <Bell className="w-5 h-5 text-muted-foreground" />
           </button>

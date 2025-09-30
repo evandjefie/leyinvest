@@ -27,7 +27,7 @@ const Analysis = () => {
   const [activeTab, setActiveTab] = useState<'prevision' | 'paiement'>('prevision');
 
   return (
-    <div className="space-y-6 md:space-y-8 p-4 md:p-6 bg-[#F0F5F4] min-h-screen">
+    <div className="min-h-screen space-y-6 md:space-y-8 p-4 md:p-6 pb-24 md:pb-6 bg-[#F0F5F4]">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl text-[#0B3C3D] font-semibold">Analyse</h1>

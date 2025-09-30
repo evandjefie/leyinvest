@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import Dashboard from "./pages/Dashboard";
 import Portfolio from "./pages/Portfolio";
 import Analysis from "./pages/Analysis";
+import Profile from "./pages/Profile";
 import Login from "./pages/auth/Login";
 import RegisterStep1 from "./pages/auth/RegisterStep1";
 import RegisterStep2VerifyEmail from "./pages/auth/RegisterStep2VerifyEmail";
@@ -69,6 +70,13 @@ const App = () => (
               <ProtectedRoute>
                 <MainLayout>
                   <Analysis />
+                </MainLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <Profile />
                 </MainLayout>
               </ProtectedRoute>
             } />

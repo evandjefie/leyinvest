@@ -99,10 +99,15 @@ VITE_API_BASE_URL=
 
 ## 📱 Pages
 
-- **Authentification**: Login, Register, Verify Email, Complete Profile
-- **Dashboard**: Tableau de bord principal
-- **Portfolio**: Gestion du portefeuille
-- **Analysis**: Analyse des investissements
+- **Authentification**: Login, Register (Step 1-3), Verify Email, Complete Profile
+- **Dashboard** (`/dashboard`): Tableau de bord principal avec statistiques
+- **Portefeuille** (`/portfolio`): Gestion et suivi du portefeuille d'investissements
+- **Analyse** (`/analysis`): Analyse approfondie des investissements par secteur
+- **Profil** (`/profile`): Profil utilisateur et paramètres du compte
+
+### Navigation
+- **Desktop**: Sidebar à gauche + TopBar en haut
+- **Mobile**: TopBar en haut + Barre de navigation en bas (5 onglets)
 
 ## ✅ Fonctionnalités développées
 
@@ -114,56 +119,88 @@ VITE_API_BASE_URL=
 - ✅ Renvoi de code de vérification
 - ✅ Changement de mot de passe
 - ✅ Déconnexion
+- ✅ Persistance de la session avec IndexedDB
 
 ### Interface utilisateur
-- ✅ Dashboard avec statistiques d'investissement
+- ✅ **Dashboard** avec statistiques d'investissement
   - Vue d'ensemble des investissements
+  - Affichage des informations utilisateur (nom, prénom)
   - Top 5 et Flop 5 des entreprises
   - Évaluations (court, moyen, long terme)
   - Publications officielles
-- ✅ Page Portefeuille
+- ✅ **Page Portefeuille**
   - Graphique de performance vs BRVM Composite
   - Tableau détaillé des positions
   - Indicateurs de gains/pertes
-- ✅ Page Analyse
+- ✅ **Page Analyse**
   - Analyse par secteurs
   - Prévision de rendements
   - Calendrier de paiement des dividendes
-- ✅ Design responsive (mobile, tablette, desktop)
-- ✅ Profil utilisateur dans la sidebar
+- ✅ **Page Profil utilisateur**
+  - Affichage des informations personnelles
+  - Actions du compte (modifier, déconnexion)
+  - Accessible depuis l'icône user (en haut à droite et profil en bas sur mobile)
+- ✅ **Design responsive** (mobile, tablette, desktop)
+  - Navigation mobile en bas avec 5 sections (Accueil, Portefeuille, +, Analyse, Profil)
+  - Sidebar cachée sur mobile
+  - Tables avec scroll horizontal sur mobile
+  - Toutes les pages optimisées pour mobile (pb-24 pour éviter le chevauchement)
 
 ### Architecture technique
 - ✅ Services API centralisés (authApi, userApi)
 - ✅ Gestion d'erreurs détaillée (CORS, network, timeout)
-- ✅ Cache hors ligne avec IndexedDB
+- ✅ **Cache hors ligne avec IndexedDB**
+  - Persistance automatique des données utilisateur
+  - Sauvegarde du portfolio dans IndexedDB
+  - Synchronisation Redux ↔ IndexedDB via middleware
+  - Nettoyage automatique du cache expiré
 - ✅ Redux Toolkit pour la gestion d'état
 - ✅ Validation Zod pour les formulaires
 - ✅ Toasts et modals pour les notifications
+- ✅ Middleware de persistance personnalisé
 
 ## 🚧 Prochaines étapes à développer
 
 ### Fonctionnalités métier
-- [ ] Page détaillée d'une entreprise avec historique
-- [ ] Système de trading (achat/vente d'actions)
-- [ ] Notifications en temps réel des mouvements du marché
-- [ ] Alertes personnalisées (prix, dividendes)
-- [ ] Historique des transactions
-- [ ] Export des données (PDF, Excel)
-- [ ] Graphiques avancés avec indicateurs techniques
+- [ ] Intégration données temps réel de la BRVM
+- [ ] Page détaillée d'une entreprise avec historique complet
+- [ ] **Système de trading** (achat/vente d'actions via API)
+  - Modal d'achat/vente fonctionnel avec API backend
+  - Validation et confirmation des transactions
+  - Mise à jour automatique du portefeuille
+- [ ] Notifications push en temps réel des mouvements du marché
+- [ ] Alertes personnalisées (prix cibles, dividendes à venir)
+- [ ] Historique détaillé des transactions avec filtres
+- [ ] Export des données (PDF, Excel, CSV)
+- [ ] Graphiques avancés avec indicateurs techniques (RSI, MACD, etc.)
+- [ ] Watchlist personnalisée
+- [ ] Comparaison de performances entre entreprises
 
-### Profil utilisateur
-- [ ] Modification du profil utilisateur
-- [ ] Photo de profil
-- [ ] Préférences de notification
-- [ ] Paramètres de sécurité (2FA)
-- [ ] Suppression de compte
+### Profil utilisateur et paramètres
+- [ ] **Modification complète du profil utilisateur**
+- [ ] Upload et gestion de photo de profil
+- [ ] Préférences de notification (email, push)
+- [ ] Paramètres de sécurité (2FA, biométrie)
+- [ ] Gestion des sessions actives
+- [ ] Historique d'activité du compte
+- [ ] Suppression de compte avec confirmation
 
-### Optimisations
-- [ ] Tests unitaires et E2E
-- [ ] PWA (Progressive Web App)
-- [ ] Mode hors ligne complet
-- [ ] Performance optimisée (lazy loading, code splitting)
-- [ ] Accessibilité WCAG AA
+### Optimisations et performance
+- [ ] Tests unitaires avec Jest/Vitest
+- [ ] Tests E2E avec Playwright/Cypress
+- [ ] PWA (Progressive Web App) avec service workers
+- [ ] Mode hors ligne complet avec synchronisation différée
+- [ ] Performance optimisée (lazy loading routes, code splitting)
+- [ ] Accessibilité WCAG AA complète
+- [ ] Optimisation SEO
+- [ ] Analytics et tracking utilisateur
+
+### Analyses avancées
+- [ ] Tableau de bord analytique personnalisé
+- [ ] Recommandations d'investissement basées sur l'IA
+- [ ] Simulateur de portefeuille
+- [ ] Calcul automatique des taxes et frais
+- [ ] Rapports périodiques automatiques (mensuel, annuel)
 
 ## 🔒 Sécurité
 
@@ -189,7 +226,30 @@ Redux Toolkit avec slices:
 
 ## 🔄 Offline Support
 
-- Cache automatique des données utilisateur
-- Synchronisation à la reconnexion
-- Nettoyage automatique du cache expiré
-- Fallback mode hors ligne
+### Persistance avec IndexedDB
+L'application utilise IndexedDB pour stocker les données localement et permettre un fonctionnement hors ligne partiel.
+
+#### Données stockées
+- **Authentification**: Token et informations utilisateur
+- **Portefeuille**: Statistiques et positions
+- **Cache**: Données temporaires avec timestamp
+
+#### Fonctionnalités
+- ✅ Sauvegarde automatique après connexion
+- ✅ Synchronisation Redux ↔ IndexedDB via middleware personnalisé
+- ✅ Nettoyage automatique des données expirées (24h par défaut)
+- ✅ Fallback mode hors ligne pour consultation des données en cache
+- ✅ Les mots de passe ne sont JAMAIS stockés localement
+
+#### Structure des stores IndexedDB
+```javascript
+DB: LeyInvestDB
+├── auth: { id, data, timestamp }
+├── user: { id, data, timestamp }
+└── cache: { key, data, timestamp }
+```
+
+### Middleware de persistance
+Le middleware `persistMiddleware` intercepte les actions Redux et synchronise automatiquement:
+- `auth/login/fulfilled` → Cache des données utilisateur
+- `portfolio/fetchPortfolioSuccess` → Cache du portefeuille

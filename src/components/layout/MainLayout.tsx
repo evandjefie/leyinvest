@@ -2,6 +2,7 @@ import { ReactNode, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
+import MobileBottomNav from './MobileBottomNav';
 import { useAppSelector } from '@/store/hooks';
 import TradeModal from '../ui/TradeModal';
 
@@ -34,6 +35,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         <main className="flex-1 overflow-y-auto">
           {children}
         </main>
+        <MobileBottomNav />
       </div>
 
       {showBuyModal && (

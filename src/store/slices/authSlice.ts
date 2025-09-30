@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { authApi } from '@/services/authApi';
+import { cacheManager } from '@/services/offline';
 import { RegisterRequest, LoginRequest, VerifyEmailRequest, ChangePasswordRequest, ResendCodeRequest } from '@/types/api';
 
 interface User {
@@ -8,6 +9,13 @@ interface User {
   nom: string;
   prenom: string;
   is_verified: boolean;
+  age?: number;
+  genre?: string;
+  numero_whatsapp?: string;
+  pays_residence?: string;
+  situation_professionnelle?: string;
+  role?: string;
+  created_at?: string;
 }
 
 interface AuthState {
@@ -78,6 +86,17 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await authApi.login(credentials);
       localStorage.setItem('access_token', response.access_token);
+      
+      const userData = {
+        id: response.user_id,
+        email: response.email,
+        nom: response.nom,
+        prenom: response.prenom,
+        is_verified: response.is_verified,
+      };
+      
+      await cacheManager.cacheAuthData({ access_token: response.access_token, user: userData });
+      
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erreur de connexion');
@@ -91,9 +110,9 @@ export const logoutUser = createAsyncThunk(
     try {
       await authApi.logout();
     } catch (error) {
-      // Continue with logout even if API call fails
     } finally {
       localStorage.removeItem('access_token');
+      await cacheManager.clearCache();
     }
   }
 );
