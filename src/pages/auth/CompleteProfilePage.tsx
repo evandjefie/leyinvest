@@ -14,7 +14,7 @@ import { completeProfileSchema, CompleteProfileFormValues } from '@/lib/validati
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
 
-const RegisterStep3CompleteProfile = () => {
+const CompleteProfilePage = () => {
   const dispatch = useAppDispatch();
   const { loading, error, registrationEmail } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
@@ -237,4 +237,4 @@ const RegisterStep3CompleteProfile = () => {
   );
 };
 
-export default RegisterStep3CompleteProfile;
+export default CompleteProfilePage;

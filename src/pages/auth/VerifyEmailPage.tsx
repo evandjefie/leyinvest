@@ -8,7 +8,7 @@ import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { resendCode, verifyEmail } from '@/store/slices/authSlice';
 
-const RegisterStep2VerifyEmail = () => {
+const VerifyEmailPage = () => {
   const [code, setCode] = useState(['', '', '', '']);
   const [timer, setTimer] = useState(59);
   const [canResend, setCanResend] = useState(false);
@@ -78,7 +78,7 @@ const RegisterStep2VerifyEmail = () => {
           title: "Email vérifié !",
           description: "Votre email a été vérifié avec succès.",
         });
-        navigate('/auth/register/step3/complete-profile');
+        navigate('/auth/complete-profile');
       } else {
         toast({
           title: "Erreur de vérification",
@@ -210,4 +210,4 @@ const RegisterStep2VerifyEmail = () => {
   );
 };
 
-export default RegisterStep2VerifyEmail;
+export default VerifyEmailPage;

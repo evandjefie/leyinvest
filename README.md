@@ -36,9 +36,9 @@ LeyInvest est une plateforme moderne d'investissement sur la Bourse Régionale d
 ### API Endpoints
 
 #### Authentification
-- `POST /register/step1/` - Inscription initiale
-- `POST /register/step2/verify-email/` - Vérification email
-- `POST /register/step2/resend-code/` - Renvoyer code
+- `POST /auth/register/` - Inscription initiale
+- `POST /auth/verify-email/` - Vérification email
+- `POST /auth/resend-code/` - Renvoyer code
 - `POST /register/step3/complete-profile/` - Finaliser profil
 - `POST /auth/login/` - Connexion
 - `POST /auth/logout/` - Déconnexion

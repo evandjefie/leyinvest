@@ -3,51 +3,31 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import LeyButton from '@/components/ui/LeyButton';
 import LeyInput from '@/components/ui/LeyInput';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { registerUser, setRegistrationEmail } from '@/store/slices/authSlice';
 import { RegisterRequest } from '@/types/api';
 import { toast } from '@/hooks/use-toast';
+import { registerSchema, RegisterFormValues } from '@/lib/validations/auth';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
-
-const registerSchema = z.object({
-  nom: z.string().min(1, 'Le nom est obligatoire').max(50, 'Le nom ne peut pas dépasser 50 caractères'),
-  prenom: z.string().min(1, 'Le prénom est obligatoire').max(50, 'Le prénom ne peut pas dépasser 50 caractères'),
-  email: z.string().email('Format d\'email invalide').min(1, 'L\'email est obligatoire'),
-  numero_whatsapp: z.string().min(8, 'Le numéro WhatsApp doit contenir au moins 8 chiffres').max(15, 'Le numéro WhatsApp ne peut pas dépasser 15 chiffres'),
-  age: z.number().int('L\'âge doit être un nombre entier').min(16, 'Vous devez avoir au moins 16 ans').max(120, 'L\'âge ne peut pas dépasser 120 ans'),
-  genre: z.enum(['Homme', 'Femme'], { required_error: 'Le genre est obligatoire' }),
-  pays_residence: z.string().min(1, 'Le pays de résidence est obligatoire'),
-  situation_professionnelle: z.string().min(1, 'La situation professionnelle est obligatoire'),
-  mot_de_passe: z.string().min(6, 'Le mot de passe doit contenir au moins 8 caractères').max(100, 'Le mot de passe ne peut pas dépasser 100 caractères'),
-});
-
-type RegisterForm = z.infer<typeof registerSchema>;
 
 const Register = () => {
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<RegisterForm>({
+  const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       nom: '',
       prenom: '',
       email: '',
-      numero_whatsapp: '',
-      age: 18,
-      genre: undefined,
-      pays_residence: '',
-      situation_professionnelle: '',
-      mot_de_passe: '',
     }
   });
 
-  const onSubmit = async (data: RegisterForm) => {
+  const onSubmit = async (data: RegisterFormValues) => {
     try {
       const result = await dispatch(registerUser(data as RegisterRequest));
       if (registerUser.fulfilled.match(result)) {
@@ -102,7 +82,7 @@ const Register = () => {
                 </svg>
               }
             >
-              S'inscrire avec Google
+              Continuer avec Google
             </LeyButton>
 
             <div className="relative">
@@ -136,84 +116,6 @@ const Register = () => {
                 {...register('email')}
                 placeholder="Votre email"
                 error={errors.email?.message}
-              />
-
-              <LeyInput
-                label="Numéro WhatsApp"
-                {...register('numero_whatsapp')}
-                placeholder="Numéro de téléphone"
-                error={errors.numero_whatsapp?.message}
-              />
-
-              <div className="grid grid-cols-2 gap-4">
-                <LeyInput
-                  label="Âge"
-                  type="number"
-                  {...register('age', { valueAsNumber: true })}
-                  placeholder="Votre âge"
-                  error={errors.age?.message}
-                />
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-foreground">
-                    Genre
-                  </label>
-                  <select
-                    {...register('genre')}
-                    className="input-field w-full"
-                  >
-                    <option value="">Sélectionner</option>
-                    <option value="Homme">Homme</option>
-                    <option value="Femme">Femme</option>
-                  </select>
-                  {errors.genre && <p className="text-sm text-destructive">{errors.genre.message}</p>}
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground">
-                  Pays de résidence
-                </label>
-                <select
-                  {...register('pays_residence')}
-                  className="input-field w-full"
-                >
-                  <option value="">Sélectionner votre pays</option>
-                  <option value="Bénin">Bénin</option>
-                  <option value="Burkina Faso">Burkina Faso</option>
-                  <option value="Côte d'Ivoire">Côte d'Ivoire</option>
-                  <option value="Guinée-Bissau">Guinée-Bissau</option>
-                  <option value="Mali">Mali</option>
-                  <option value="Niger">Niger</option>
-                  <option value="Sénégal">Sénégal</option>
-                  <option value="Togo">Togo</option>
-                </select>
-                {errors.pays_residence && <p className="text-sm text-destructive">{errors.pays_residence.message}</p>}
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground">
-                  Situation professionnelle
-                </label>
-                <select
-                  {...register('situation_professionnelle')}
-                  className="input-field w-full"
-                >
-                  <option value="">Votre profession</option>
-                  <option value="Employé">Employé</option>
-                  <option value="Travailleur indépendant">Travailleur indépendant</option>
-                  <option value="Entrepreneur">Entrepreneur</option>
-                  <option value="Étudiant">Étudiant</option>
-                  <option value="Retraité">Retraité</option>
-                </select>
-                {errors.situation_professionnelle && <p className="text-sm text-destructive">{errors.situation_professionnelle.message}</p>}
-              </div>
-
-              <LeyInput
-                label="Mot de passe"
-                type="password"
-                {...register('mot_de_passe')}
-                placeholder="Au moins 8 caractères"
-                error={errors.mot_de_passe?.message}
               />
 
               <LeyButton

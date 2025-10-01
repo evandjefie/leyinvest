@@ -13,9 +13,9 @@ import Portfolio from "./pages/Portfolio";
 import Analysis from "./pages/Analysis";
 import Profile from "./pages/Profile";
 import Login from "./pages/auth/Login";
-import RegisterStep1 from "./pages/auth/RegisterStep1";
-import RegisterStep2VerifyEmail from "./pages/auth/RegisterStep2VerifyEmail";
-import RegisterStep3CompleteProfile from "./pages/auth/RegisterStep3CompleteProfile";
+import Register from "./pages/auth/Register";
+import VerifyEmailPage from "./pages/auth/VerifyEmailPage";
+import CompleteProfilePage from "./pages/auth/CompleteProfilePage";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import VerifyCodeReset from "./pages/auth/VerifyCodeReset";
@@ -37,9 +37,9 @@ const App = () => (
           <Routes>
             {/* Auth Routes */}
             <Route path="/auth/login" element={<Login />} />
-            <Route path="/auth/register" element={<RegisterStep1 />} />
-            <Route path="/auth/register/step2/verify-email" element={<RegisterStep2VerifyEmail />} />
-            <Route path="/auth/register/step3/complete-profile" element={<RegisterStep3CompleteProfile />} />
+            <Route path="/auth/register" element={<Register />} />
+            <Route path="/auth/verify-email" element={<VerifyEmailPage />} />
+            <Route path="/auth/complete-profile" element={<CompleteProfilePage />} />
             <Route path="/auth/verify-code-reset" element={<VerifyCodeReset />} />
             <Route path="/auth/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/reset-password" element={<ResetPassword />} />

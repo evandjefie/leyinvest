@@ -4,25 +4,25 @@ import { axiosInstance, executeWithErrorHandling } from './apiConfig';
 export const authApi = {
   async register(data: RegisterRequest): Promise<RegisterResponse> {
     return executeWithErrorHandling(() => 
-      axiosInstance.post<RegisterResponse>('/register/step1/', data)
+      axiosInstance.post<RegisterResponse>('/auth/register/', data)
     );
   },
 
   async verifyEmail(data: VerifyEmailRequest): Promise<VerifyEmailResponse> {
     return executeWithErrorHandling(() => 
-      axiosInstance.post<VerifyEmailResponse>('/register/step2/verify-email/', data)
+      axiosInstance.post<VerifyEmailResponse>('/auth/verify-email/', data)
     );
   },
 
   async resendCode(data: ResendCodeRequest): Promise<{ message: string }> {
     return executeWithErrorHandling(() => 
-      axiosInstance.post<{ message: string }>('/register/step2/resend-code/', data)
+      axiosInstance.post<{ message: string }>('/auth/resend-code/', data)
     );
   },
 
   async completeProfile(data: any): Promise<{ message: string }> {
     return executeWithErrorHandling(() => 
-      axiosInstance.post<{ message: string }>('/register/step3/complete-profile/', data)
+      axiosInstance.patch<{ message: string }>('/user/me/', data)
     );
   },
 
