@@ -13,7 +13,7 @@ const TopBar = ({ onBuyClick, onSellClick }: TopBarProps) => {
     <div className="h-16 bg-white border-b border-border flex items-center justify-between px-4 md:px-6">
       {/* Logo on mobile */}
       <div className="md:hidden">
-        <img src={logoLeycom} alt="LeyInvest" className="h-8" />
+        <img src={logoLeycom} alt="LeyInvest" className="h-12" />
       </div>
       
       <div className="hidden md:block flex-1"></div>

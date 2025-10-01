@@ -84,7 +84,7 @@ const Login = () => {
             {/* Logo & Title */}
             <div className="text-center space-y-4">
               <div className="flex justify-center">
-                <img src={logoLeycom} alt="LeyInvest" className="h-16" />
+                <img src={logoLeycom} alt="LeyInvest" className="h-12" />
               </div>
             </div>
 

@@ -123,7 +123,7 @@ const VerifyEmail = () => {
           {/* Logo & Title */}
           <div className="text-center space-y-4">
             <div className="flex justify-center">
-              <img src={logoLeycom} alt="LeyInvest" className="h-16" />
+              <img src={logoLeycom} alt="LeyInvest" className="h-12" />
             </div>
             <div>
               {/* <p className="text-muted-foreground mt-2">Votre partenaire d'investissement BRVM</p> */}
@@ -157,7 +157,8 @@ const VerifyEmail = () => {
             </div>
 
             {/* Resend Timer */}
-            <div className="text-center">
+            <div className="text-center text-sm text-muted-foreground cursor-not-allowed">
+              Renvoyer un code dans
               <button
                 onClick={handleResend}
                 disabled={!canResend}
@@ -167,8 +168,8 @@ const VerifyEmail = () => {
                     : 'text-muted-foreground cursor-not-allowed'
                 } transition-colors`}
               >
-                Renvoyer un code dans {timer > 0 ? `00:${timer.toString().padStart(2, '0')}` : ''}
-                {canResend && 'Renvoyer le code'}
+                {timer > 0 ? `00:${timer.toString().padStart(2, '0')}` : ''}
+                {canResend && 'Maintenant'}
               </button>
             </div>
 

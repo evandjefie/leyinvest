@@ -64,7 +64,7 @@ const ResetPassword = () => {
           {/* Logo & Title */}
           <div className="text-center space-y-4">
             <div className="flex justify-center">
-              <img src={logoLeycom} alt="LeyInvest" className="h-16" />
+              <img src={logoLeycom} alt="LeyInvest" className="h-12" />
             </div>
             <div>
               {/* <p className="text-muted-foreground mt-2">Votre partenaire d'investissement BRVM</p> */}

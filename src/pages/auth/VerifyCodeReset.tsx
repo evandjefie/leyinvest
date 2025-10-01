@@ -71,7 +71,7 @@ const VerifyCodeReset = () => {
           {/* Logo & Title */}
           <div className="text-center space-y-4">
             <div className="flex justify-center">
-              <img src={logoLeycom} alt="LeyInvest" className="h-16" />
+              <img src={logoLeycom} alt="LeyInvest" className="h-12" />
             </div>
             <div>
               {/* <p className="text-muted-foreground mt-2">Votre partenaire d'investissement BRVM</p> */}
@@ -99,13 +99,14 @@ const VerifyCodeReset = () => {
                   maxLength={1}
                   value={digit}
                   onChange={(e) => handleCodeChange(index, e.target.value)}
-                  className="w-16 h-16 text-center text-2xl font-bold border-2 border-border rounded-xl focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition-all duration-300"
+                  className="w-16 h-16 text-center text-2xl font-bold border-2 border-border rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
                 />
               ))}
             </div>
 
             {/* Resend Timer */}
-            <div className="text-center">
+            <div className="text-center text-sm text-muted-foreground cursor-not-allowed">
+              Renvoyer un code dans {''}
               <button
                 onClick={handleResend}
                 disabled={!canResend}
@@ -115,8 +116,8 @@ const VerifyCodeReset = () => {
                     : 'text-muted-foreground cursor-not-allowed'
                 } transition-colors`}
               >
-                Renvoyer un code dans {timer > 0 ? `00:${timer.toString().padStart(2, '0')}` : ''}
-                {canResend && 'Renvoyer le code'}
+                {timer > 0 ? `00:${timer.toString().padStart(2, '0')}` : ''}
+                {canResend && 'Maintenant'}
               </button>
             </div>
 
