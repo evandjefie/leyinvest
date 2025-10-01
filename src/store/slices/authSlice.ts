@@ -99,16 +99,62 @@ export const loginUser = createAsyncThunk(
         is_verified: response.is_verified,
       };
       
-      // S'assurer que les données sont correctement structurées pour IndexedDB
       if (response && response.access_token) {
         await cacheManager.cacheAuthData({ access_token: response.access_token, user: userData });
-      } else {
-        console.error("Données de connexion incomplètes", response);
       }
       
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erreur de connexion');
+    }
+  }
+);
+
+export const restoreSession = createAsyncThunk(
+  'auth/restoreSession',
+  async (_, { rejectWithValue, dispatch }) => {
+    try {
+      const cachedAuth = await cacheManager.getCachedAuthData();
+      const token = localStorage.getItem('access_token');
+      
+      if (!token && !cachedAuth?.access_token) {
+        return rejectWithValue('Aucune session trouvée');
+      }
+
+      if (cachedAuth?.access_token && !token) {
+        localStorage.setItem('access_token', cachedAuth.access_token);
+      }
+
+      const { userApi } = await import('@/services/userApi');
+      const userProfile = await userApi.getCurrentUser();
+      
+      await cacheManager.cacheAuthData({ 
+        access_token: token || cachedAuth.access_token, 
+        user: userProfile 
+      });
+      
+      return userProfile;
+    } catch (error: any) {
+      localStorage.removeItem('access_token');
+      await cacheManager.clearCache();
+      return rejectWithValue(error.message || 'Session expirée');
+    }
+  }
+);
+
+export const updateUserProfile = createAsyncThunk(
+  'auth/updateProfile',
+  async (data: Partial<User>, { rejectWithValue }) => {
+    try {
+      const { userApi } = await import('@/services/userApi');
+      await userApi.updateProfile(data);
+      const updatedUser = await userApi.getCurrentUser();
+      
+      await cacheManager.cacheUserData(updatedUser.id.toString(), updatedUser);
+      
+      return updatedUser;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Erreur de mise à jour');
     }
   }
 );
@@ -253,6 +299,36 @@ const authSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = false;
         state.user = null;
+        state.error = action.payload as string;
+      })
+      
+    // Restore Session
+      .addCase(restoreSession.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(restoreSession.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.user = action.payload;
+      })
+      .addCase(restoreSession.rejected, (state) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.user = null;
+      })
+      
+    // Update Profile
+      .addCase(updateUserProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        state.error = null;
+      })
+      .addCase(updateUserProfile.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload as string;
       })
       
