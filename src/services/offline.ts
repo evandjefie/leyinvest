@@ -44,14 +44,24 @@ class OfflineStorage {
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([store], 'readwrite');
       const objectStore = transaction.objectStore(store);
+      
+      // S'assurer que la clé est toujours définie et valide
+      if (!key || key === undefined) {
+        reject(new Error("La clé ne peut pas être undefined ou null"));
+        return;
+      }
+      
       const request = objectStore.put({ 
         key, 
-        data, 
+        data: data || {}, // S'assurer que data n'est jamais null
         timestamp: Date.now() 
       });
       
       request.onsuccess = () => resolve();
-      request.onerror = () => reject(request.error);
+      request.onerror = (event) => {
+        console.error("Erreur IndexedDB:", request.error);
+        reject(request.error);
+      };
     });
   }
 
@@ -115,7 +125,16 @@ export const cacheManager = {
   },
 
   async cacheAuthData(authData: any): Promise<void> {
-    await offlineStorage.set(STORES.AUTH, 'current', authData);
+    try {
+      // Vérifier que authData contient les données nécessaires
+      if (!authData || !authData.access_token) {
+        console.error("Données d'authentification invalides", authData);
+        return;
+      }
+      await offlineStorage.set(STORES.AUTH, 'current', authData);
+    } catch (error) {
+      console.error("Erreur lors du stockage des données d'authentification:", error);
+    }
   },
 
   async getCachedAuthData(): Promise<any> {

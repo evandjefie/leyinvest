@@ -267,7 +267,7 @@ const Dashboard = () => {
               <ExternalLink className="w-3 h-3 md:w-4 md:h-4" />
             </button>
           </div>
-          <LeyCard className="space-y-4" variant='default'>
+          <LeyCard className="space-y-4 bg-[#f0f5f4]" variant='stats'>
             <div className="space-y-1">
               {publications.map((pub, index) => (
                 <div

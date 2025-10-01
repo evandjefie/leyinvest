@@ -99,7 +99,12 @@ export const loginUser = createAsyncThunk(
         is_verified: response.is_verified,
       };
       
-      await cacheManager.cacheAuthData({ access_token: response.access_token, user: userData });
+      // S'assurer que les données sont correctement structurées pour IndexedDB
+      if (response && response.access_token) {
+        await cacheManager.cacheAuthData({ access_token: response.access_token, user: userData });
+      } else {
+        console.error("Données de connexion incomplètes", response);
+      }
       
       return response;
     } catch (error: any) {
