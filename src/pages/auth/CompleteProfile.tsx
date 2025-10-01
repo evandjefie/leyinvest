@@ -80,10 +80,12 @@ const CompleteProfile = () => {
 
     setLoading(true);
 
+    const fullPhoneNumber = `${formData.countryCode}${formData.phone}`;
+    
     const profileData = {
       age: parseInt(formData.age, 10),
       genre: formData.gender === 'male' ? 'Homme' : 'Femme',
-      numero_whatsapp: formData.phone,
+      numero_whatsapp: fullPhoneNumber,
       pays_residence: formData.country,
       situation_professionnelle: formData.profession,
     };
@@ -153,7 +155,7 @@ const CompleteProfile = () => {
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Numéro whatsapp
                 </label>
-                <div className="flex gap-2">
+                <div className="grid grid-cols-[120px_1fr] gap-2">
                   <LeySelect
                     value={formData.countryCode}
                     onChange={(e) => handleInputChange('countryCode', e.target.value)}
@@ -162,16 +164,14 @@ const CompleteProfile = () => {
                       { value: '+33', label: '+33' },
                       { value: '+1', label: '+1' },
                     ]}
-                    className="w-24"
                   />
                   <LeyInput
                     value={formData.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
                     placeholder="Numéro de téléphone"
-                    className="flex-1"
-                      name="phone"
-                      error={errors.phone}
-                      required
+                    name="phone"
+                    error={errors.phone}
+                    required
                   />
                 </div>
               </div>
@@ -259,18 +259,33 @@ const CompleteProfile = () => {
                 />
               </div>
 
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.acceptTerms}
-                  onChange={(e) => handleInputChange('acceptTerms', e.target.checked)}
-                  className="w-4 h-4 mt-1 text-primary border-border rounded focus:ring-primary focus:ring-opacity-20"
-                />
-                <span className="text-sm text-foreground">
-                  J'ai lu et j'accepte <Link to="/terms" className="text-primary underline">les conditions d'utilisation de LeyInvest</Link>
-                </span>
-              </label>
-              {errors.terms && <p className="text-sm text-destructive">{errors.terms}</p>}
+              <div>
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={formData.acceptTerms}
+                      onChange={(e) => handleInputChange('acceptTerms', e.target.checked)}
+                      className="peer h-5 w-5 shrink-0 appearance-none rounded border-2 border-border bg-background transition-all duration-300 checked:bg-primary checked:border-primary hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    />
+                    <svg 
+                      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity duration-200" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="3" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </div>
+                  <span className="text-sm text-foreground select-none">
+                    J'ai lu et j'accepte <Link to="/terms" className="text-primary underline">les conditions d'utilisation de LeyInvest</Link>
+                  </span>
+                </label>
+                {errors.terms && <p className="text-sm text-destructive ml-8">{errors.terms}</p>}
+              </div>
 
               <LeyButton
                 type="submit"

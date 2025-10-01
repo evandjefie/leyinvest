@@ -1,4 +1,4 @@
-import { SelectHTMLAttributes, forwardRef, ReactNode } from 'react';
+import { SelectHTMLAttributes, forwardRef } from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronDown } from 'lucide-react';
 
@@ -22,7 +22,9 @@ const LeySelect = forwardRef<HTMLSelectElement, LeySelectProps>(
           <select
             ref={ref}
             className={cn(
-              'input-field w-full appearance-none pr-10',
+              'w-full h-12 px-4 pr-10 rounded-xl border-2 border-border bg-background text-foreground transition-all duration-300',
+              'hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none',
+              'appearance-none cursor-pointer',
               error && 'border-destructive focus:border-destructive focus:ring-destructive focus:ring-opacity-20',
               className
             )}

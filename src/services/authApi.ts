@@ -1,4 +1,4 @@
-import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, VerifyEmailRequest, VerifyEmailResponse, ResendCodeRequest, ChangePasswordRequest } from '@/types/api';
+import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, VerifyEmailRequest, VerifyEmailResponse, ResendCodeRequest, ChangePasswordRequest, ResetPasswordRequest, ResetPasswordResponse, ConfirmResetPasswordRequest, ConfirmResetPasswordResponse } from '@/types/api';
 import { axiosInstance, executeWithErrorHandling } from './apiConfig';
 
 export const authApi = {
@@ -45,6 +45,18 @@ export const authApi = {
   async changePassword(data: ChangePasswordRequest): Promise<{ message: string }> {
     return executeWithErrorHandling(() => 
       axiosInstance.post<{ message: string }>('/auth/change-password/', data)
+    );
+  },
+
+  async resetPassword(data: ResetPasswordRequest): Promise<ResetPasswordResponse> {
+    return executeWithErrorHandling(() => 
+      axiosInstance.post<ResetPasswordResponse>('/auth/reset-password/', data)
+    );
+  },
+
+  async confirmResetPassword(token: string, data: ConfirmResetPasswordRequest): Promise<ConfirmResetPasswordResponse> {
+    return executeWithErrorHandling(() => 
+      axiosInstance.post<ConfirmResetPasswordResponse>(`/auth/change-password/${token}`, data)
     );
   },
 };

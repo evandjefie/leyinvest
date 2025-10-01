@@ -8,7 +8,7 @@ import LeyButton from '@/components/ui/LeyButton';
 import LeyInput from '@/components/ui/LeyInput';
 import ErrorModal from '@/components/ui/ErrorModal';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { loginUser, clearError } from '@/store/slices/authSlice';
+import { loginUser, clearError, setRememberMe } from '@/store/slices/authSlice';
 import { toast } from '@/hooks/use-toast';
 import { loginSchema, LoginFormValues } from '@/lib/validations/auth';
 import logoLeycom from '@/assets/logo_leycom.svg';
@@ -34,6 +34,12 @@ const Login = () => {
 
   const onSubmit = async (data: LoginFormValues) => {
     dispatch(clearError());
+    
+    if (rememberMe) {
+      localStorage.setItem('rememberMe', 'true');
+    } else {
+      localStorage.removeItem('rememberMe');
+    }
 
     try {
       const result = await dispatch(loginUser({ email: data.email, password: data.password }));
@@ -150,13 +156,26 @@ const Login = () => {
 
                 <div className="flex items-center justify-between">
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={rememberMe}
-                      onChange={(e) => setRememberMe(e.target.checked)}
-                      className="w-4 h-4 text-primary border-border rounded focus:ring-primary focus:ring-opacity-20"
-                    />
-                    <span className="text-sm text-foreground">Se souvenir de moi</span>
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        className="peer h-5 w-5 shrink-0 appearance-none rounded border-2 border-border bg-background transition-all duration-300 checked:bg-primary checked:border-primary hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      />
+                      <svg 
+                        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity duration-200" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="3" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
+                    <span className="text-sm text-foreground select-none">Se souvenir de moi</span>
                   </label>
                   <Link 
                     to="/auth/forgot-password" 

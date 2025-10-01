@@ -4,25 +4,44 @@ import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import LeyButton from '@/components/ui/LeyButton';
 import LeyInput from '@/components/ui/LeyInput';
-import toast from 'react-hot-toast';
+import { toast } from '@/hooks/use-toast';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { resetPassword, setRegistrationEmail } from '@/store/slices/authSlice';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
+  const dispatch = useAppDispatch();
+  const { loading } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-      toast.success('Instructions envoyées par email');
-      navigate('/auth/verify-code-reset');
-    }, 1500);
+    try {
+      const result = await dispatch(resetPassword({ email }));
+      if (resetPassword.fulfilled.match(result)) {
+        dispatch(setRegistrationEmail(email));
+        toast({
+          title: "Email envoyé !",
+          description: "Un code de vérification a été envoyé à votre adresse email.",
+        });
+        navigate('/auth/verify-code-reset');
+      } else {
+        toast({
+          title: "Erreur",
+          description: result.payload as string,
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de l'envoi du code",
+        variant: "destructive"
+      });
+    }
   };
 
   return (

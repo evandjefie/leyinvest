@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { authApi } from '@/services/authApi';
 import { cacheManager } from '@/services/offline';
-import { RegisterRequest, LoginRequest, VerifyEmailRequest, ChangePasswordRequest, ResendCodeRequest } from '@/types/api';
+import { RegisterRequest, LoginRequest, VerifyEmailRequest, ChangePasswordRequest, ResendCodeRequest, ResetPasswordRequest, ConfirmResetPasswordRequest } from '@/types/api';
 
 interface User {
   id: number;
@@ -24,6 +24,8 @@ interface AuthState {
   loading: boolean;
   error: string | null;
   registrationEmail: string | null;
+  resetToken: string | null;
+  rememberMe: boolean;
 }
 
 const initialState: AuthState = {
@@ -32,6 +34,8 @@ const initialState: AuthState = {
   loading: false,
   error: null,
   registrationEmail: null,
+  resetToken: null,
+  rememberMe: false,
 };
 
 // Async thunks
@@ -128,6 +132,28 @@ export const changePassword = createAsyncThunk(
   }
 );
 
+export const resetPassword = createAsyncThunk(
+  'auth/resetPassword',
+  async (data: ResetPasswordRequest, { rejectWithValue }) => {
+    try {
+      return await authApi.resetPassword(data);
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Erreur lors de la réinitialisation du mot de passe');
+    }
+  }
+);
+
+export const confirmResetPassword = createAsyncThunk(
+  'auth/confirmResetPassword',
+  async ({ token, data }: { token: string; data: ConfirmResetPasswordRequest }, { rejectWithValue }) => {
+    try {
+      return await authApi.confirmResetPassword(token, data);
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Erreur lors de la confirmation du mot de passe');
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -137,6 +163,9 @@ const authSlice = createSlice({
     },
     setRegistrationEmail: (state, action: PayloadAction<string>) => {
       state.registrationEmail = action.payload;
+    },
+    setRememberMe: (state, action: PayloadAction<boolean>) => {
+      state.rememberMe = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -242,9 +271,39 @@ const authSlice = createSlice({
       .addCase(changePassword.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      
+    // Reset Password
+      .addCase(resetPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.resetToken = action.payload.token;
+        state.error = null;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      
+    // Confirm Reset Password
+      .addCase(confirmResetPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(confirmResetPassword.fulfilled, (state) => {
+        state.loading = false;
+        state.resetToken = null;
+        state.error = null;
+      })
+      .addCase(confirmResetPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { clearError, setRegistrationEmail } = authSlice.actions;
+export const { clearError, setRegistrationEmail, setRememberMe } = authSlice.actions;
 export default authSlice.reducer;

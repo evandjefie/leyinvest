@@ -2,14 +2,18 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import LeyButton from '@/components/ui/LeyButton';
-import toast from 'react-hot-toast';
+import { toast } from '@/hooks/use-toast';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { resendCode } from '@/store/slices/authSlice';
 
 const VerifyCodeReset = () => {
   const [code, setCode] = useState(['', '', '', '']);
-  const [timer, setTimer] = useState(59);
+  const [timer, setTimer] = useState(300);
   const [canResend, setCanResend] = useState(false);
+  const dispatch = useAppDispatch();
+  const { loading, registrationEmail } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,18 +47,54 @@ const VerifyCodeReset = () => {
   const handleSubmit = () => {
     const fullCode = code.join('');
     if (fullCode.length === 4) {
-      toast.success('Vérification réussie !');
+      toast({
+        title: "Vérification réussie !",
+        description: "Code vérifié avec succès.",
+      });
       navigate('/auth/reset-password');
     } else {
-      toast.error('Veuillez saisir le code complet');
+      toast({
+        title: "Code incomplet",
+        description: "Veuillez saisir le code complet",
+        variant: "destructive"
+      });
     }
   };
 
-  const handleResend = () => {
-    if (canResend) {
-      setTimer(59);
-      setCanResend(false);
-      toast.success('Code renvoyé !');
+  const handleResend = async () => {
+    if (!canResend) return;
+    const email = registrationEmail;
+    if (!email) {
+      toast({
+        title: "Erreur",
+        description: "Email non trouvé",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      const result = await dispatch(resendCode({ email }));
+      if (resendCode.fulfilled.match(result)) {
+        setTimer(300);
+        setCanResend(false);
+        toast({
+          title: "Code renvoyé !",
+          description: "Un nouveau code a été envoyé à votre email.",
+        });
+      } else {
+        toast({
+          title: "Erreur",
+          description: result.payload as string,
+          variant: "destructive"
+        });
+      }
+    } catch (e) {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors du renvoi du code",
+        variant: "destructive"
+      });
     }
   };
 
@@ -85,7 +125,9 @@ const VerifyCodeReset = () => {
               </h2>
               <p className="text-muted-foreground">
                 Veuillez entrer le code envoyé au{' '}
-                <span className="text-primary font-medium">utilisateur@gmail.com</span>
+                <span className="text-primary font-medium">
+                  {registrationEmail || 'votre adresse email'}
+                </span>
               </p>
             </div>
 
@@ -104,19 +146,18 @@ const VerifyCodeReset = () => {
               ))}
             </div>
 
-            {/* Resend Timer */}
-            <div className="text-center text-sm text-muted-foreground cursor-not-allowed">
-              Renvoyer un code dans {''}
+            <div className="text-center text-sm text-muted-foreground">
+              Renvoyer un code dans{' '}
               <button
                 onClick={handleResend}
                 disabled={!canResend}
-                className={`text-sm ${
+                className={`text-sm ml-1 ${
                   canResend 
                     ? 'text-primary hover:text-primary-dark cursor-pointer' 
                     : 'text-muted-foreground cursor-not-allowed'
                 } transition-colors`}
               >
-                {timer > 0 ? `00:${timer.toString().padStart(2, '0')}` : ''}
+                {timer > 0 ? `${Math.floor(timer / 60)}:${(timer % 60).toString().padStart(2, '0')}` : ''}
                 {canResend && 'Maintenant'}
               </button>
             </div>
@@ -124,6 +165,7 @@ const VerifyCodeReset = () => {
             <LeyButton
               onClick={handleSubmit}
               className="w-full"
+              loading={loading}
               disabled={code.join('').length !== 4}
             >
               Suivant

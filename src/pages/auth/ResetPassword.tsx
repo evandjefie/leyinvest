@@ -11,12 +11,15 @@ import { resetPasswordSchema, ResetPasswordFormValues } from '@/lib/validations/
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
 import SuccessModal from '@/components/ui/SuccessModal';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { confirmResetPassword } from '@/store/slices/authSlice';
 
 const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const dispatch = useAppDispatch();
+  const { loading, resetToken } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
   
   const { register, handleSubmit, formState: { errors } } = useForm<ResetPasswordFormValues>({
@@ -33,13 +36,41 @@ const ResetPassword = () => {
   };
 
   const onSubmit = async (data: ResetPasswordFormValues) => {
-    setLoading(true);
+    if (!resetToken) {
+      toast({
+        title: "Erreur",
+        description: "Token de réinitialisation non trouvé",
+        variant: "destructive"
+      });
+      navigate('/auth/forgot-password');
+      return;
+    }
 
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-      setShowSuccessModal(true);
-    }, 1500);
+    try {
+      const result = await dispatch(confirmResetPassword({ 
+        token: resetToken, 
+        data: { 
+          password: data.password, 
+          confirm_password: data.confirmPassword 
+        } 
+      }));
+      
+      if (confirmResetPassword.fulfilled.match(result)) {
+        setShowSuccessModal(true);
+      } else {
+        toast({
+          title: "Erreur",
+          description: result.payload as string,
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la réinitialisation du mot de passe",
+        variant: "destructive"
+      });
+    }
   };
 
   return (

@@ -10,11 +10,11 @@ import { resendCode, verifyEmail } from '@/store/slices/authSlice';
 
 const VerifyEmail = () => {
   const [code, setCode] = useState(['', '', '', '']);
-  const [timer, setTimer] = useState(59);
+  const [timer, setTimer] = useState(300);
   const [canResend, setCanResend] = useState(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((s) => s.auth);
+  const { loading, registrationEmail, user } = useAppSelector((s) => s.auth);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -84,11 +84,11 @@ const VerifyEmail = () => {
 
   const handleResend = async () => {
     if (!canResend) return;
-    const email = (window as any).__registrationEmail__ || null;
+    const email = (window as any).__registrationEmail__ || registrationEmail || null;
     try {
       const result = await dispatch(resendCode({ email }));
       if (resendCode.fulfilled.match(result)) {
-        setTimer(59);
+        setTimer(300);
         setCanResend(false);
         toast({
           title: "Code renvoyé !",
@@ -137,7 +137,9 @@ const VerifyEmail = () => {
               </h2>
               <p className="text-muted-foreground">
                 Veuillez entrer le code envoyé au{' '}
-                <span className="text-primary font-medium">utilisateur@gmail.com</span>
+                <span className="text-primary font-medium">
+                  {registrationEmail || user?.email || 'votre adresse email'}
+                </span>
               </p>
             </div>
 
@@ -156,19 +158,18 @@ const VerifyEmail = () => {
               ))}
             </div>
 
-            {/* Resend Timer */}
-            <div className="text-center text-sm text-muted-foreground cursor-not-allowed">
-              Renvoyer un code dans
+            <div className="text-center text-sm text-muted-foreground">
+              Renvoyer un code dans{' '}
               <button
                 onClick={handleResend}
                 disabled={!canResend}
-                className={`text-sm ${
+                className={`text-sm ml-1 ${
                   canResend 
                     ? 'text-primary hover:text-primary-dark cursor-pointer' 
                     : 'text-muted-foreground cursor-not-allowed'
                 } transition-colors`}
               >
-                {timer > 0 ? `00:${timer.toString().padStart(2, '0')}` : ''}
+                {timer > 0 ? `${Math.floor(timer / 60)}:${(timer % 60).toString().padStart(2, '0')}` : ''}
                 {canResend && 'Maintenant'}
               </button>
             </div>

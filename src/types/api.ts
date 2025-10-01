@@ -56,6 +56,24 @@ export interface ChangePasswordRequest {
   new_password: string;
 }
 
+export interface ResetPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordResponse {
+  message: string;
+  token: string;
+}
+
+export interface ConfirmResetPasswordRequest {
+  password: string;
+  confirm_password: string;
+}
+
+export interface ConfirmResetPasswordResponse {
+  message: string;
+}
+
 export interface UserProfile {
   nom: string;
   prenom: string;

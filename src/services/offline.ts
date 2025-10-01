@@ -23,11 +23,11 @@ class OfflineStorage {
         const db = (event.target as IDBOpenDBRequest).result;
         
         if (!db.objectStoreNames.contains(STORES.AUTH)) {
-          db.createObjectStore(STORES.AUTH, { keyPath: 'id' });
+          db.createObjectStore(STORES.AUTH, { keyPath: 'key' });
         }
         
         if (!db.objectStoreNames.contains(STORES.USER)) {
-          db.createObjectStore(STORES.USER, { keyPath: 'id' });
+          db.createObjectStore(STORES.USER, { keyPath: 'key' });
         }
         
         if (!db.objectStoreNames.contains(STORES.CACHE)) {

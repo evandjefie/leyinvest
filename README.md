@@ -48,25 +48,39 @@ LeyInvest est une plateforme moderne d'investissement sur la Bourse Régionale d
 - `GET /users/me/` - Profil utilisateur
 - `DELETE /users/me/` - Supprimer compte
 
+## ⚙️ Installation et utilisation locale
+
+### Prérequis
+- Node.js (v18 ou supérieur)
+- npm ou yarn
+
 ### Installation
 
 ```bash
-# Cloner le repository
-git clone <repository-url>
+git clone <url-du-repo>
 cd leyinvest
-
-# Installer les dépendances
 npm install
-
-# Configurer les variables d'environnement
-# Créer un fichier .env à la racine du projet
-echo "VITE_API_BASE_URL=https://backend.com" > .env
-
-# Lancer le serveur de développement
 npm run dev
-
-# L'application sera accessible sur http://localhost:5173
 ```
+
+L'application sera accessible sur `http://localhost:5173`
+
+## ✅ Fonctionnalités implémentées
+
+- Timer de vérification email : 5 minutes
+- Endpoints de réinitialisation de mot de passe intégrés
+- Formulaires avec inputs et dropdowns améliorés
+- Checkboxes fonctionnelles (Se souvenir de moi, Accepter les CGU)
+- Numéro WhatsApp avec indicatif pays
+- Email utilisateur affiché partout
+- Données persistées avec IndexedDB + Redux
+
+## 🚧 Prochaines étapes
+
+- Connexion Google OAuth
+- Données temps réel BRVM
+- Notifications push
+- Mode hors ligne complet
 
 ### Build pour la production
 ```bash
