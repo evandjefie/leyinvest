@@ -42,11 +42,11 @@ const Dashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl md:text-3xl text-[#0B3C3D] font-semibold">Vue d'ensemble de vos investissements</h1>
-          {user && (
+          {/* {user && (
             <p className="text-sm md:text-base text-muted-foreground mt-1">
               Utilisateur: {user.prenom} {user.nom}
             </p>
-          )}
+          )} */}
         </div>
       </div>
 

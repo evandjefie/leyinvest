@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Home, ArrowLeft } from "lucide-react";
 import LeyButton from "@/components/ui/LeyButton";
+import logoLeycom from '@/assets/logo_leycom.svg';
 
 const NotFound = () => {
   const location = useLocation();
@@ -20,9 +21,9 @@ const NotFound = () => {
         className="text-center space-y-8 max-w-md mx-auto"
       >
         {/* Logo */}
-        <div className="flex justify-center">
-          <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-            <div className="w-10 h-10 bg-white rounded-lg opacity-90"></div>
+        <div className="text-center space-y-4">
+          <div className="flex justify-center">
+            <img src={logoLeycom} alt="LeyInvest" className="h-12" />
           </div>
         </div>
 

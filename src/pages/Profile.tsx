@@ -1,17 +1,24 @@
 import { useState } from 'react';
-import { useAppSelector } from '@/store/hooks';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ChevronRight, LogOut, Trash2 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import { logoutUser } from '@/store/slices/authSlice';
+import { userApi } from '@/services/userApi';
 import EditProfile from './profile/EditProfile';
 import ChangePassword from './profile/ChangePassword';
 import IdentityDocuments from './profile/IdentityDocuments';
+import LeyButton from '@/components/ui/LeyButton';
 
 type Section = 'main' | 'edit' | 'password' | 'documents';
 
 const Profile = () => {
   const { user } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [activeSection, setActiveSection] = useState<Section>('main');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   if (!user) {
     return (
@@ -23,6 +30,51 @@ const Profile = () => {
 
   const getInitials = () => {
     return `${user.prenom?.[0] || ''}${user.nom?.[0] || ''}`.toUpperCase();
+  };
+
+  const handleLogout = async () => {
+    setIsLoading(true);
+    try {
+      await dispatch(logoutUser());
+      toast({
+        title: "Déconnexion réussie",
+        description: "Vous avez été déconnecté avec succès."
+      });
+      navigate('/auth/login');
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la déconnexion.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.")) {
+      return;
+    }
+    
+    setIsDeletingAccount(true);
+    try {
+      await userApi.deleteMe();
+      await dispatch(logoutUser());
+      toast({
+        title: "Compte supprimé",
+        description: "Votre compte a été supprimé avec succès."
+      });
+      navigate('/auth/login');
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la suppression du compte.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDeletingAccount(false);
+    }
   };
 
   const renderSection = () => {
@@ -98,10 +150,46 @@ const Profile = () => {
                       <p className="text-base font-medium text-foreground">*******</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-foreground">Modifier</span>
-                      <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">Modifier</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
                     </div>
                   </button>
+
+                  <button
+                    onClick={() => setActiveSection('documents')}
+                    className="w-full flex items-center justify-between p-4 bg-background hover:bg-muted/50 rounded-xl transition-colors border border-border"
+                  >
+                    <div className="text-left">
+                      <p className="text-sm text-muted-foreground">Documents d'identité</p>
+                      <p className="text-base font-medium text-foreground">Gérer mes documents</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground">Voir</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                  </button>
+                </div>
+
+                <div className="mt-8 space-y-4">
+                  <LeyButton
+                    variant="outline"
+                    className="w-full flex items-center justify-center gap-2"
+                    onClick={handleLogout}
+                    loading={isLoading}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Déconnexion</span>
+                  </LeyButton>
+                  
+                  <LeyButton
+                    variant="destructive"
+                    className="w-full flex items-center justify-center gap-2"
+                    onClick={handleDeleteAccount}
+                    loading={isDeletingAccount}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span>Supprimer mon compte</span>
+                  </LeyButton>
                 </div>
               </div>
             </div>
@@ -111,7 +199,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-secondary/30 pb-24 md:pb-8">
+    <div className="min-h-screen bg-muted/30">
       {renderSection()}
     </div>
   );
