@@ -113,7 +113,7 @@ const ResetPassword = () => {
                   Nouveau mot de passe
                 </label>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Votre mot de passe doit comporter 6 caractères ou plus, incluant au moins une
+                  Votre mot de passe doit comporter 8 caractères ou plus, incluant au moins une
                   majuscule, une minuscule, un chiffre et un symbole spécial (@ # $ % & etc.)
                 </p>
                 <LeyInput

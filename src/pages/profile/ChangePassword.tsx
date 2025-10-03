@@ -80,7 +80,7 @@ const ChangePassword = ({ onBack }: ChangePasswordProps) => {
               required
             />
             <p className="text-xs text-muted-foreground">
-              Votre mot de passe doit comporter 6 caractères ou plus, incluant au moins une majuscule, une minuscule, 
+              Votre mot de passe doit comporter 8 caractères ou plus, incluant au moins une majuscule, une minuscule, 
               un chiffre et un symbole spécial (@, #, $, %, &, etc.)
             </p>
           </div>
