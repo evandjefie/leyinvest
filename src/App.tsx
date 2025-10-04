@@ -21,6 +21,7 @@ import CompleteProfilePage from "./pages/auth/CompleteProfilePage";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import VerifyCodeReset from "./pages/auth/VerifyCodeReset";
+import GoogleCallback from "./pages/auth/GoogleCallback";
 import NotFound from "./pages/NotFound";
 
 // Layout
@@ -50,6 +51,7 @@ const AppContent = () => {
             <Route path="/auth/verify-code-reset" element={<VerifyCodeReset />} />
             <Route path="/auth/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/reset-password" element={<ResetPassword />} />
+            <Route path="/auth/google/callback" element={<GoogleCallback />} />
             
             {/* Protected Routes */}
             <Route path="/" element={

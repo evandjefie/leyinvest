@@ -5,8 +5,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import LeyButton from '@/components/ui/LeyButton';
 import LeyInput from '@/components/ui/LeyInput';
+import GoogleAccountsModal from '@/components/ui/GoogleAccountsModal';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { registerUser, setRegistrationEmail } from '@/store/slices/authSlice';
+import { registerUser, setRegistrationEmail, googleLogin } from '@/store/slices/authSlice';
 import { RegisterRequest } from '@/types/api';
 import { toast } from '@/hooks/use-toast';
 import { registerSchema, RegisterFormValues } from '@/lib/validations/auth';
@@ -17,6 +18,7 @@ const Register = () => {
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
+  const [showGoogleAccountsModal, setShowGoogleAccountsModal] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -43,15 +45,34 @@ const Register = () => {
     }
   };
 
-  const handleGoogleSignup = () => {
-    toast({
-      title: "Bientôt disponible",
-      description: "L'inscription avec Google sera bientôt disponible.",
-    });
+  const handleGoogleSignup = async () => {
+    try {
+      // Afficher la modal de sélection de comptes Google
+      setShowGoogleAccountsModal(true);
+    } catch (err) {
+      console.error('Google signup error:', err);
+    }
+  };
+
+  const handleSelectGoogleAccount = async (email: string) => {
+    setShowGoogleAccountsModal(false);
+    try {
+      // Stocker dans le localStorage que c'est une inscription
+      localStorage.setItem('google_signup', 'true');
+      await dispatch(googleLogin());
+    } catch (err) {
+      console.error('Google signup error:', err);
+    }
   };
 
   return (
     <div className="min-h-screen flex">
+      <GoogleAccountsModal
+        isOpen={showGoogleAccountsModal}
+        onClose={() => setShowGoogleAccountsModal(false)}
+        onSelectAccount={handleSelectGoogleAccount}
+      />
+      
       <div className="flex-1 flex items-center justify-center p-8 bg-background">
         <motion.div 
           initial={{ opacity: 0, x: -20 }}

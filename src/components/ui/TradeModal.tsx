@@ -4,6 +4,8 @@ import { X } from 'lucide-react';
 import LeyInput from './LeyInput';
 import LeySelect from './LeySelect';
 import LeyButton from './LeyButton';
+import { toast } from '@/hooks/use-toast';
+import transactionApi from '@/services/transactionApi';
 
 interface TradeModalProps {
   isOpen: boolean;
@@ -20,6 +22,7 @@ const TradeModal = ({ isOpen, onClose, type = 'buy' }: TradeModalProps) => {
     comment: ''
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const buyActions = [
     { value: 'SONATEL', label: 'SONATEL' },
@@ -68,11 +71,39 @@ const TradeModal = ({ isOpen, onClose, type = 'buy' }: TradeModalProps) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log('Form submitted:', formData);
-      onClose();
+      try {
+        setIsSubmitting(true);
+        
+        // Préparer les données pour l'API
+        const transactionData = {
+          action_id: parseInt(formData.action),
+          type_transaction: type === 'buy' ? 'achat' : 'vente',
+          quantite: parseInt(formData.quantity),
+          prix_unitaire: parseFloat(formData.price),
+          commentaire: formData.comment
+        };
+        
+        // Appel à l'API
+        const response = await transactionApi.createTransaction(transactionData);
+        
+        toast({
+          title: "Transaction enregistrée",
+          description: `Votre ${type === 'buy' ? 'achat' : 'vente'} a été enregistré avec succès.`,
+        });
+        
+        onClose();
+      } catch (error: any) {
+        toast({
+          title: "Erreur",
+          description: error.message || `Une erreur est survenue lors de l'enregistrement de votre ${type === 'buy' ? 'achat' : 'vente'}.`,
+          variant: "destructive"
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -139,7 +170,6 @@ const TradeModal = ({ isOpen, onClose, type = 'buy' }: TradeModalProps) => {
               Prix par action (FCFA) <span className="text-destructive">*</span>
             </label>
             <LeyInput
-              // label="Prix par action (FCFA)"
               type="number"
               placeholder="0"
               value={formData.price}
@@ -190,6 +220,7 @@ const TradeModal = ({ isOpen, onClose, type = 'buy' }: TradeModalProps) => {
               type="submit"
               variant="primary"
               className="flex-1"
+              loading={isSubmitting}
             >
               Enregistrer
             </LeyButton>

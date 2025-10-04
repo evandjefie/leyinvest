@@ -7,8 +7,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import LeyButton from '@/components/ui/LeyButton';
 import LeyInput from '@/components/ui/LeyInput';
 import ErrorModal from '@/components/ui/ErrorModal';
+import GoogleAccountsModal from '@/components/ui/GoogleAccountsModal';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { loginUser, clearError, setRememberMe } from '@/store/slices/authSlice';
+import { loginUser, clearError, setRememberMe, googleLogin } from '@/store/slices/authSlice';
 import { toast } from '@/hooks/use-toast';
 import { loginSchema, LoginFormValues } from '@/lib/validations/auth';
 import logoLeycom from '@/assets/logo_leycom.svg';
@@ -19,6 +20,7 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showGoogleAccountsModal, setShowGoogleAccountsModal] = useState(false);
   
   const dispatch = useAppDispatch();
   const { loading, error } = useAppSelector((state) => state.auth);
@@ -61,11 +63,21 @@ const Login = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    toast({
-      title: "Bientôt disponible",
-      description: "La connexion avec Google sera bientôt disponible.",
-    });
+  const handleGoogleLogin = async () => {
+    try {
+      setShowGoogleAccountsModal(true);
+    } catch (err) {
+      console.error('Google login error:', err);
+    }
+  };
+  
+  const handleSelectGoogleAccount = async (email: string) => {
+    setShowGoogleAccountsModal(false);
+    try {
+      await dispatch(googleLogin());
+    } catch (err) {
+      console.error('Google login error:', err);
+    }
   };
 
   return (
@@ -76,6 +88,12 @@ const Login = () => {
         title="Compte introuvable"
         message={errorMessage}
         showSignupLink
+      />
+      
+      <GoogleAccountsModal
+        isOpen={showGoogleAccountsModal}
+        onClose={() => setShowGoogleAccountsModal(false)}
+        onSelectAccount={handleSelectGoogleAccount}
       />
       
       <div className="min-h-screen flex">

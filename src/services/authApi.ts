@@ -22,7 +22,7 @@ export const authApi = {
 
   async completeProfile(data: any): Promise<{ message: string }> {
     return executeWithErrorHandling(() => 
-      axiosInstance.patch<{ message: string }>('/user/me/', data)
+      axiosInstance.patch<{ message: string }>('/auth/complete-profile/', data)
     );
   },
 
@@ -50,7 +50,7 @@ export const authApi = {
 
   async resetPassword(data: ResetPasswordRequest): Promise<ResetPasswordResponse> {
     return executeWithErrorHandling(() => 
-      axiosInstance.post<ResetPasswordResponse>('/auth/reset-password/', data)
+      axiosInstance.post<ResetPasswordResponse>('/auth/change-password/', data)
     );
   },
 
@@ -58,5 +58,22 @@ export const authApi = {
     return executeWithErrorHandling(() => 
       axiosInstance.post<ConfirmResetPasswordResponse>(`/auth/change-password/${token}`, data)
     );
+  },
+
+  // Google SSO endpoints
+  async googleLogin(): Promise<{ redirect_url: string }> {
+    return executeWithErrorHandling(() => 
+      axiosInstance.get<{ redirect_url: string }>('/auth/google/login')
+    );
+  },
+
+  async googleCallback(code: string, state?: string): Promise<LoginResponse> {
+    return executeWithErrorHandling(async () => {
+      const response = await axiosInstance.get<LoginResponse>(`/auth/google/callback?code=${code}${state ? `&state=${state}` : ''}`);
+      if (response.data.access_token) {
+        localStorage.setItem('access_token', response.data.access_token);
+      }
+      return response;
+    });
   },
 };

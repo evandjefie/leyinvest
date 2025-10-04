@@ -50,93 +50,169 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Investment Overview */}
-      <div className="bg-background text-primary-foreground rounded-2xl p-3 md:p-6 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4 md:gap-6">
-        {/* Montant investi */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <LeyCard className="space-y-1 bg-[#F6F6F6]">
-            <p className="text-sm text-muted-foreground">Montant investi</p>
-            <p className="text-2xl font-semibold text-foreground">XOF {stats.totalInvested.toLocaleString()}</p>
-          </LeyCard>
-        </motion.div>
+      {/* Investment Overview - Mobile Layout Based on Image */}
+      <div className="bg-background text-primary-foreground rounded-2xl p-3 md:p-6">
+        {/* Mobile Layout */}
+        <div className="md:hidden">
+          {/* Valeur totale - Grande carte verte */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-4"
+          >
+            <LeyCard className="space-y-1 bg-gradient-to-tl from-[#30B59B] to-[#D1A55E] text-white">
+              <p className="text-sm text-green-100">Valeur totale</p>
+              <p className="text-4xl font-semibold text-white">XOF {stats.totalValue.toLocaleString()}</p>
+            </LeyCard>
+          </motion.div>
 
-        {/* Rendement */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <LeyCard className="space-y-1 bg-[#F6F6F6]">
-            <p className="text-sm text-muted-foreground">Rendement</p>
-            <p className="text-2xl font-semibold text-foreground">{stats.returnPercentage} %</p>
-          </LeyCard>
-        </motion.div>
+          {/* Gains / Pertes avec Rentabilité */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mb-4"
+          >
+            <div className="flex">
+              <div className="flex-1 mr-2">
+                <LeyCard className="space-y-1 bg-white border">
+                  <p className="text-sm font-medium text-gray-700">Gains / Pertes</p>
+                  <p className="text-xl font-semibold text-gray-800">XOF {stats.totalReturn.toLocaleString()}</p>
+                </LeyCard>
+              </div>
+              <div className="flex-1 ml-2">
+                <LeyCard className="space-y-1 bg-white border">
+                  <p className="text-sm font-medium text-gray-700">Rentabilité</p>
+                  <p className="text-xl font-semibold text-gray-800">{stats.returnPercentage} %</p>
+                </LeyCard>
+              </div>
+            </div>
+          </motion.div>
 
-        {/* Gains / Pertes */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <LeyCard className="space-y-1 bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200">
-            <p className="text-sm font-medium text-teal-700">Gains / Pertes</p>
-            <p className="text-2xl font-semibold text-teal-800">XOF {stats.totalReturn.toLocaleString()}</p>
-          </LeyCard>
-        </motion.div>
+          {/* Montant investi */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mb-4"
+          >
+            <LeyCard className="space-y-1 bg-white border">
+              <p className="text-sm text-gray-700">Montant investi</p>
+              <p className="text-xl font-semibold text-gray-800">XOF {stats.totalInvested.toLocaleString()}</p>
+            </LeyCard>
+          </motion.div>
 
-        {/* Valeur totale - Grande carte */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="lg:col-span-1 lg:row-span-2"
-        >
-          <LeyCard className="space-y-1 bg-gradient-to-tl from-[#30B59B] to-[#D1A55E] text-white h-full">
-            <p className="text-sm text-green-100">Valeur totale</p>
-            <p className="text-4xl font-semibold text-white">XOF {stats.totalValue.toLocaleString()}</p>
-          </LeyCard>
-        </motion.div>
-        
-        {/* Capital */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <LeyCard className="space-y-1 bg-[#F6F6F6]">
-            <p className="text-sm text-muted-foreground">Capital</p>
-            <p className="text-2xl font-semibold text-foreground">XOF {stats.totalInvested.toLocaleString()}</p>
-          </LeyCard>
-        </motion.div>
+          {/* Capital et Liquidité */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <div className="flex">
+              <div className="flex-1 mr-2">
+                <LeyCard className="space-y-1 bg-white border">
+                  <p className="text-sm text-gray-700">Capital</p>
+                  <p className="text-xl font-semibold text-gray-800">XOF {stats.totalInvested.toLocaleString()}</p>
+                </LeyCard>
+              </div>
+              <div className="flex-1 ml-2">
+                <LeyCard className="space-y-1 bg-white border">
+                  <p className="text-sm text-gray-700">Liquidité</p>
+                  <p className="text-xl font-semibold text-gray-800">XOF {stats.totalValue.toLocaleString()}</p>
+                </LeyCard>
+              </div>
+            </div>
+          </motion.div>
+        </div>
 
-        {/* Liquidité */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <LeyCard className="space-y-1 bg-[#F6F6F6]">
-            <p className="text-sm text-muted-foreground">Liquidité</p>
-            <p className="text-2xl font-semibold text-foreground">XOF {stats.totalValue.toLocaleString()}</p>
-          </LeyCard>
-        </motion.div>
+        {/* Desktop Layout */}
+        <div className="hidden md:grid lg:grid-cols-4 md:grid-cols-2 gap-4 md:gap-6">
+          {/* Montant investi */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <LeyCard className="space-y-1 bg-[#F6F6F6]">
+              <p className="text-sm text-muted-foreground">Montant investi</p>
+              <p className="text-2xl font-semibold text-foreground">XOF {stats.totalInvested.toLocaleString()}</p>
+            </LeyCard>
+          </motion.div>
 
-        {/* Rentabilité */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
-          <LeyCard className="space-y-1 bg-[#F6F6F6]">
-            <p className="text-sm text-muted-foreground">Rentabilité</p>
-            <p className="text-2xl font-semibold text-foreground">{stats.returnPercentage} %</p>
-          </LeyCard>
-        </motion.div>
+          {/* Rendement */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <LeyCard className="space-y-1 bg-[#F6F6F6]">
+              <p className="text-sm text-muted-foreground">Rendement</p>
+              <p className="text-2xl font-semibold text-foreground">{stats.returnPercentage} %</p>
+            </LeyCard>
+          </motion.div>
 
+          {/* Gains / Pertes */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <LeyCard className="space-y-1 bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200">
+              <p className="text-sm font-medium text-teal-700">Gains / Pertes</p>
+              <p className="text-2xl font-semibold text-teal-800">XOF {stats.totalReturn.toLocaleString()}</p>
+            </LeyCard>
+          </motion.div>
+
+          {/* Valeur totale - Grande carte */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="lg:col-span-1 lg:row-span-2"
+          >
+            <LeyCard className="space-y-1 bg-gradient-to-tl from-[#30B59B] to-[#D1A55E] text-white h-full">
+              <p className="text-sm text-green-100">Valeur totale</p>
+              <p className="text-4xl font-semibold text-white">XOF {stats.totalValue.toLocaleString()}</p>
+            </LeyCard>
+          </motion.div>
+          
+          {/* Capital */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <LeyCard className="space-y-1 bg-[#F6F6F6]">
+              <p className="text-sm text-muted-foreground">Capital</p>
+              <p className="text-2xl font-semibold text-foreground">XOF {stats.totalInvested.toLocaleString()}</p>
+            </LeyCard>
+          </motion.div>
+
+          {/* Liquidité */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <LeyCard className="space-y-1 bg-[#F6F6F6]">
+              <p className="text-sm text-muted-foreground">Liquidité</p>
+              <p className="text-2xl font-semibold text-foreground">XOF {stats.totalValue.toLocaleString()}</p>
+            </LeyCard>
+          </motion.div>
+
+          {/* Rentabilité */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <LeyCard className="space-y-1 bg-[#F6F6F6]">
+              <p className="text-sm text-muted-foreground">Rentabilité</p>
+              <p className="text-2xl font-semibold text-foreground">{stats.returnPercentage} %</p>
+            </LeyCard>
+          </motion.div>
+        </div>
       </div>
 
       {/* Top 5 and Flop 5 Tables */}

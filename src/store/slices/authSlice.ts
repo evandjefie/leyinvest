@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { authApi } from '@/services/authApi';
 import { cacheManager } from '@/services/offline';
-import { RegisterRequest, LoginRequest, VerifyEmailRequest, ChangePasswordRequest, ResendCodeRequest, ResetPasswordRequest, ConfirmResetPasswordRequest } from '@/types/api';
+import { RegisterRequest, LoginRequest, VerifyEmailRequest, ChangePasswordRequest, ResendCodeRequest, ResetPasswordRequest, ConfirmResetPasswordRequest, GoogleCallbackResponse } from '@/types/api';
 
 interface User {
   id: number;
@@ -205,6 +205,46 @@ export const confirmResetPassword = createAsyncThunk(
   }
 );
 
+// Google SSO async thunks
+export const googleLogin = createAsyncThunk(
+  'auth/googleLogin',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authApi.googleLogin();
+      // Rediriger vers l'URL Google
+      window.location.href = response.redirect_url;
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Erreur lors de la connexion Google');
+    }
+  }
+);
+
+export const googleCallback = createAsyncThunk(
+  'auth/googleCallback',
+  async ({ code, state }: { code: string; state?: string }, { rejectWithValue }) => {
+    try {
+      const response = await authApi.googleCallback(code, state);
+      
+      const userData = {
+        id: response.user_id,
+        email: response.email,
+        nom: response.nom,
+        prenom: response.prenom,
+        is_verified: response.is_verified,
+      };
+      
+      if (response && response.access_token) {
+        await cacheManager.cacheAuthData({ access_token: response.access_token, user: userData });
+      }
+      
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Erreur lors du callback Google');
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -381,6 +421,44 @@ const authSlice = createSlice({
       })
       .addCase(confirmResetPassword.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload as string;
+      })
+      
+    // Google Login
+      .addCase(googleLogin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(googleLogin.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(googleLogin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      
+    // Google Callback
+      .addCase(googleCallback.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(googleCallback.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.user = {
+          id: action.payload.user_id,
+          email: action.payload.email,
+          nom: action.payload.nom,
+          prenom: action.payload.prenom,
+          is_verified: action.payload.is_verified,
+        };
+        state.error = null;
+      })
+      .addCase(googleCallback.rejected, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = false;
+        state.user = null;
         state.error = action.payload as string;
       });
   },

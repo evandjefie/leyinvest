@@ -98,3 +98,13 @@ export interface ApiError {
     ctx?: any;
   }>;
 }
+
+// Google SSO types
+export interface GoogleLoginResponse {
+  redirect_url: string;
+}
+
+export interface GoogleCallbackResponse extends LoginResponse {
+  is_new_user?: boolean;
+  needs_profile_completion?: boolean;
+}

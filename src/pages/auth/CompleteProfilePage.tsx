@@ -1,15 +1,23 @@
-import { useState } from 'react';
+// src/pages/Auth/CompleteProfilePage.tsx
+
+import { useEffect } from 'react'; // Importer useEffect
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useForm } from 'react-hook-form';
+// Importer useForm, mais aussi Controller, watch et setValue
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
+
+// Nos composants et données
 import LeyButton from '@/components/ui/LeyButton';
 import LeyInput from '@/components/ui/LeyInput';
 import LeySelect from '@/components/ui/LeySelect';
+import { LeyCombobox } from '@/components/ui/LeyCombobox'; // Notre nouveau Combobox
+import { countries } from '@/lib/countries'; // Nos données de pays
+
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { completeProfile } from '@/store/slices/authSlice';
 import { toast } from '@/hooks/use-toast';
-
 import { completeProfileSchema, CompleteProfileFormValues } from '@/lib/validations/auth';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
@@ -19,21 +27,39 @@ const CompleteProfilePage = () => {
   const { loading, error, registrationEmail } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<CompleteProfileFormValues>({
+  const { register, handleSubmit, formState: { errors }, control, watch, setValue } = useForm<CompleteProfileFormValues>({
     resolver: zodResolver(completeProfileSchema),
     defaultValues: {
-      numero_whatsapp: '',
-      age: 18,
       genre: undefined,
+      age: 18,
       pays_residence: '',
+      phone_prefix: '',
+      numero_whatsapp: '',
       situation_professionnelle: '',
-      mot_de_passe: '',      
+      mot_de_passe: '',
+      accept_terms: false,
     }
   });
 
+  // 1. On "observe" le champ du pays de résidence
+  const selectedCountry = watch('pays_residence');
+
+  // 2. On met à jour l'indicatif téléphonique quand le pays change
+  useEffect(() => {
+    const countryData = countries.find(c => c.code === selectedCountry);
+    if (countryData) {
+      setValue('phone_prefix', countryData.dial_code, { shouldValidate: true });
+    } else {
+      setValue('phone_prefix', '', { shouldValidate: true });
+    }
+  }, [selectedCountry, setValue]);
+
 
   const onSubmit = async (data: CompleteProfileFormValues) => {
-    if (!registrationEmail) {
+    // Vérifier si l'utilisateur vient de Google SSO
+    const isGoogleUser = localStorage.getItem('google_signup') === 'true';
+    
+    if (!registrationEmail && !isGoogleUser) {
       toast({
         title: "Erreur",
         description: "Session expirée, veuillez vous réinscrire",
@@ -44,12 +70,27 @@ const CompleteProfilePage = () => {
     }
 
     try {
-      const result = await dispatch(completeProfile({
-        email: registrationEmail,
-        ...data
-      }));
+      // On combine l'indicatif et le numéro avant l'envoi
+      const fullPhoneNumber = `${data.phone_prefix}${data.numero_whatsapp}`;
+      
+      const profileData: any = {
+        ...data,
+        numero_whatsapp: fullPhoneNumber, // On envoie le numéro complet
+      };
+
+      // Si c'est un utilisateur Google, on n'a pas besoin de l'email
+      if (registrationEmail) {
+        profileData.email = registrationEmail;
+      }
+      
+      const result = await dispatch(completeProfile(profileData));
       
       if (completeProfile.fulfilled.match(result)) {
+        // Nettoyer le localStorage pour Google
+        if (isGoogleUser) {
+          localStorage.removeItem('google_signup');
+        }
+        
         toast({
           title: "Profil complété !",
           description: "Votre compte a été créé avec succès.",
@@ -62,46 +103,42 @@ const CompleteProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
-      <div className="flex-1 flex items-center justify-center p-8 bg-white">
+    // Pour éviter le scroll, on utilise h-screen et overflow-auto sur la partie formulaire
+    <div className="w-full h-screen flex">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-white overflow-auto">
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
-          className="w-full max-w-md space-y-8"
+          className="w-full max-w-lg space-y-6" // max-w-lg pour un peu plus d'espace
         >
-          <div className="text-center space-y-4">
-            <div className="flex justify-center">
-              <img src={logoLeycom} alt="LeyInvest" className="h-12" />
-            </div>
+          <div className="text-center">
+            <img src={logoLeycom} alt="LeyInvest" className="h-10 mx-auto" />
           </div>
 
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-center text-foreground">
-              Finalisez la création de votre compte
-            </h2>
-            <p className="text-center text-muted-foreground">
-              Veuillez compléter votre profil pour accéder à votre tableau de bord
-            </p>
+          <div className="space-y-4">
+            <div className="text-center">
+                <h2 className="text-2xl font-bold text-foreground">
+                Finalisez la création de votre compte
+                </h2>
+                <p className="text-muted-foreground mt-1">
+                Veuillez compléter votre profil pour continuer.
+                </p>
+            </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-foreground">
-                    Genre
-                  </label>
-                  
-                  <select
-                    {...register('genre')}
-                    className="input-field w-full"
-                  >
-                    <option value="">Sélectionner</option>
-                    <option value="Homme">Homme</option>
-                    <option value="Femme">Femme</option>
-                  </select>
-                  {errors.genre && <p className="text-sm text-destructive">{errors.genre.message}</p>}
-                </div>                
+              {/* Genre et Âge sur la même ligne */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <LeySelect
+                  label="Genre"
+                  options={[
+                    { value: 'Homme', label: 'Homme' },
+                    { value: 'Femme', label: 'Femme' },
+                  ]}
+                  placeholder="Sélectionner"
+                  {...register('genre')}
+                  error={errors.genre?.message}
+                />            
                 <LeyInput
                   label="Âge"
                   type="number"
@@ -111,80 +148,72 @@ const CompleteProfilePage = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground">
-                  Pays de résidence
-                </label>
-                <select
-                  {...register('pays_residence')}
-                  className="input-field w-full"
-                >
-                  <option value="">Sélectionner votre pays</option>
-                  <option value="Bénin">Bénin</option>
-                  <option value="Burkina Faso">Burkina Faso</option>
-                  <option value="Côte d'Ivoire">Côte d'Ivoire</option>
-                  <option value="Guinée-Bissau">Guinée-Bissau</option>
-                  <option value="Mali">Mali</option>
-                  <option value="Niger">Niger</option>
-                  <option value="Sénégal">Sénégal</option>
-                  <option value="Togo">Togo</option>
-                </select>
-                {errors.pays_residence && <p className="text-sm text-destructive">{errors.pays_residence.message}</p>}
+              {/* Pays de résidence avec le Combobox */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">Pays de résidence</label>
+                <Controller
+                    control={control}
+                    name="pays_residence"
+                    render={({ field }) => (
+                        <LeyCombobox
+                            options={countries.map(country => ({
+                                value: country.code,
+                                label: country.name
+                            }))}
+                            value={field.value}
+                            onChange={field.onChange}
+                            placeholder="Sélectionner votre pays"
+                            searchPlaceholder='Rechercher un pays...'
+                        />
+                    )}
+                />
+                {errors.pays_residence && <p className="text-sm text-destructive mt-1">{errors.pays_residence.message}</p>}
               </div>
-
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground">
-                    Numéro whatsapp
-                </label>
-                <div className="flex gap-2">
-                  <LeySelect
-                    value={null}
-                    onChange={(e) => null}
-                    options={[
-                      { value: '+245', label: '+245' },
-                      { value: '+229', label: '+229' },
-                      { value: '+228', label: '+228' },
-                      { value: '+226', label: '+226' },
-                      { value: '+225', label: '+225' },
-                      { value: '+224', label: '+224' },
-                      { value: '+223', label: '+223' },
-                      { value: '+221', label: '+221' },
-                    ]}
-                    className=""
-                  />
+              
+              {/* Numéro WhatsApp */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">Numéro WhatsApp</label>
+                <div className="flex items-start gap-2">
+                   {/* L'indicatif est maintenant un input désactivé qui se met à jour automatiquement */}
                   <LeyInput
-                    value={null}
-                    onChange={(e) => null}
-                    // type='number'
-                    minLength={8}
-                    maxLength={10}
-                    {...register('numero_whatsapp')}
-                    // placeholder="Numéro de téléphone"
-                    className="w-full"
-                    name="phone"
-                    error={null}
-                    required
+                    {...register('phone_prefix')}
+                    readOnly
+                    className="w-24 bg-gray-100 text-center"
+                    placeholder="+XXX"
                   />
+                  <div className="w-full">
+                    <LeyInput
+                      {...register('numero_whatsapp', {
+                        onChange: (e) => {
+                          // Nettoyage du numéro (suppression des caractères non numériques)
+                          const value = e.target.value.replace(/[^\d]/g, '');
+                          e.target.value = value;
+                          return value;
+                        }
+                      })}
+                      placeholder="Votre numéro (sans indicatif)"
+                      error={errors.numero_whatsapp?.message}
+                      type="tel" // Type sémantique pour les numéros
+                    />
+                  </div>
                 </div>
+                {errors.phone_prefix && <p className="text-sm text-destructive mt-1">{errors.phone_prefix.message}</p>}
               </div>
 
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground">
-                  Situation professionnelle
-                </label>
-                <select
+              <LeySelect
+                  label="Situation professionnelle"
+                  options={[
+                    { value: 'Employé', label: 'Employé' },
+                    { value: 'Travailleur indépendant', label: 'Travailleur indépendant' },
+                    { value: 'Entrepreneur', label: 'Entrepreneur' },
+                    { value: 'Étudiant', label: 'Étudiant' },
+                    { value: 'Retraité', label: 'Retraité' },
+                    { value: 'Autre', label: 'Autre' },
+                  ]}
+                   placeholder="Votre profession"
                   {...register('situation_professionnelle')}
-                  className="input-field w-full"
-                >
-                  <option value="">Votre profession</option>
-                  <option value="Employé">Employé</option>
-                  <option value="Travailleur indépendant">Travailleur indépendant</option>
-                  <option value="Entrepreneur">Entrepreneur</option>
-                  <option value="Étudiant">Étudiant</option>
-                  <option value="Retraité">Retraité</option>
-                </select>
-                {errors.situation_professionnelle && <p className="text-sm text-destructive">{errors.situation_professionnelle.message}</p>}
-              </div>
+                  error={errors.situation_professionnelle?.message}
+              />
 
               <LeyInput
                 label="Mot de passe"
@@ -194,38 +223,35 @@ const CompleteProfilePage = () => {
                 error={errors.mot_de_passe?.message}
               />
               
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={null}
-                  onChange={(e) => null}
-                  className="w-4 h-4 mt-1 text-primary border-border rounded focus:ring-primary focus:ring-opacity-20"
-                />
-                <span className="text-sm text-foreground">
-                  J'ai lu et j'accepte <Link to="/terms" className="text-primary underline">les conditions d'utilisation</Link> de LeyInvest
-                </span>
-              </label>
+              <div className="flex items-start">
+                  <input
+                    id="accept_terms"
+                    type="checkbox"
+                    {...register('accept_terms')}
+                    className="h-4 w-4 mt-0.5 rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                  <div className="ml-3 text-sm">
+                      <label htmlFor="accept_terms" className="text-foreground">
+                          J'ai lu et j'accepte les <Link to="/terms" className="font-medium text-primary hover:underline">conditions d'utilisation</Link>
+                      </label>
+                      {errors.accept_terms && <p className="text-sm text-destructive">{errors.accept_terms.message}</p>}
+                  </div>
+              </div>
 
-              <LeyButton
-                type="submit"
-                className="w-full"
-                loading={loading}
-              >
+              <LeyButton type="submit" className="w-full" loading={loading}>
                 S'inscrire
               </LeyButton>
               
-              {error && (
-                <div className="text-destructive text-sm text-center">
-                  {error}
-                </div>
-              )}
+              {error && <p className="text-destructive text-sm text-center">{error}</p>}
             </form>
-
           </div>
         </motion.div>
       </div>
 
-      <div className="hidden lg:block flex-1 relative overflow-hidden">
+      {/* Partie Droite avec l'image */}
+      <div 
+        className="hidden lg:block flex-1 relative overflow-hidden"
+      >
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${bgAuthLeycom})` }}

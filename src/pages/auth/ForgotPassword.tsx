@@ -27,7 +27,7 @@ const ForgotPassword = () => {
           title: "Email envoyé !",
           description: "Un code de vérification a été envoyé à votre adresse email.",
         });
-        navigate('/auth/verify-code-reset');
+        navigate('/auth/change-password');
       } else {
         toast({
           title: "Erreur",
