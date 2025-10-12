@@ -20,24 +20,22 @@ const GoogleAccountsModal = ({ isOpen, onClose, onSelectAccount }: GoogleAccount
 
   useEffect(() => {
     if (isOpen) {
-      // Dans un environnement réel, nous utiliserions l'API Google Identity Services
-      // pour récupérer les comptes Google disponibles sur l'appareil
-      // Exemple: https://developers.google.com/identity/gsi/web/guides/overview
-      
-      // Simulation de chargement des comptes Google de l'appareil
       setLoading(true);
       
-      // Dans une implémentation réelle, nous utiliserions:
-      // google.accounts.id.initialize({...})
-      // google.accounts.oauth2.initCodeClient({...})
-      
-      // Pour l'instant, nous simulons un délai de chargement
-      const timer = setTimeout(() => {
-        // Ici, nous récupérerions les comptes réels via l'API Google
-        setLoading(false);
-      }, 1000);
-      
-      return () => clearTimeout(timer);
+      // Récupérer l'URL de redirection Google depuis l'API
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/google/login`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.redirect_url) {
+            // Ouvrir la page Google dans une nouvelle fenêtre
+            window.location.href = data.redirect_url;
+          }
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error('Erreur lors de la récupération de l\'URL Google:', err);
+          setLoading(false);
+        });
     }
   }, [isOpen]);
 

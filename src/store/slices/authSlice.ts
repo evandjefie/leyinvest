@@ -86,10 +86,19 @@ export const completeProfile = createAsyncThunk(
 
 export const loginUser = createAsyncThunk(
   'auth/login',
-  async (credentials: LoginRequest, { rejectWithValue }) => {
+  async (credentials: LoginRequest & { rememberMe?: boolean }, { rejectWithValue }) => {
     try {
       const response = await authApi.login(credentials);
       localStorage.setItem('access_token', response.access_token);
+      
+      // Gérer le "Se souvenir de moi"
+      if (credentials.rememberMe) {
+        // Stocker le token avec une longue durée de vie
+        localStorage.setItem('rememberMe', 'true');
+        // Le token sera conservé indéfiniment jusqu'à déconnexion explicite
+      } else {
+        localStorage.removeItem('rememberMe');
+      }
       
       const userData = {
         id: response.user_id,

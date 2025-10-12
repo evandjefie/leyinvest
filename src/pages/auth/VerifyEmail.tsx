@@ -44,6 +44,14 @@ const VerifyEmail = () => {
     }
   };
 
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').trim();
+    if (/^\d{4}$/.test(pastedData)) {
+      setCode(pastedData.split(''));
+    }
+  };
+
   const handleSubmit = async () => {
     const fullCode = code.join('');
     if (fullCode.length !== 4) {
@@ -153,6 +161,7 @@ const VerifyEmail = () => {
                   maxLength={1}
                   value={digit}
                   onChange={(e) => handleCodeChange(index, e.target.value)}
+                  onPaste={handlePaste}
                   className="w-16 h-16 text-center text-2xl font-bold border-2 border-border rounded-xl focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20 transition-all duration-300"
                 />
               ))}

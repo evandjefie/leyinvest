@@ -19,9 +19,13 @@ const TradeModal = ({ isOpen, onClose, type = 'buy' }: TradeModalProps) => {
     action: '',
     quantity: '',
     price: '',
-    totalAmount: '',
     comment: ''
   });
+  
+  // Calculer automatiquement le montant
+  const calculatedAmount = formData.quantity && formData.price 
+    ? (parseFloat(formData.quantity) * parseFloat(formData.price)).toFixed(2)
+    : '0';
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [actions, setActions] = useState<Action[]>([]);
@@ -70,11 +74,6 @@ const TradeModal = ({ isOpen, onClose, type = 'buy' }: TradeModalProps) => {
     } else if (parseFloat(formData.price) <= 0) {
       newErrors.price = 'Le prix doit être strictement positif';
     }
-    if (!formData.totalAmount) {
-      newErrors.totalAmount = 'Veuillez renseigner le montant';
-    } else if (parseFloat(formData.totalAmount) <= 0) {
-      newErrors.totalAmount = 'Le montant doit être strictement positif';
-    }
 
     // Comment is required per new requirement
     if (!formData.comment || formData.comment.trim() === '') {
@@ -111,7 +110,6 @@ const TradeModal = ({ isOpen, onClose, type = 'buy' }: TradeModalProps) => {
           action: '',
           quantity: '',
           price: '',
-          totalAmount: '',
           comment: ''
         });
       } catch (error: any) {
@@ -201,16 +199,13 @@ const TradeModal = ({ isOpen, onClose, type = 'buy' }: TradeModalProps) => {
           
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-              {type === 'buy' ? "Montant de l'achat" : "Montant de la vente"} <span className="text-destructive">*</span>
+              {type === 'buy' ? "Montant de l'achat" : "Montant de la vente"}
             </label>
               <LeyInput
-                // label={type === 'buy' ? "Montant de l'achat" : "Montant de la vente"}
-                type="number"
-                placeholder="0"
-                value={formData.totalAmount}
-                onChange={(e) => handleInputChange('totalAmount')(e.target.value)}
-                error={errors.totalAmount}
-                required
+                type="text"
+                placeholder="Calculé automatiquement"
+                value={`${calculatedAmount} FCFA`}
+                disabled
               />
           </div>
 

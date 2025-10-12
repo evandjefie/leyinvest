@@ -36,15 +36,13 @@ const Login = () => {
 
   const onSubmit = async (data: LoginFormValues) => {
     dispatch(clearError());
-    
-    if (rememberMe) {
-      localStorage.setItem('rememberMe', 'true');
-    } else {
-      localStorage.removeItem('rememberMe');
-    }
 
     try {
-      const result = await dispatch(loginUser({ email: data.email, password: data.password }));
+      const result = await dispatch(loginUser({ 
+        email: data.email, 
+        password: data.password,
+        rememberMe 
+      }));
       if (loginUser.fulfilled.match(result)) {
         toast({
           title: "Connexion réussie !",

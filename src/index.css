@@ -138,22 +138,6 @@
     font-family: 'Poppins', sans-serif;
   }
 
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  ::-webkit-scrollbar-track {
-    @apply bg-secondary;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    @apply bg-primary rounded-full opacity-30;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-primary opacity-50;
-  }
 }
 
 @layer components {
