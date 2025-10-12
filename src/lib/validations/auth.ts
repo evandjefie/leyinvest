@@ -35,20 +35,8 @@ export const resetPasswordSchema = z.object({
 
 // Schéma de validation pour la finalisation du profil
 export const completeProfileSchema = z.object({
-
   phone_prefix: z.string().min(1, "L'indicatif est requis."),
-  numero_whatsapp: z.string()
-    .min(1, 'Le numéro est obligatoire')
-    .refine((val) => {
-      if (!val) return false;
-      try {
-        // Combine prefix and number for validation
-        const phoneWithPrefix = (data: any) => `${data.phone_prefix}${val}`;
-        return isValidPhoneNumber(phoneWithPrefix({ phone_prefix: '+' }), { defaultCountry: 'ZZ' });
-      } catch (error) {
-        return false;
-      }
-    }, 'Numéro de téléphone invalide'),
+  numero_whatsapp: z.string().min(1, 'Le numéro est obligatoire'),
   age: z.number().int('L\'âge doit être un nombre entier').min(16, 'Vous devez avoir au moins 16 ans').max(120, 'L\'âge ne peut pas dépasser 120 ans'),
   genre: z.enum(['Homme', 'Femme'], { required_error: 'Le genre est obligatoire' }),
   pays_residence: z.string().min(1, 'Le pays de résidence est obligatoire'),
@@ -57,7 +45,17 @@ export const completeProfileSchema = z.object({
   accept_terms: z.boolean().refine(val => val === true, {
     message: "Vous devez accepter les conditions d'utilisation."
   }),
-
+}).refine((data) => {
+  try {
+    const fullNumber = `${data.phone_prefix}${data.numero_whatsapp}`;
+    const phoneNumber = parsePhoneNumberFromString(fullNumber);
+    return phoneNumber && phoneNumber.isValid();
+  } catch {
+    return false;
+  }
+}, {
+  message: 'Le numéro de téléphone est invalide pour ce pays',
+  path: ['numero_whatsapp'],
 });
 
 // Types dérivés des schémas

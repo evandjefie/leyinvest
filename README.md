@@ -30,12 +30,54 @@ npm run build
 - **Réinitialisation** de mot de passe
 - **Session persistante** avec refresh automatique
 - **IndexedDB** pour le stockage offline
+- **Validation avancée** des numéros de téléphone par pays
 
 ### Flux d'Authentification
 
 1. **Inscription** → Vérification email → Complétion du profil
 2. **Connexion** → Restauration automatique de la session
 3. **Mot de passe oublié** → Reset par email → Nouveau mot de passe
+
+### Validation Numéro de Téléphone
+
+Le système valide automatiquement que le numéro correspond au format du pays sélectionné:
+
+```typescript
+// Combine l'indicatif + numéro et vérifie la validité
+const fullNumber = `${countryCode}${phoneNumber}`;
+const isValid = parsePhoneNumberFromString(fullNumber).isValid();
+```
+
+### Endpoints API
+
+```typescript
+// Inscription
+POST /auth/register/
+Body: { nom, prenom, email }
+
+// Vérification email
+POST /auth/verify-email/
+Body: { email, verification_code }
+
+// Complétion du profil
+PATCH /auth/complete-profile/?email={email}
+Body: { 
+  age, genre, numero_whatsapp, pays_residence, 
+  situation_professionnelle, mot_de_passe 
+}
+
+// Connexion
+POST /auth/login/
+Body: { email, password }
+
+// Réinitialisation mot de passe
+POST /auth/reset-password/
+Body: { email }
+
+// Changement mot de passe avec token
+POST /auth/change-password/{token}
+Body: { password, confirm_password }
+```
 
 ### Persistance de Session
 
@@ -73,6 +115,49 @@ Body: { nom, prenom, email, numero_whatsapp, pays_residence, genre, situation_pr
 // Changer le mot de passe
 POST /auth/change-password/
 Body: { old_password, new_password }
+
+// Upload documents d'identification
+POST /users/documents/
+FormData: { file }
+```
+
+## 💼 Trading et Transactions
+
+### Fonctionnalités
+
+- **Modal d'achat/vente** avec formulaire complet
+- **Chargement dynamique** des actions depuis l'API
+- **Validation** des quantités et montants
+- **Enregistrement** des transactions avec commentaires
+
+### Endpoints API
+
+```typescript
+// Obtenir la liste des actions
+GET /api/v1/actions/?secteur={secteur}&search={search}
+Response: {
+  actions: [
+    {
+      id: number,
+      nom: string,
+      symbole: string,
+      secteur: string,
+      prix_actuel: number,
+      variation: number
+    }
+  ],
+  total: number
+}
+
+// Enregistrer une transaction
+POST /api/v1/transactions/
+Body: {
+  action_id: number,
+  type_transaction: 'achat' | 'vente',
+  quantite: number,
+  prix_unitaire: number,
+  commentaire: string
+}
 ```
 
 ## 🔄 Redux Store
@@ -161,12 +246,21 @@ Tokens sémantiques HSL pour une cohérence visuelle:
 
 ### Architecture Technique
 
-- ✅ Services API centralisés (authApi, userApi)
+- ✅ Services API centralisés (authApi, userApi, actionsApi, transactionApi)
 - ✅ Gestion d'erreurs détaillée
 - ✅ **Cache hors ligne avec IndexedDB**
 - ✅ Redux Toolkit avec middleware de persistance
 - ✅ Validation Zod pour les formulaires
 - ✅ Toasts et modals pour les notifications
+- ✅ Validation avancée des numéros de téléphone par pays
+
+### Trading et Transactions
+
+- ✅ **Modal Achat/Vente** avec formulaire complet
+- ✅ **Chargement dynamique** des actions depuis l'API
+- ✅ **Validation** des quantités, prix et montants
+- ✅ **Enregistrement** des transactions avec commentaires obligatoires
+- ✅ **Gestion d'erreurs** avec messages détaillés
 
 ## 🚧 Prochaines Étapes
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import LeyInput from './LeyInput';
@@ -6,6 +6,7 @@ import LeySelect from './LeySelect';
 import LeyButton from './LeyButton';
 import { toast } from '@/hooks/use-toast';
 import transactionApi from '@/services/transactionApi';
+import actionsApi, { Action } from '@/services/actionsApi';
 
 interface TradeModalProps {
   isOpen: boolean;
@@ -23,22 +24,35 @@ const TradeModal = ({ isOpen, onClose, type = 'buy' }: TradeModalProps) => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [actions, setActions] = useState<Action[]>([]);
+  const [loadingActions, setLoadingActions] = useState(false);
 
-  const buyActions = [
-    { value: 'SONATEL', label: 'SONATEL' },
-    { value: 'ECOBANK', label: 'ECOBANK' },
-    { value: 'BOA', label: 'BOA' },
-    { value: 'ORANGE', label: 'ORANGE' },
-  ];
+  useEffect(() => {
+    if (isOpen) {
+      loadActions();
+    }
+  }, [isOpen]);
 
-  const sellActions = [
-    { value: 'SONATEL', label: 'SONATEL (10 actions disponibles)' },
-    { value: 'ECOBANK', label: 'ECOBANK (25 actions disponibles)' },
-    { value: 'BOA', label: 'BOA (15 actions disponibles)' },
-    { value: 'ORANGE', label: 'ORANGE (30 actions disponibles)' },
-  ];
+  const loadActions = async () => {
+    try {
+      setLoadingActions(true);
+      const response = await actionsApi.getActions();
+      setActions(response.actions || []);
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les actions disponibles",
+        variant: "destructive"
+      });
+    } finally {
+      setLoadingActions(false);
+    }
+  };
 
-  const actions = type === 'buy' ? buyActions : sellActions;
+  const actionOptions = actions.map(action => ({
+    value: action.id.toString(),
+    label: action.nom
+  }));
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -77,17 +91,15 @@ const TradeModal = ({ isOpen, onClose, type = 'buy' }: TradeModalProps) => {
       try {
         setIsSubmitting(true);
         
-        // Préparer les données pour l'API
         const transactionData = {
           action_id: parseInt(formData.action),
-          type_transaction: type === 'buy' ? 'achat' : 'vente',
+          type_transaction: (type === 'buy' ? 'achat' : 'vente') as 'achat' | 'vente',
           quantite: parseInt(formData.quantity),
           prix_unitaire: parseFloat(formData.price),
           commentaire: formData.comment
         };
         
-        // Appel à l'API
-        const response = await transactionApi.createTransaction(transactionData);
+        await transactionApi.createTransaction(transactionData);
         
         toast({
           title: "Transaction enregistrée",
@@ -95,6 +107,13 @@ const TradeModal = ({ isOpen, onClose, type = 'buy' }: TradeModalProps) => {
         });
         
         onClose();
+        setFormData({
+          action: '',
+          quantity: '',
+          price: '',
+          totalAmount: '',
+          comment: ''
+        });
       } catch (error: any) {
         toast({
           title: "Erreur",
@@ -143,11 +162,12 @@ const TradeModal = ({ isOpen, onClose, type = 'buy' }: TradeModalProps) => {
               Action <span className="text-destructive">*</span>
             </label>
             <LeySelect
-              placeholder="Sélectionner une action"
-              options={actions}
+              placeholder={loadingActions ? "Chargement..." : "Sélectionner une action"}
+              options={actionOptions}
               value={formData.action}
               onChange={(e) => handleInputChange('action')(e.target.value)}
               error={errors.action}
+              disabled={loadingActions}
             />
           </div>
 

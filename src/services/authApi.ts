@@ -21,9 +21,11 @@ export const authApi = {
   },
 
   async completeProfile(data: any): Promise<{ message: string }> {
-    return executeWithErrorHandling(() => 
-      axiosInstance.patch<{ message: string }>('/auth/complete-profile/', data)
-    );
+    return executeWithErrorHandling(() => {
+      const { email, ...profileData } = data;
+      const url = email ? `/auth/complete-profile/?email=${encodeURIComponent(email)}` : '/auth/complete-profile/';
+      return axiosInstance.patch<{ message: string }>(url, profileData);
+    });
   },
 
   async login(data: LoginRequest): Promise<LoginResponse> {
@@ -50,7 +52,7 @@ export const authApi = {
 
   async resetPassword(data: ResetPasswordRequest): Promise<ResetPasswordResponse> {
     return executeWithErrorHandling(() => 
-      axiosInstance.post<ResetPasswordResponse>('/auth/change-password/', data)
+      axiosInstance.post<ResetPasswordResponse>('/auth/reset-password/', data)
     );
   },
 

@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { motion, HTMLMotionProps } from 'framer-motion';
 
 interface LeyButtonProps extends Omit<HTMLMotionProps<"button">, 'children'> {
-  variant?: 'primary' | 'secondary' | 'google' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'google' | 'ghost' | 'outline' | 'destructive';
   size?: 'sm' | 'md' | 'lg';
   children: ReactNode;
   loading?: boolean;
@@ -28,6 +28,8 @@ const LeyButton = ({
     tertiary: 'btn-tertiary',
     google: 'btn-google',
     ghost: 'hover:bg-primary hover:bg-opacity-5 text-foreground rounded-xl px-4 py-2',
+    outline: 'border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-xl px-4 py-2',
+    destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl px-4 py-2',
   };
 
   const sizes = {
