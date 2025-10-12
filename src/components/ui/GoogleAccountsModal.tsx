@@ -27,7 +27,7 @@ const GoogleAccountsModal = ({ isOpen, onClose, onSelectAccount }: GoogleAccount
         .then(res => res.json())
         .then(data => {
           if (data.redirect_url) {
-            // Ouvrir la page Google dans une nouvelle fenêtre
+            // Rediriger directement vers Google (pas de nouvelle fenêtre)
             window.location.href = data.redirect_url;
           }
           setLoading(false);
@@ -35,9 +35,10 @@ const GoogleAccountsModal = ({ isOpen, onClose, onSelectAccount }: GoogleAccount
         .catch(err => {
           console.error('Erreur lors de la récupération de l\'URL Google:', err);
           setLoading(false);
+          onClose();
         });
     }
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

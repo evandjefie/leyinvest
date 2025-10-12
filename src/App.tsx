@@ -5,9 +5,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Provider, useDispatch } from "react-redux";
-import { store } from "./store";
+import { store, AppDispatch } from "./store";
 import { restoreSession } from "./store/slices/authSlice";
-import { AppDispatch } from "./store";
+import { useAppSelector } from "./store/hooks";
 
 // Pages
 import Dashboard from "./pages/Dashboard";
@@ -32,9 +32,30 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const { isAuthenticated, loading } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    dispatch(restoreSession());
+    // Sauvegarder la route actuelle avant le refresh
+    const currentPath = window.location.pathname;
+    if (isAuthenticated && currentPath !== '/auth/login' && currentPath !== '/auth/register') {
+      localStorage.setItem('lastRoute', currentPath);
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    const restoreUserSession = async () => {
+      const result = await dispatch(restoreSession());
+      
+      // Après la restauration, rediriger vers la dernière route ou dashboard
+      if (restoreSession.fulfilled.match(result)) {
+        const lastRoute = localStorage.getItem('lastRoute');
+        if (lastRoute && lastRoute !== window.location.pathname) {
+          window.location.href = lastRoute;
+        }
+      }
+    };
+    
+    restoreUserSession();
   }, [dispatch]);
 
   return (

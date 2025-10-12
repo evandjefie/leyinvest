@@ -3,3 +3,6 @@ import type { RootState, AppDispatch } from './index';
 
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+
+// Export AppDispatch for convenience
+export type { AppDispatch };

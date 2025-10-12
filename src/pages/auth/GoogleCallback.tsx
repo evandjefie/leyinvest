@@ -42,17 +42,23 @@ const GoogleCallback = () => {
         
         if (googleCallback.fulfilled.match(result)) {
           const isGoogleSignup = localStorage.getItem('google_signup') === 'true';
+          const response = result.payload as any;
           
-          if (isGoogleSignup) {
-            // C'est une inscription, rediriger vers CompleteProfilePage
-            localStorage.removeItem('google_signup');
+          // Vérifier si l'utilisateur doit compléter son profil
+          // Si c'est marqué comme inscription ou si needs_profile_completion est true
+          const needsProfileCompletion = isGoogleSignup || response.needs_profile_completion || response.is_new_user;
+          
+          if (needsProfileCompletion) {
+            // C'est une inscription ou profil incomplet, rediriger vers CompleteProfilePage
+            localStorage.setItem('google_signup', 'true');
             toast({
               title: "Connexion Google réussie !",
               description: "Veuillez finaliser votre profil.",
             });
             navigate('/auth/complete-profile');
           } else {
-            // C'est une connexion, rediriger vers le dashboard
+            // Profil complet, connexion directe
+            localStorage.removeItem('google_signup');
             toast({
               title: "Connexion réussie !",
               description: "Vous êtes maintenant connecté.",

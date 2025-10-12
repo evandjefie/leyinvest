@@ -25,7 +25,7 @@ const LeySelect = forwardRef<HTMLSelectElement, LeySelectProps>(
               'w-full h-12 px-4 pr-10 rounded-xl border-2 border-border bg-background text-foreground transition-all duration-300',
               'hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none',
               'appearance-none cursor-pointer',
-              error && 'border-destructive focus:border-destructive focus:ring-destructive focus:ring-opacity-20',
+              error && 'border-destructive focus:border-destructive focus:ring-destructive/20',
               className
             )}
             {...props}

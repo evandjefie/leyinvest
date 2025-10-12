@@ -68,7 +68,15 @@ Body: {
 
 // Connexion
 POST /auth/login/
-Body: { email, password }
+Body: { email, password, rememberMe?: boolean }
+
+// Connexion Google OAuth
+GET /api/v1/auth/google/login
+Response: { redirect_url: string }
+
+// Callback Google OAuth
+GET /api/v1/auth/google/callback?code={code}&state={state}
+Response: { access_token, user_id, email, nom, prenom, is_verified }
 
 // Réinitialisation mot de passe
 POST /auth/reset-password/
@@ -221,11 +229,14 @@ Tokens sémantiques HSL pour une cohérence visuelle:
 ### Authentification Complète
 
 - ✅ Inscription en 3 étapes avec vérification email
-- ✅ Connexion avec gestion d'erreurs
+- ✅ **Connexion Google OAuth** pour inscription et connexion
+- ✅ Connexion avec gestion d'erreurs et option "Se souvenir de moi"
 - ✅ Réinitialisation de mot de passe par email
 - ✅ Session persistante avec IndexedDB
 - ✅ Refresh token automatique
 - ✅ Restauration automatique de session au chargement
+- ✅ **Persistance de navigation** : retour à la dernière page après actualisation
+- ✅ **Collage de code OTP** en un clic pour la vérification email
 
 ### Profil Utilisateur
 
@@ -258,6 +269,7 @@ Tokens sémantiques HSL pour une cohérence visuelle:
 
 - ✅ **Modal Achat/Vente** avec formulaire complet
 - ✅ **Chargement dynamique** des actions depuis l'API
+- ✅ **Calcul automatique du montant** (quantité × prix unitaire)
 - ✅ **Validation** des quantités, prix et montants
 - ✅ **Enregistrement** des transactions avec commentaires obligatoires
 - ✅ **Gestion d'erreurs** avec messages détaillés

@@ -210,7 +210,7 @@ const CompleteProfilePage = () => {
                     { value: 'Retraité', label: 'Retraité' },
                     { value: 'Autre', label: 'Autre' },
                   ]}
-                   placeholder="Votre profession"
+                  placeholder="Votre profession"
                   {...register('situation_professionnelle')}
                   error={errors.situation_professionnelle?.message}
               />
