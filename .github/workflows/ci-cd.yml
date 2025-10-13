@@ -1,0 +1,45 @@
+name: Deploy Front-end to Dokploy
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - dev
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Installer Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm' # Ou 'yarn', 'pnpm'
+
+      # Installer les dépendances
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build application
+        run: npm run build
+
+      # Cette étape nécessite une configuration préalable de Dokploy
+      - name: Deploy to Dokploy
+        uses: dokploy/github-action@v1
+        with:
+          # URL de votre serveur Dokploy (ex: https://dokploy.mon-vps.com)
+          server_url: ${{ secrets.DOKPLOY_SERVER_URL }}
+          # Clé d'API générée dans les paramètres de Dokploy
+          api_key: ${{ secrets.DOKPLOY_API_KEY }}
+          # ID de l'application Dokploy (voir l'URL de l'app dans Dokploy)
+          app_id: ${{ secrets.DOKPLOY_APP_ID }}
+          # Spécifiez le chemin vers le dossier `dist` après la construction
+          # Le chemin par défaut pour Vite est souvent `dist`
+          folder: 'dist'
+          # Le tag de Docker à utiliser. Par exemple, le nom de la branche
+          docker_tag: ${{ github.ref_name }}
