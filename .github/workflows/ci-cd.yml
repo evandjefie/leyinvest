@@ -50,7 +50,7 @@ jobs:
       # 4. Déclenchement du Déploiement via l'API Dokploy
       # Assurez-vous que le champ "Image Docker" dans Dokploy est réglé sur ${{ env.IMAGE_TAG }} (ex: ghcr.io/org/repo:latest)
       - name: Dokploy Deployment Trigger
-        uses: benbristow/dokploy-deploy-action@v0.0.1
+        uses: benbristow/dokploy-deploy-action@0.0.1
         with:
           auth_token: ${{ secrets.DOKPLOY_AUTH_TOKEN }}
           application_id: ${{ secrets.DOKPLOY_APPLICATION_ID }}
