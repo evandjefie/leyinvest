@@ -61,12 +61,12 @@ jobs:
         #uses: dokploy/dokploy-action@v1
         run: |
             curl -X 'POST' \
-            'https://$DOKPLOY_URL/api/trpc/application.deploy' \
+            "https://$DOKPLOY_URL/api/trpc/application.deploy" \
             -H 'accept: application/json' \
-            -H 'x-api-key: $DOKPLOY_AUTH_TOKEN' \
+            -H "x-api-key: $DOKPLOY_AUTH_TOKEN" \
             -H 'Content-Type: application/json' \
             -d '{
                 "json":{
-                    "applicationId": $DOKPLOY_APPLICATION_ID
+                    "applicationId": "$DOKPLOY_APPLICATION_ID"
                 }
-            }'   
+            }'  
