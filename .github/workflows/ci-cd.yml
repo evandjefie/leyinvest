@@ -1,45 +1,66 @@
-name: Deploy Front-end to Dokploy
+name: CI/CD Dokploy Deployment (avec GHCR)
 
 on:
   push:
     branches:
       - main
-      - staging
-      - dev
+
+# Définissez les permissions minimales.
+# 'packages: write' est nécessaire pour pousser vers GHCR.
+permissions:
+  packages: write
+  contents: read 
 
 jobs:
-  build_and_deploy:
+  deploy:
     runs-on: ubuntu-latest
+    
+    # Utilisez une seule job nommée 'deploy' pour orchestrer toutes les étapes.
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Installer Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      # --- Étape 1: Configuration des Variables (Tag de l'Image) ---
+      # Nous définissons l'IMAGE_TAG pour qu'elle soit disponible dans les étapes suivantes.
+      - name: Set up Image Variables for GHCR
+        id: vars
+        run: |
+          # Le format requis est : ghcr.io/ORGANIZATION_OR_USER/REPOSITORY_NAME:latest
+          # Example for LeyInvest: ghcr.io/evandjefie/leyinvest:latest
+          IMAGE_TAG="ghcr.io/${{ github.repository }}:latest"
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          echo "Image Tag set to: $IMAGE_TAG"
+
+      # --- Étape 2: Connexion au GitHub Container Registry (GHCR) ---
+      # Utilise le GITHUB_TOKEN par défaut qui a les permissions nécessaires.
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
         with:
-          node-version: '20'
-          cache: 'npm' # Ou 'yarn', 'pnpm'
+          registry: ghcr.io
+          username: ${{ github.actor }} 
+          password: ${{ secrets.GITHUB_TOKEN }} 
 
-      # Installer les dépendances
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build application
-        run: npm run build
-
-      # Cette étape nécessite une configuration préalable de Dokploy
-      - name: Deploy to Dokploy
-        uses: dokploy/github-action@v1
+      # --- Étape 3: Build et Push de l'image vers GHCR ---
+      # Utilise l'IMAGE_TAG définie à l'étape 1.
+      - name: Build and Push Docker Image to GHCR
+        uses: docker/build-push-action@v5
         with:
-          # URL de votre serveur Dokploy (ex: https://dokploy.mon-vps.com)
-          server_url: ${{ secrets.DOKPLOY_SERVER_URL }}
-          # Clé d'API générée dans les paramètres de Dokploy
-          api_key: ${{ secrets.DOKPLOY_API_KEY }}
-          # ID de l'application Dokploy (voir l'URL de l'app dans Dokploy)
-          app_id: ${{ secrets.DOKPLOY_APP_ID }}
-          # Spécifiez le chemin vers le dossier `dist` après la construction
-          # Le chemin par défaut pour Vite est souvent `dist`
-          folder: 'dist'
-          # Le tag de Docker à utiliser. Par exemple, le nom de la branche
-          docker_tag: ${{ github.ref_name }}
+          context: .
+          push: true
+          tags: ${{ env.IMAGE_TAG }}
+
+      # --- Étape 4: Déploiement sur Dokploy ---
+      # Utilise l'action Dokploy pour déclencher un redéploiement
+      # avec la nouvelle image (spécifiée par l'application ID et le tag par défaut).
+      # Note: Cette action Dokploy utilise le tag 'latest' implicitement 
+      # ou doit être configurée pour accepter le tag GHCR.
+      # L'action benbristow/dokploy-deploy-action permet de passer le tag 
+      # via l'argument `image_tag`. Je l'ajoute pour la clarté et la flexibilité.
+      - name: Dokploy Deployment
+        uses: benbristow/dokploy-deploy-action@0.0.1
+        with:
+          # Les variables GH Actions sont toujours appelées par secrets.NAME
+          auth_token: ${{ secrets.DOKPLOY_AUTH_TOKEN }}
+          application_id: ${{ secrets.DOKPLOY_APPLICATION_ID }}
+          dokploy_url: ${{ secrets.DOKPLOY_URL }}
+          image_tag: ${{ env.IMAGE_TAG }}
