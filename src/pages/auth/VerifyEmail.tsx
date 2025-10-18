@@ -10,7 +10,7 @@ import { resendCode, verifyEmail } from '@/store/slices/authSlice';
 
 const VerifyEmail = () => {
   const [code, setCode] = useState(['', '', '', '']);
-  const [timer, setTimer] = useState(300);
+  const [timer, setTimer] = useState(60*5);
   const [canResend, setCanResend] = useState(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -67,7 +67,7 @@ const VerifyEmail = () => {
     // Fallback: l'état Redux possède registrationEmail
     // On évite d'importer ici pour garder le composant simple, l'endpoint backend demande email + code
     try {
-      const result = await dispatch(verifyEmail({ email, verification_code: fullCode }));
+  const result = await dispatch(verifyEmail({ email, otp: fullCode }));
       if (verifyEmail.fulfilled.match(result)) {
         toast({
           title: "Email vérifié !",

@@ -1,5 +1,4 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-// import env from '@/config/env';
 
 export enum ErrorType {
   NETWORK_ERROR = 'NETWORK_ERROR',
@@ -33,7 +32,7 @@ export const handleApiError = (error: any): APIError => {
         ErrorType.TIMEOUT_ERROR
       );
     }
-    
+
     if (error.code === 'ERR_NETWORK') {
       return createAPIError(
         'Problème de connexion réseau. Vérifiez votre connexion internet.',
@@ -56,89 +55,93 @@ export const handleApiError = (error: any): APIError => {
 
   const { status, data } = error.response;
 
-  // Extraire le message d'erreur de l'API de manière intelligente
-  let errorMessage = 'Une erreur s\'est produite.';
-  
-  // Priorité 1: message direct
-  if (data?.message) {
-    errorMessage = data.message;
-  }
-  // Priorité 2: detail (peut être string ou array)
-  else if (data?.detail) {
-    if (typeof data.detail === 'string') {
-      errorMessage = data.detail;
-    } else if (Array.isArray(data.detail)) {
-      const firstError = data.detail[0];
-      if (typeof firstError === 'string') {
-        errorMessage = firstError;
-      } else if (firstError?.msg) {
-        errorMessage = firstError.msg;
-      }
-    }
-  }
-  // Priorité 3: error
-  else if (data?.error) {
-    errorMessage = data.error;
-  }
-
   switch (status) {
     case 400:
       return createAPIError(
-        errorMessage || 'Données invalides. Vérifiez vos informations.',
+        data?.message || 'Données invalides. Vérifiez vos informations.',
         ErrorType.VALIDATION_ERROR,
         status,
         data
       );
-    
+
     case 401:
       return createAPIError(
-        errorMessage || 'Session expirée. Veuillez vous reconnecter.',
+        data?.message || 'Session expirée. Veuillez vous reconnecter.',
         ErrorType.AUTH_ERROR,
         status
       );
-    
+
     case 403:
       return createAPIError(
-        errorMessage || 'Accès refusé. Vous n\'avez pas les permissions nécessaires.',
+        data?.message || 'Accès refusé. Vous n\'avez pas les permissions nécessaires.',
         ErrorType.AUTH_ERROR,
         status
       );
-    
+
     case 404:
       return createAPIError(
-        errorMessage || 'Ressource non trouvée.',
+        data?.message || 'Service non trouvé. L\'URL demandée n\'existe pas.',
         ErrorType.SERVER_ERROR,
         status
       );
-    
+
     case 422:
+      // Gestion spécifique pour Laravel (structure différente de FastAPI)
+      let validationMessage = 'Erreur de validation des données';
+
+      // Format Laravel: { errors: { field: ["message"] } }
+      if (data?.errors && typeof data.errors === 'object') {
+        const firstField = Object.keys(data.errors)[0];
+        const firstError = data.errors[firstField];
+        if (Array.isArray(firstError) && firstError[0]) {
+          validationMessage = firstError[0];
+        }
+      }
+      // Format FastAPI: { detail: [{ msg: "..." }] }
+      else if (data?.detail && Array.isArray(data.detail)) {
+        const firstError = data.detail[0];
+        if (firstError?.msg) {
+          validationMessage = firstError.msg;
+        }
+      }
+      // Format générique
+      else if (data?.message) {
+        validationMessage = data.message;
+      }
+
       return createAPIError(
-        errorMessage || 'Erreur de validation des données',
+        validationMessage,
         ErrorType.VALIDATION_ERROR,
         status,
         data
       );
-    
-    case 429:
+
+    case 429: {
+      const retryAfter = error.response.headers['retry-after'];
+      const retryMessage = retryAfter
+        ? 'Trop de tentatives. Réessayez dans ${retryAfter} secondes.'
+        : 'Trop de tentatives. Veuillez patienter avant de réessayer.';
+
       return createAPIError(
-        errorMessage || 'Trop de tentatives. Veuillez patienter avant de réessayer.',
+        data?.message || retryMessage,
         ErrorType.SERVER_ERROR,
         status
       );
-    
+    }
+
     case 500:
     case 502:
     case 503:
     case 504:
       return createAPIError(
-        errorMessage || 'Erreur serveur temporaire. Veuillez réessayer dans quelques instants.',
+        data?.message || 'Erreur serveur temporaire. Veuillez réessayer dans quelques instants.',
         ErrorType.SERVER_ERROR,
         status
       );
-    
+
     default:
       return createAPIError(
-        errorMessage,
+        data?.message || 'Une erreur inattendue s\'est produite.',
         ErrorType.UNKNOWN_ERROR,
         status,
         data
@@ -146,32 +149,82 @@ export const handleApiError = (error: any): APIError => {
   }
 };
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// Configuration de l'API
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://leyinvest.skygroups.ci/api/v1';
 
 export const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
-  withCredentials: false,
+  withCredentials: false, // false pour token-based auth (Sanctum avec Bearer Token)
   timeout: 30000,
 });
 
-axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem('access_token');
-  if (token) {
-    if (!config.headers) config.headers = {} as any;
-    const headers: any = config.headers;
-    if (typeof headers.set === 'function') {
-      headers.set('Authorization', `Bearer ${token}`);
-    } else {
-      headers.Authorization = `Bearer ${token}`;
+/**
+ * 🔥 INTERCEPTEUR REQUEST - CRITIQUE POUR CORS
+ */
+axiosInstance.interceptors.request.use(
+  (config) => {
+    // 1️⃣ ENLEVER LE TRAILING SLASH (évite la redirection 301 qui casse CORS)
+    if (config.url && config.url.endsWith('/')) {
+      config.url = config.url.slice(0, -1);
     }
-  }
-  return config;
-});
 
-export const executeWithErrorHandling = async <T>(apiCall: () => Promise<AxiosResponse<T>>): Promise<T> => {
+    // 2️⃣ AJOUTER LE TOKEN D'AUTHENTIFICATION
+    const token = localStorage.getItem('access_token') || localStorage.getItem('auth_token');
+    if (token) {
+      if (!config.headers) config.headers = {} as any;
+      const headers: any = config.headers;
+
+      // Compatibilité avec les différentes versions d'Axios
+      if (typeof headers.set === 'function') {
+        headers.set('Authorization', `Bearer ${token}`);
+      } else {
+        headers.Authorization = `Bearer ${token}`;
+      }
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+/**
+ * 🔥 INTERCEPTEUR RESPONSE - GESTION AUTOMATIQUE DES ERREURS
+ */
+axiosInstance.interceptors.response.use(
+  (response) => {
+    // Réponse réussie, retourner tel quel
+    return response;
+  },
+  (error) => {
+    // Gestion automatique de la déconnexion sur 401
+    if (error.response?.status === 401) {
+      // Nettoyer le localStorage
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+
+      // Rediriger vers la page de connexion (si pas déjà sur /login)
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+/**
+ * Wrapper pour exécuter des appels API avec gestion d'erreurs automatique
+ */
+export const executeWithErrorHandling = async <T>(
+  apiCall: () => Promise<AxiosResponse<T>>
+): Promise<T> => {
   try {
     const response = await apiCall();
     return response.data;
@@ -179,3 +232,19 @@ export const executeWithErrorHandling = async <T>(apiCall: () => Promise<AxiosRe
     throw handleApiError(error);
   }
 };
+
+/**
+ * Helper pour logger les erreurs en développement
+ */
+export const logApiError = (error: APIError, context?: string) => {
+  if (import.meta.env.DEV) {
+    console.error(`[API Error${context ? ` - ${context}` : ''}]`, {
+      type: error.type,
+      message: error.message,
+      statusCode: error.statusCode,
+      details: error.details,
+    });
+  }
+};
+
+export default axiosInstance;

@@ -50,6 +50,7 @@
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.23.12",
+    "google-libphonenumber": "^3.2.43",
     "input-otp": "^1.4.2",
     "libphonenumber-js": "^1.12.23",
     "lucide-react": "^0.462.0",

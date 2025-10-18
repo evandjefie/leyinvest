@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 // Importer useForm, mais aussi Controller, watch et setValue
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import { PhoneNumberUtil, PhoneNumberFormat } from 'google-libphonenumber';
 
 // Nos composants et données
 import LeyButton from '@/components/ui/LeyButton';
@@ -72,16 +72,57 @@ const CompleteProfilePage = () => {
     try {
       // On combine l'indicatif et le numéro avant l'envoi
       const fullPhoneNumber = `${data.phone_prefix}${data.numero_whatsapp}`;
-      
-      const profileData: any = {
-        ...data,
-        numero_whatsapp: fullPhoneNumber, // On envoie le numéro complet
-      };
 
-      // Si c'est un utilisateur Google, on n'a pas besoin de l'email
-      if (registrationEmail) {
-        profileData.email = registrationEmail;
+      // Validate phone number length using google-libphonenumber
+      try {
+        const phoneUtil = PhoneNumberUtil.getInstance();
+        // Try to parse with the country code from phone_prefix or selectedCountry
+        // phone_prefix like +225 -> remove + for region lookup
+        const regionCode = selectedCountry || undefined;
+        let parsed;
+        if (regionCode) {
+          parsed = phoneUtil.parse(fullPhoneNumber, regionCode);
+        } else {
+          parsed = phoneUtil.parse(fullPhoneNumber);
+        }
+
+        const isPossible = phoneUtil.isPossibleNumber(parsed);
+        if (!isPossible) {
+          toast({
+            title: 'Numéro invalide',
+            description: 'Le numéro de téléphone semble invalide pour le pays sélectionné.',
+            variant: 'destructive',
+          });
+          return;
+        }
+      } catch (err) {
+        toast({
+          title: 'Numéro invalide',
+          description: 'Le numéro de téléphone fourni est invalide.',
+          variant: 'destructive',
+        });
+        return;
       }
+      
+      // Construire le payload exact attendu par l'API
+      // country_id: tenter de déduire à partir de l'indicatif (ex: +225 -> 225)
+      const countryData = countries.find(c => c.code === selectedCountry);
+      let country_id: number | null = null;
+      if (countryData) {
+        const digits = countryData.dial_code.replace(/\D/g, '');
+        country_id = digits ? parseInt(digits, 10) : null;
+      }
+
+      const profileData: any = {
+        email: registrationEmail,
+        password: data.mot_de_passe,
+        country_id: country_id,
+        age: data.age,
+        genre: data.genre || undefined,
+        situation_professionnelle: data.situation_professionnelle,
+        numero: fullPhoneNumber,
+        whatsapp: fullPhoneNumber,
+      };
       
       const result = await dispatch(completeProfile(profileData));
       
@@ -95,7 +136,8 @@ const CompleteProfilePage = () => {
           title: "Profil complété !",
           description: result.payload?.message || "Votre compte a été créé avec succès.",
         });
-        navigate('/dashboard');
+        // Rediriger vers la page de connexion pour que l'utilisateur se connecte
+        navigate('/auth/login');
       } else if (completeProfile.rejected.match(result)) {
         toast({
           title: "Erreur",

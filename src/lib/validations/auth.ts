@@ -21,7 +21,7 @@ export const registerSchema = z.object({
 // Schéma de validation pour la vérification d'email
 export const verifyEmailSchema = z.object({
   email: emailSchema,
-  verification_code: z.string().length(4, 'Le code de vérification doit contenir 4 chiffres'),
+  otp: z.string().length(6, 'Le code de vérification doit contenir 6 chiffres'),
 });
 
 // Schéma de validation pour la réinitialisation du mot de passe

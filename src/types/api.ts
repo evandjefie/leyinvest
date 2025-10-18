@@ -20,12 +20,16 @@ export interface RegisterResponse {
 
 export interface VerifyEmailRequest {
   email: string;
-  verification_code: string;
+  otp: string;
 }
 
 export interface VerifyEmailResponse {
   message: string;
-  user_id: number;
+  data: {    
+    user: {
+      id: string;
+    };
+  }
 }
 
 export interface ResendCodeRequest {

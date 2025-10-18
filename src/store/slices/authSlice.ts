@@ -21,6 +21,7 @@ interface User {
 interface AuthState {
   isAuthenticated: boolean;
   user: User | null;
+  token?: string | null;
   loading: boolean;
   error: string | null;
   registrationEmail: string | null;
@@ -31,6 +32,7 @@ interface AuthState {
 const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
+  token: localStorage.getItem('access_token') || null,
   loading: false,
   error: null,
   registrationEmail: null,
@@ -89,7 +91,12 @@ export const loginUser = createAsyncThunk(
   async (credentials: LoginRequest & { rememberMe?: boolean }, { rejectWithValue }) => {
     try {
       const response = await authApi.login(credentials);
-      localStorage.setItem('access_token', response.access_token);
+      // authApi.login returns AxiosResponse-like via executeWithErrorHandling
+      const token = (response as any).data?.data?.token || (response as any).access_token || (response as any).data?.access_token;
+      const user = (response as any).data?.data?.user || (response as any).user;
+      if (token) {
+        localStorage.setItem('access_token', token);
+      }
       
       // Gérer le "Se souvenir de moi"
       if (credentials.rememberMe) {
@@ -100,19 +107,19 @@ export const loginUser = createAsyncThunk(
         localStorage.removeItem('rememberMe');
       }
       
-      const userData = {
-        id: response.user_id,
-        email: response.email,
-        nom: response.nom,
-        prenom: response.prenom,
-        is_verified: response.is_verified,
+      const userData = user || {
+        id: (response as any).user_id,
+        email: (response as any).email,
+        nom: (response as any).nom,
+        prenom: (response as any).prenom,
+        is_verified: (response as any).is_verified,
       };
       
-      if (response && response.access_token) {
-        await cacheManager.cacheAuthData({ access_token: response.access_token, user: userData });
+      if (token) {
+        await cacheManager.cacheAuthData({ access_token: token, user: userData });
       }
-      
-      return response;
+
+      return { token, user: userData, raw: response };
     } catch (error: any) {
       return rejectWithValue(error.message || 'Erreur de connexion');
     }
@@ -335,13 +342,15 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.isAuthenticated = true;
-        state.user = {
-          id: action.payload.user_id,
-          email: action.payload.email,
-          nom: action.payload.nom,
-          prenom: action.payload.prenom,
-          is_verified: action.payload.is_verified,
-        };
+        state.token = (action.payload as any).token || null;
+        const u = (action.payload as any).user || null;
+        state.user = u ? {
+          id: u.id,
+          email: u.email,
+          nom: u.nom,
+          prenom: u.prenom,
+          is_verified: u.is_verified,
+        } : null;
         state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -359,6 +368,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = true;
         state.user = action.payload;
+        state.token = localStorage.getItem('access_token') || state.token || null;
       })
       .addCase(restoreSession.rejected, (state) => {
         state.loading = false;
@@ -455,13 +465,15 @@ const authSlice = createSlice({
       .addCase(googleCallback.fulfilled, (state, action) => {
         state.loading = false;
         state.isAuthenticated = true;
-        state.user = {
-          id: action.payload.user_id,
-          email: action.payload.email,
-          nom: action.payload.nom,
-          prenom: action.payload.prenom,
-          is_verified: action.payload.is_verified,
-        };
+        state.token = (action.payload as any).token || state.token || null;
+        const gu = (action.payload as any).user || null;
+        state.user = gu ? {
+          id: gu.id,
+          email: gu.email,
+          nom: gu.nom,
+          prenom: gu.prenom,
+          is_verified: gu.is_verified,
+        } : null;
         state.error = null;
       })
       .addCase(googleCallback.rejected, (state, action) => {

@@ -9,8 +9,9 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { resendCode, verifyEmail } from '@/store/slices/authSlice';
 
 const VerifyEmailPage = () => {
-  const [code, setCode] = useState(['', '', '', '']);
-  const [timer, setTimer] = useState(59);
+  const [code, setCode] = useState(['', '', '', '', '', '']);
+  // 10 minutes in seconds
+  const [timer, setTimer] = useState(600);
   const [canResend, setCanResend] = useState(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -22,11 +23,12 @@ const VerifyEmailPage = () => {
       return;
     }
 
-    let interval: NodeJS.Timeout;
+    let interval: NodeJS.Timeout | undefined;
     if (timer > 0) {
       interval = setInterval(() => {
         setTimer((prev) => prev - 1);
       }, 1000);
+      setCanResend(false);
     } else {
       setCanResend(true);
     }
@@ -37,13 +39,31 @@ const VerifyEmailPage = () => {
   }, [timer, navigate, registrationEmail]);
 
   const handleCodeChange = (index: number, value: string) => {
-    if (value.length <= 1 && /^\d*$/.test(value)) {
+    // Only digits
+    if (!/^\d*$/.test(value)) return;
+
+    // If user pasted the whole code into one field
+    if (value.length > 1) {
+      const digits = value.slice(0, 6).split('');
+      const newCode = [...code];
+      for (let i = 0; i < 6; i++) {
+        newCode[i] = digits[i] ?? '';
+      }
+      setCode(newCode);
+      // focus last filled or last input
+      const lastFilled = Math.min(digits.length - 1, 5);
+      const next = document.getElementById(`code-${lastFilled}`);
+      next?.focus();
+      return;
+    }
+
+    if (value.length <= 1) {
       const newCode = [...code];
       newCode[index] = value;
       setCode(newCode);
 
       // Auto-focus next input
-      if (value && index < 3) {
+      if (value && index < 5) {
         const nextInput = document.getElementById(`code-${index + 1}`);
         nextInput?.focus();
       }
@@ -52,7 +72,7 @@ const VerifyEmailPage = () => {
 
   const handleSubmit = async () => {
     const fullCode = code.join('');
-    if (fullCode.length !== 4) {
+    if (fullCode.length !== 6) {
       toast({
         title: "Erreur de validation",
         description: "Veuillez saisir le code complet",
@@ -72,7 +92,7 @@ const VerifyEmailPage = () => {
     }
 
     try {
-      const result = await dispatch(verifyEmail({ email: registrationEmail, verification_code: fullCode }));
+  const result = await dispatch(verifyEmail({ email: registrationEmail, otp: fullCode }));
       if (verifyEmail.fulfilled.match(result)) {
         toast({
           title: "Email vérifié !",
@@ -154,9 +174,18 @@ const VerifyEmailPage = () => {
                   key={index}
                   id={`code-${index}`}
                   type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   maxLength={1}
                   value={digit}
                   onChange={(e) => handleCodeChange(index, e.target.value)}
+                  onPaste={(e) => {
+                    const paste = e.clipboardData.getData('text');
+                    if (/^\d+$/.test(paste)) {
+                      e.preventDefault();
+                      handleCodeChange(index, paste);
+                    }
+                  }}
                   className="w-14 h-14 text-center text-2xl font-bold border border-border rounded-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
                 />
               ))}

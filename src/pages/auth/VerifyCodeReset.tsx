@@ -10,8 +10,8 @@ import { resendCode, resetPassword } from '@/store/slices/authSlice';
 import { authApi } from '@/services/authApi';
 
 const VerifyCodeReset = () => {
-  const [code, setCode] = useState(['', '', '', '']);
-  const [timer, setTimer] = useState(300);
+  const [code, setCode] = useState(['', '', '', '', '', '']);
+  const [timer, setTimer] = useState(600);
   const [canResend, setCanResend] = useState(false);
   const dispatch = useAppDispatch();
   const { loading, registrationEmail } = useAppSelector((state) => state.auth);
@@ -32,13 +32,31 @@ const VerifyCodeReset = () => {
   }, []);
 
   const handleCodeChange = (index: number, value: string) => {
-    if (value.length <= 1 && /^\d*$/.test(value)) {
+    // Only digits
+    if (!/^\d*$/.test(value)) return;
+
+    // If user pasted the whole code into one field
+    if (value.length > 1) {
+      const digits = value.slice(0, 6).split('');
+      const newCode = [...code];
+      for (let i = 0; i < 6; i++) {
+        newCode[i] = digits[i] ?? '';
+      }
+      setCode(newCode);
+      // focus last filled or last input
+      const lastFilled = Math.min(digits.length - 1, 5);
+      const next = document.getElementById(`code-${lastFilled}`);
+      next?.focus();
+      return;
+    }
+
+    if (value.length <= 1) {
       const newCode = [...code];
       newCode[index] = value;
       setCode(newCode);
 
       // Auto-focus next input
-      if (value && index < 3) {
+      if (value && index < 5) {
         const nextInput = document.getElementById(`code-${index + 1}`);
         nextInput?.focus();
       }
@@ -47,7 +65,7 @@ const VerifyCodeReset = () => {
 
   const handleSubmit = async () => {
     const fullCode = code.join('');
-    if (fullCode.length !== 4) {
+    if (fullCode.length !== 6) {
       toast({
         title: "Code incomplet",
         description: "Veuillez saisir le code complet",
@@ -163,16 +181,25 @@ const VerifyCodeReset = () => {
             </div>
 
             {/* Code Input */}
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center gap-3">
               {code.map((digit, index) => (
                 <input
                   key={index}
                   id={`code-${index}`}
                   type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   maxLength={1}
                   value={digit}
                   onChange={(e) => handleCodeChange(index, e.target.value)}
-                  className="w-16 h-16 text-center text-2xl font-bold border-2 border-border rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300"
+                  onPaste={(e) => {
+                    const paste = e.clipboardData.getData('text');
+                    if (/^\d+$/.test(paste)) {
+                      e.preventDefault();
+                      handleCodeChange(index, paste);
+                    }
+                  }}
+                  className="w-14 h-14 text-center text-2xl font-bold border border-border rounded-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
                 />
               ))}
             </div>

@@ -22,9 +22,9 @@ export const authApi = {
 
   async completeProfile(data: any): Promise<{ message: string }> {
     return executeWithErrorHandling(() => {
-      const { email, ...profileData } = data;
-      const url = email ? `/auth/complete-profile/?email=${encodeURIComponent(email)}` : '/auth/complete-profile/';
-      return axiosInstance.patch<{ message: string }>(url, profileData);
+      // The backend expects a POST to /auth/complete-profile with body containing
+      // { email, password, country_id, age, genre, situation_professionnelle, numero, whatsapp }
+      return axiosInstance.post<{ message: string }>('/auth/complete-profile/', data);
     });
   },
 
