@@ -59,17 +59,17 @@ const Profile = () => {
     
     setIsDeletingAccount(true);
     try {
-      await userApi.deleteMe();
+      const result = await userApi.deleteMe();
       await dispatch(logoutUser());
       toast({
         title: "Compte supprimé",
-        description: "Votre compte a été supprimé avec succès."
+        description: result?.message || "Votre compte a été supprimé avec succès."
       });
       navigate('/auth/login');
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de la suppression du compte.",
+        description: error?.message || "Une erreur est survenue lors de la suppression du compte.",
         variant: "destructive"
       });
     } finally {

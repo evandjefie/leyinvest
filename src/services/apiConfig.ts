@@ -56,10 +56,35 @@ export const handleApiError = (error: any): APIError => {
 
   const { status, data } = error.response;
 
+  // Extraire le message d'erreur de l'API de manière intelligente
+  let errorMessage = 'Une erreur s\'est produite.';
+  
+  // Priorité 1: message direct
+  if (data?.message) {
+    errorMessage = data.message;
+  }
+  // Priorité 2: detail (peut être string ou array)
+  else if (data?.detail) {
+    if (typeof data.detail === 'string') {
+      errorMessage = data.detail;
+    } else if (Array.isArray(data.detail)) {
+      const firstError = data.detail[0];
+      if (typeof firstError === 'string') {
+        errorMessage = firstError;
+      } else if (firstError?.msg) {
+        errorMessage = firstError.msg;
+      }
+    }
+  }
+  // Priorité 3: error
+  else if (data?.error) {
+    errorMessage = data.error;
+  }
+
   switch (status) {
     case 400:
       return createAPIError(
-        data?.message || 'Données invalides. Vérifiez vos informations.',
+        errorMessage || 'Données invalides. Vérifiez vos informations.',
         ErrorType.VALIDATION_ERROR,
         status,
         data
@@ -67,35 +92,28 @@ export const handleApiError = (error: any): APIError => {
     
     case 401:
       return createAPIError(
-        'Session expirée. Veuillez vous reconnecter.',
+        errorMessage || 'Session expirée. Veuillez vous reconnecter.',
         ErrorType.AUTH_ERROR,
         status
       );
     
     case 403:
       return createAPIError(
-        'Accès refusé. Vous n\'avez pas les permissions nécessaires.',
+        errorMessage || 'Accès refusé. Vous n\'avez pas les permissions nécessaires.',
         ErrorType.AUTH_ERROR,
         status
       );
     
     case 404:
       return createAPIError(
-        'Service non trouvé. L\'URL demandée n\'existe pas.',
+        errorMessage || 'Ressource non trouvée.',
         ErrorType.SERVER_ERROR,
         status
       );
     
     case 422:
-      let validationMessage = 'Erreur de validation des données';
-      if (data?.detail && Array.isArray(data.detail)) {
-        const firstError = data.detail[0];
-        if (firstError?.msg) {
-          validationMessage = firstError.msg;
-        }
-      }
       return createAPIError(
-        validationMessage,
+        errorMessage || 'Erreur de validation des données',
         ErrorType.VALIDATION_ERROR,
         status,
         data
@@ -103,7 +121,7 @@ export const handleApiError = (error: any): APIError => {
     
     case 429:
       return createAPIError(
-        'Trop de tentatives. Veuillez patienter avant de réessayer.',
+        errorMessage || 'Trop de tentatives. Veuillez patienter avant de réessayer.',
         ErrorType.SERVER_ERROR,
         status
       );
@@ -113,14 +131,14 @@ export const handleApiError = (error: any): APIError => {
     case 503:
     case 504:
       return createAPIError(
-        'Erreur serveur temporaire. Veuillez réessayer dans quelques instants.',
+        errorMessage || 'Erreur serveur temporaire. Veuillez réessayer dans quelques instants.',
         ErrorType.SERVER_ERROR,
         status
       );
     
     default:
       return createAPIError(
-        data?.message || 'Une erreur inattendue s\'est produite.',
+        errorMessage,
         ErrorType.UNKNOWN_ERROR,
         status,
         data

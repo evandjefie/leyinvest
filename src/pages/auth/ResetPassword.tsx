@@ -60,14 +60,14 @@ const ResetPassword = () => {
       } else {
         toast({
           title: "Erreur",
-          description: result.payload as string,
+          description: result.payload as string || "Erreur lors de la réinitialisation du mot de passe",
           variant: "destructive"
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Erreur",
-        description: "Erreur lors de la réinitialisation du mot de passe",
+        description: error?.message || "Erreur lors de la réinitialisation du mot de passe",
         variant: "destructive"
       });
     }

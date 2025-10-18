@@ -98,11 +98,11 @@ const TradeModal = ({ isOpen, onClose, type = 'buy' }: TradeModalProps) => {
           commentaire: formData.comment
         };
         
-        await transactionApi.createTransaction(transactionData);
+        const response = await transactionApi.createTransaction(transactionData);
         
         toast({
           title: "Transaction enregistrée",
-          description: `Votre ${type === 'buy' ? 'achat' : 'vente'} a été enregistré avec succès.`,
+          description: response?.message || `Votre ${type === 'buy' ? 'achat' : 'vente'} a été enregistré avec succès.`,
         });
         
         onClose();

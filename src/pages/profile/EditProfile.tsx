@@ -43,7 +43,7 @@ const EditProfile = ({ onBack }: EditProfileProps) => {
       toast.success('Informations mises à jour avec succès');
       onBack();
     } catch (error: any) {
-      toast.error(error || 'Erreur lors de la mise à jour');
+      toast.error(error?.message || error || 'Erreur lors de la mise à jour');
     } finally {
       setIsLoading(false);
     }

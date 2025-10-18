@@ -35,15 +35,15 @@ const ChangePassword = ({ onBack }: ChangePasswordProps) => {
     setIsLoading(true);
 
     try {
-      await dispatch(changePassword({
+      const result = await dispatch(changePassword({
         old_password: formData.old_password,
         new_password: formData.new_password,
       })).unwrap();
       
-      toast.success('Mot de passe modifié avec succès');
+      toast.success(result?.message || 'Mot de passe modifié avec succès');
       onBack();
     } catch (error: any) {
-      toast.error(error || 'Erreur lors du changement de mot de passe');
+      toast.error(error?.message || error || 'Erreur lors du changement de mot de passe');
     } finally {
       setIsLoading(false);
     }

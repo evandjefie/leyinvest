@@ -6,7 +6,8 @@ import { toast } from '@/hooks/use-toast';
 import logoLeycom from '@/assets/logo_leycom.svg';
 import bgAuthLeycom from '@/assets/bg_auth_leycom.svg';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { resendCode } from '@/store/slices/authSlice';
+import { resendCode, resetPassword } from '@/store/slices/authSlice';
+import { authApi } from '@/services/authApi';
 
 const VerifyCodeReset = () => {
   const [code, setCode] = useState(['', '', '', '']);
@@ -44,18 +45,48 @@ const VerifyCodeReset = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const fullCode = code.join('');
-    if (fullCode.length === 4) {
-      toast({
-        title: "Vérification réussie !",
-        description: "Code vérifié avec succès.",
-      });
-      navigate('/auth/reset-password');
-    } else {
+    if (fullCode.length !== 4) {
       toast({
         title: "Code incomplet",
         description: "Veuillez saisir le code complet",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!registrationEmail) {
+      toast({
+        title: "Erreur",
+        description: "Email non trouvé",
+        variant: "destructive"
+      });
+      navigate('/auth/forgot-password');
+      return;
+    }
+
+    try {
+      const response = await authApi.verifyResetCode({ 
+        email: registrationEmail, 
+        reset_code: fullCode 
+      });
+      
+      toast({
+        title: "Vérification réussie !",
+        description: response?.message || "Code vérifié avec succès.",
+      });
+      
+      // Stocker le token de reset pour l'utiliser dans la page suivante
+      if (response.token) {
+        localStorage.setItem('reset_token_temp', response.token);
+      }
+      
+      navigate('/auth/reset-password');
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: error?.message || "Code invalide ou expiré",
         variant: "destructive"
       });
     }

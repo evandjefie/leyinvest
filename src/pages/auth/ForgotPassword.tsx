@@ -25,20 +25,20 @@ const ForgotPassword = () => {
         dispatch(setRegistrationEmail(email));
         toast({
           title: "Email envoyé !",
-          description: "Un code de vérification a été envoyé à votre adresse email.",
+          description: result.payload?.message || "Un code de vérification a été envoyé à votre adresse email.",
         });
-        navigate('/auth/change-password');
+        navigate('/auth/verify-code-reset');
       } else {
         toast({
           title: "Erreur",
-          description: result.payload as string,
+          description: result.payload as string || "Erreur lors de l'envoi du code",
           variant: "destructive"
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Erreur",
-        description: "Erreur lors de l'envoi du code",
+        description: error?.message || "Erreur lors de l'envoi du code",
         variant: "destructive"
       });
     }

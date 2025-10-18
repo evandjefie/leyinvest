@@ -56,9 +56,15 @@ export const authApi = {
     );
   },
 
+  async verifyResetCode(data: { email: string; reset_code: string }): Promise<{ message: string; token: string }> {
+    return executeWithErrorHandling(() => 
+      axiosInstance.post<{ message: string; token: string }>('/auth/verify-reset-code/', data)
+    );
+  },
+
   async confirmResetPassword(token: string, data: ConfirmResetPasswordRequest): Promise<ConfirmResetPasswordResponse> {
     return executeWithErrorHandling(() => 
-      axiosInstance.post<ConfirmResetPasswordResponse>(`/auth/change-password/${token}`, data)
+      axiosInstance.post<ConfirmResetPasswordResponse>(`/auth/reset-password/confirm/${token}`, data)
     );
   },
 

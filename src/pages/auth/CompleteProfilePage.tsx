@@ -93,12 +93,23 @@ const CompleteProfilePage = () => {
         
         toast({
           title: "Profil complété !",
-          description: "Votre compte a été créé avec succès.",
+          description: result.payload?.message || "Votre compte a été créé avec succès.",
         });
         navigate('/dashboard');
+      } else if (completeProfile.rejected.match(result)) {
+        toast({
+          title: "Erreur",
+          description: result.payload as string || "Une erreur est survenue lors de la création du profil",
+          variant: "destructive"
+        });
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Complete profile error:', err);
+      toast({
+        title: "Erreur",
+        description: err.message || "Une erreur est survenue",
+        variant: "destructive"
+      });
     }
   };
 
