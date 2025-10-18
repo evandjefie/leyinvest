@@ -18,7 +18,7 @@ const LeyCard = ({
   const variants = {
     default: 'card-ley',
     gradient: 'card-gradient',
-    stats: 'bg-primary text-primary-foreground rounded-2xl p-6 shadow-primary',
+    stats: 'bg-primary text-primary-foreground rounded-2xl p-6 ',
   };
 
   return (

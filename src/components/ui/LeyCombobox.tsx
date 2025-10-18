@@ -1,8 +1,7 @@
-// src/components/ui/LeyCombobox.tsx
 import * as React from 'react';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button'; // Assurez-vous d'avoir un composant Button
+import { Button } from '@/components/ui/button'; 
 import {
   Command,
   CommandEmpty,

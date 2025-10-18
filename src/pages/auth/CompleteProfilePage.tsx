@@ -127,7 +127,6 @@ const CompleteProfilePage = () => {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              {/* Genre et Âge sur la même ligne */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <LeySelect
                   label="Genre"

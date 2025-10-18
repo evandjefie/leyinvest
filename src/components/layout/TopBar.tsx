@@ -2,6 +2,8 @@ import { ArrowUpToLine, ArrowDownToLine, Bell, Settings, User } from 'lucide-rea
 import { Link } from 'react-router-dom';
 import LeyButton from '../ui/LeyButton';
 import logoLeycom from '@/assets/logo_leycom.svg';
+import icon_record_achat from '@/assets/icon_record_achat.svg';
+import icon_record_vente from '@/assets/icon_record_vente.svg';
 
 interface TopBarProps {
   onBuyClick?: () => void;
@@ -13,7 +15,7 @@ const TopBar = ({ onBuyClick, onSellClick }: TopBarProps) => {
     <div className="h-16 bg-white border-b border-border flex items-center justify-between px-4 md:px-6">
       {/* Logo on mobile */}
       <div className="md:hidden">
-        <img src={logoLeycom} alt="LeyInvest" className="h-12" />
+        <img src={logoLeycom} alt="LeyInvest" className="h-8" />
       </div>
       
       <div className="hidden md:block flex-1"></div>
@@ -21,21 +23,21 @@ const TopBar = ({ onBuyClick, onSellClick }: TopBarProps) => {
       <div className="flex items-center gap-2 md:gap-4">
         <div className="hidden md:flex items-center gap-2">
           <LeyButton 
-            variant="primary"
+            variant=""
             size="sm"
-            className="flex items-center gap-2"
+            className="bg-[#D5F1EC] rounded-sm flex items-center gap-2"
             onClick={onBuyClick}  
           >
-            <ArrowUpToLine/>
+            <img src={icon_record_achat} alt="icon_achat" className="h-6" />
             Enregistrer achat
           </LeyButton>
           <LeyButton 
-            variant="secondary" 
+            variant="" 
             size="sm" 
-            className="bg-[#FFD796] flex items-center gap-2"
+            className="bg-[#FFF8EC] rounded-sm flex items-center gap-2"
             onClick={onSellClick}
           >
-            <ArrowDownToLine/>
+            <img src={icon_record_vente} alt="icon_vente" className="h-6" />
             Enregistrer vente
           </LeyButton>
         </div>

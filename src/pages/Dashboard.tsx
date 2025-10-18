@@ -37,33 +37,25 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen space-y-6 md:space-y-8 p-4 md:p-6 pb-24 md:pb-6 bg-[#F0F5F4]">
+    <div className="min-h-screen space-y-3 md:space-y-3 p-4 md:p-5 pb-24 md:pb-6 bg-[#F0F5F4]">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl md:text-3xl text-[#0B3C3D] font-semibold">Vue d'ensemble de vos investissements</h1>
-          {/* {user && (
-            <p className="text-sm md:text-base text-muted-foreground mt-1">
-              Utilisateur: {user.prenom} {user.nom}
-            </p>
-          )} */}
-        </div>
+      <div>
+        <h1 className="text-base md:text-2xl text-[#0B3C3D] font-semibold">Vue d'ensemble de vos investissements</h1>
       </div>
 
       {/* Investment Overview - Mobile Layout Based on Image */}
-      <div className="bg-background text-primary-foreground rounded-2xl p-3 md:p-6">
+      <div className="bg-background text-primary-foreground rounded-xl p-3 md:p-3">
         {/* Mobile Layout */}
         <div className="md:hidden">
-          {/* Valeur totale - Grande carte verte */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             className="mb-4"
           >
-            <LeyCard className="space-y-1 bg-gradient-to-tl from-[#30B59B] to-[#D1A55E] text-white">
-              <p className="text-sm text-green-100">Valeur totale</p>
-              <p className="text-4xl font-semibold text-white">XOF {stats.totalValue.toLocaleString()}</p>
+            <LeyCard className="item-center bg-gradient-to-l from-[#30B59B] to-[#8cac78] text-white">
+              <p className="text-xs text-green-100">Valeur totale</p>
+              <p className="text-4xl font-semibold text-white">FCFA {stats.totalValue.toLocaleString()}</p>
             </LeyCard>
           </motion.div>
 
@@ -76,15 +68,15 @@ const Dashboard = () => {
           >
             <div className="flex">
               <div className="flex-1 mr-2">
-                <LeyCard className="space-y-1 bg-white border">
-                  <p className="text-sm font-medium text-gray-700">Gains / Pertes</p>
-                  <p className="text-xl font-semibold text-gray-800">XOF {stats.totalReturn.toLocaleString()}</p>
+                <LeyCard className="space-y-1 bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200">
+                  <p className="text-xs font-medium text-teal-700">Gains / Pertes</p>
+                  <p className="text-base font-semibold text-teal-800">FCFA {stats.totalReturn.toLocaleString()}</p>
                 </LeyCard>
               </div>
               <div className="flex-1 ml-2">
                 <LeyCard className="space-y-1 bg-white border">
-                  <p className="text-sm font-medium text-gray-700">Rentabilité</p>
-                  <p className="text-xl font-semibold text-gray-800">{stats.returnPercentage} %</p>
+                  <p className="text-xs font-medium text-gray-700">Rentabilité</p>
+                  <p className="text-base font-semibold text-gray-800">{stats.returnPercentage} %</p>
                 </LeyCard>
               </div>
             </div>
@@ -97,10 +89,20 @@ const Dashboard = () => {
             transition={{ delay: 0.3 }}
             className="mb-4"
           >
-            <LeyCard className="space-y-1 bg-white border">
-              <p className="text-sm text-gray-700">Montant investi</p>
-              <p className="text-xl font-semibold text-gray-800">XOF {stats.totalInvested.toLocaleString()}</p>
-            </LeyCard>
+            <div className="flex">
+              <div className="flex-1 mr-2">
+                <LeyCard className="space-y-1 bg-white border">
+                  <p className="text-xs text-gray-700">Montant investi</p>
+                  <p className="text-base font-semibold text-gray-800">FCFA {stats.totalInvested.toLocaleString()}</p>
+                </LeyCard>
+              </div>
+              <div className="flex-1 ml-2">
+                <LeyCard className="space-y-1 bg-white border">
+                  <p className="text-xs text-gray-700">Rendement</p>
+                  <p className="text-base font-semibold text-gray-800">FCFA {stats.totalValue.toLocaleString()}</p>
+                </LeyCard>
+              </div>
+            </div>
           </motion.div>
 
           {/* Capital et Liquidité */}
@@ -112,14 +114,14 @@ const Dashboard = () => {
             <div className="flex">
               <div className="flex-1 mr-2">
                 <LeyCard className="space-y-1 bg-white border">
-                  <p className="text-sm text-gray-700">Capital</p>
-                  <p className="text-xl font-semibold text-gray-800">XOF {stats.totalInvested.toLocaleString()}</p>
+                  <p className="text-xs text-gray-700">Capital</p>
+                  <p className="text-base font-semibold text-gray-800">FCFA {stats.totalInvested.toLocaleString()}</p>
                 </LeyCard>
               </div>
               <div className="flex-1 ml-2">
                 <LeyCard className="space-y-1 bg-white border">
-                  <p className="text-sm text-gray-700">Liquidité</p>
-                  <p className="text-xl font-semibold text-gray-800">XOF {stats.totalValue.toLocaleString()}</p>
+                  <p className="text-xs text-gray-700">Liquidité</p>
+                  <p className="text-base font-semibold text-gray-800">FCFA {stats.totalValue.toLocaleString()}</p>
                 </LeyCard>
               </div>
             </div>
@@ -127,7 +129,7 @@ const Dashboard = () => {
         </div>
 
         {/* Desktop Layout */}
-        <div className="hidden md:grid lg:grid-cols-4 md:grid-cols-2 gap-4 md:gap-6">
+        <div className="hidden md:grid lg:grid-cols-4 md:grid-cols-2 gap-4 md:gap-3">
           {/* Montant investi */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -136,7 +138,7 @@ const Dashboard = () => {
           >
             <LeyCard className="space-y-1 bg-[#F6F6F6]">
               <p className="text-sm text-muted-foreground">Montant investi</p>
-              <p className="text-2xl font-semibold text-foreground">XOF {stats.totalInvested.toLocaleString()}</p>
+              <p className="text-xl font-semibold text-foreground">FCFA {stats.totalInvested.toLocaleString()}</p>
             </LeyCard>
           </motion.div>
 
@@ -148,7 +150,7 @@ const Dashboard = () => {
           >
             <LeyCard className="space-y-1 bg-[#F6F6F6]">
               <p className="text-sm text-muted-foreground">Rendement</p>
-              <p className="text-2xl font-semibold text-foreground">{stats.returnPercentage} %</p>
+              <p className="text-xl font-semibold text-foreground">{stats.returnPercentage} %</p>
             </LeyCard>
           </motion.div>
 
@@ -160,7 +162,7 @@ const Dashboard = () => {
           >
             <LeyCard className="space-y-1 bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200">
               <p className="text-sm font-medium text-teal-700">Gains / Pertes</p>
-              <p className="text-2xl font-semibold text-teal-800">XOF {stats.totalReturn.toLocaleString()}</p>
+              <p className="text-xl font-semibold text-teal-800">FCFA {stats.totalReturn.toLocaleString()}</p>
             </LeyCard>
           </motion.div>
 
@@ -171,9 +173,9 @@ const Dashboard = () => {
             transition={{ delay: 0.7 }}
             className="lg:col-span-1 lg:row-span-2"
           >
-            <LeyCard className="space-y-1 bg-gradient-to-tl from-[#30B59B] to-[#D1A55E] text-white h-full">
+            <LeyCard className="space-y-1 bg-gradient-to-l from-[#30B59B] to-[#8cac78] text-white h-full">
               <p className="text-sm text-green-100">Valeur totale</p>
-              <p className="text-4xl font-semibold text-white">XOF {stats.totalValue.toLocaleString()}</p>
+              <p className="text-4xl font-semibold text-white">FCFA {stats.totalValue.toLocaleString()}</p>
             </LeyCard>
           </motion.div>
           
@@ -185,7 +187,7 @@ const Dashboard = () => {
           >
             <LeyCard className="space-y-1 bg-[#F6F6F6]">
               <p className="text-sm text-muted-foreground">Capital</p>
-              <p className="text-2xl font-semibold text-foreground">XOF {stats.totalInvested.toLocaleString()}</p>
+              <p className="text-xl font-semibold text-foreground">FCFA {stats.totalInvested.toLocaleString()}</p>
             </LeyCard>
           </motion.div>
 
@@ -197,7 +199,7 @@ const Dashboard = () => {
           >
             <LeyCard className="space-y-1 bg-[#F6F6F6]">
               <p className="text-sm text-muted-foreground">Liquidité</p>
-              <p className="text-2xl font-semibold text-foreground">XOF {stats.totalValue.toLocaleString()}</p>
+              <p className="text-xl font-semibold text-foreground">FCFA {stats.totalValue.toLocaleString()}</p>
             </LeyCard>
           </motion.div>
 
@@ -209,20 +211,20 @@ const Dashboard = () => {
           >
             <LeyCard className="space-y-1 bg-[#F6F6F6]">
               <p className="text-sm text-muted-foreground">Rentabilité</p>
-              <p className="text-2xl font-semibold text-foreground">{stats.returnPercentage} %</p>
+              <p className="text-xl font-semibold text-foreground">{stats.returnPercentage} %</p>
             </LeyCard>
           </motion.div>
         </div>
       </div>
 
       {/* Top 5 and Flop 5 Tables */}
-      <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 md:gap-8">
+      <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 md:gap-8 ">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <LeyCard className="space-y-4 p-3 md:p-6" variant='default'>
+          <LeyCard className="space-y-4 p-5 md:p-3" variant='default'>
             <div className="flex items-center justify-between">
               <h3 className="text-base md:text-lg font-semibold text-gray-800">Top 5</h3>
               <button className="text-teal-600 hover:text-teal-700 text-xs md:text-sm font-medium transition-colors">
@@ -231,26 +233,26 @@ const Dashboard = () => {
             </div>
             <div className="overflow-x-auto -mx-3 md:mx-0">
               <table className="w-full min-w-[400px]">
-                <thead className="bg-teal-50">
+                <thead className="bg-[#D5F1EC]">
                   <tr>
-                    <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-gray-700">Entreprise</th>
-                    <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-gray-700">Ouverture</th>
-                    <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-gray-700">Clôture</th>
-                    <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-gray-700">Variation</th>
+                    <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-gray-900">Entreprise</th>
+                    <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-gray-900">Ouverture</th>
+                    <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-gray-900">Clôture</th>
+                    <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-gray-900">Variation</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {top5.map((item) => (
                     <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="py-2 md:py-3 px-2 md:px-4">
+                      <td className="py-2 md:py-1 px-2 md:px-4">
                         <div>
                           <p className="font-medium text-gray-900 text-xs md:text-base">{item.company}</p>
                           <p className="text-xs text-gray-500">{item.symbol}</p>
                         </div>
                       </td>
-                      <td className="py-2 md:py-3 px-2 md:px-4 text-gray-700 text-xs md:text-base">{item.openPrice}</td>
-                      <td className="py-2 md:py-3 px-2 md:px-4 text-gray-700 text-xs md:text-base">{item.closePrice}</td>
-                      <td className="py-2 md:py-3 px-2 md:px-4">
+                      <td className="py-2 md:py-1 px-2 md:px-4 text-gray-700 text-xs md:text-base">{item.openPrice}</td>
+                      <td className="py-2 md:py-1 px-2 md:px-4 text-gray-700 text-xs md:text-base">{item.closePrice}</td>
+                      <td className="py-2 md:py-1 px-2 md:px-4">
                         <span className="text-green-600 font-medium text-xs md:text-base">{item.variation}</span>
                       </td>
                     </tr>
@@ -266,7 +268,7 @@ const Dashboard = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <LeyCard className="space-y-4 p-3 md:p-6" variant='default'>
+          <LeyCard className="space-y-4 p-5 md:p-3" variant='default'>
             <div className="flex items-center justify-between">
               <h3 className="text-base md:text-lg font-semibold text-gray-800">Flop 5</h3>
               <button className="text-teal-600 hover:text-teal-700 text-xs md:text-sm font-medium transition-colors">
@@ -275,27 +277,27 @@ const Dashboard = () => {
             </div>
             <div className="overflow-x-auto -mx-3 md:mx-0">
               <table className="w-full min-w-[400px]">
-                <thead className="bg-teal-50">
-                <tr>
-                    <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-gray-700">Entreprise</th>
-                    <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-gray-700">Ouverture</th>
-                    <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-gray-700">Clôture</th>
-                    <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-gray-700">Variation</th>
+                <thead className="bg-[#D5F1EC]">
+                  <tr>
+                    <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-gray-900">Entreprise</th>
+                    <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-gray-900">Ouverture</th>
+                    <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-gray-900">Clôture</th>
+                    <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-bold text-gray-900">Variation</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {flop5.map((item) => (
                     <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="py-2 md:py-3 px-2 md:px-4">
+                      <td className="py-2 md:py-1 px-2 md:px-4">
                         <div>
                           <p className="font-medium text-gray-900 text-xs md:text-base">{item.company}</p>
                           <p className="text-xs text-gray-500">{item.symbol}</p>
                         </div>
                       </td>
-                      <td className="py-2 md:py-3 px-2 md:px-4 text-gray-700 text-xs md:text-base">{item.openPrice}</td>
-                      <td className="py-2 md:py-3 px-2 md:px-4 text-gray-700 text-xs md:text-base">{item.closePrice}</td>
-                      <td className="py-2 md:py-3 px-2 md:px-4">
-                        <span className="text-red-600 font-medium text-xs md:text-base">{item.variation}</span>
+                      <td className="py-2 md:py-1 px-2 md:px-4 text-gray-700 text-xs md:text-base">{item.openPrice}</td>
+                      <td className="py-2 md:py-1 px-2 md:px-4 text-gray-700 text-xs md:text-base">{item.closePrice}</td>
+                      <td className="py-2 md:py-1 px-2 md:px-4">
+                        <span className="text-green-600 font-medium text-xs md:text-base">{item.variation}</span>
                       </td>
                     </tr>
                   ))}
@@ -313,8 +315,8 @@ const Dashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7 }}
         >
-          <div className="mb-4">
-            <h3 className="text-xl md:text-3xl text-[#0B3C3D] font-semibold">Nos évaluations</h3>
+          <div className="mb-1">
+            <h3 className="text-xl md:text-xl text-[#0B3C3D] font-semibold">Nos évaluations</h3>
           </div>
           <LeyCard className="space-y-4 bg-white">
             <div className="space-y-1">
@@ -336,14 +338,14 @@ const Dashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
         >
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 gap-2">
-            <h3 className="text-xl md:text-3xl text-[#0B3C3D] font-semibold">Publications officielles</h3>
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-1 gap-2">
+            <h3 className="text-xl md:text-xl text-[#0B3C3D] font-semibold">Publications officielles</h3>
             <button className="bg-[#0B3C3D] text-white px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium hover:bg-gray-700 transition-colors flex items-center gap-2">
               Actualités du marché
               <ExternalLink className="w-3 h-3 md:w-4 md:h-4" />
             </button>
           </div>
-          <LeyCard className="space-y-4 bg-[#f0f5f4]" variant='stats'>
+          <LeyCard className="space-y-4 " variant=''>
             <div className="space-y-1">
               {publications.map((pub, index) => (
                 <div
@@ -354,7 +356,7 @@ const Dashboard = () => {
                     <p className="font-medium text-xs md:text-sm text-gray-800 line-clamp-1">{pub.title}</p>
                     <p className="text-xs text-gray-500 mt-1 line-clamp-1">{pub.subtitle}</p>
                   </div>
-                  <button className="text-teal-600 hover:text-teal-700 text-xs md:text-sm font-medium transition-colors shrink-0">
+                  <button className="bg-gray-100 px-3 py-1 rounded-sm text-xs md:text-sm font-medium transition-colors shrink-0">
                     {pub.action}
                   </button>
                 </div>
